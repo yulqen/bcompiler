@@ -6,6 +6,7 @@ cell_regex = re.compile('[A-Z]+[0-9]+')
 
 SOURCE_RETURN_FILE = "source_files/A14 Cambs to Huntington.xlsx"
 DATA_MAP_FILE = 'source_files/data_map'
+OUTPUT_FILE = 'source_files/output.xlsx'
 
 def get_sheet_names(source_file):
     wb = load_workbook(source_file, read_only=True)
@@ -109,6 +110,7 @@ def write_excel(source_file, target_file):
     ws.title = "GMPP Return - DfT"
 
     out_map = parse_source_cells(source_file)
+
     i = 1
     for d in out_map:
         c = ws.cell(row=i, column=1)
@@ -123,6 +125,5 @@ def write_excel(source_file, target_file):
 
 
 
-
 if __name__ == '__main__':
-    write_excel(SOURCE_RETURN_FILE, 'source_files/output.xlsx')
+    write_excel(SOURCE_RETURN_FILE,  OUTPUT_FILE)

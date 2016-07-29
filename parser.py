@@ -1,9 +1,9 @@
 import fnmatch
-import glob
 import os
 import re
-import sys
-
+"""
+PROBABLY NEVER GOING TO UNDERSTAND THIS COME SEPTEMBER
+"""
 from openpyxl import load_workbook, Workbook
 
 cell_regex = re.compile('[A-Z]+[0-9]+')

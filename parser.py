@@ -57,7 +57,7 @@ def parse_source_cells(source_file):
     """
 
     # first, we load the source file
-    wb = load_workbook(source_file, read_only=True)
+    wb = load_workbook(source_file, read_only=True, data_only=True)
 
     # we're going to output data from this function as a list of dict items
     output_excel_map_list = []
@@ -72,35 +72,36 @@ def parse_source_cells(source_file):
             data_map_line = line.split(',')
             # if the second word in each MAP line is a named sheet from the template file, we're interested
             if data_map_line[1] in ['Summary', 'Finance & Benefits', 'Resources', 'Milestones and Assurance', 'Dropdown lists', 'Resources backup']:
-                # just creates a nice list from the split
-                dest_cell_map_list = [w for w in data_map_line]
                 # the end item in the list is a newline - get rid of that
-                del dest_cell_map_list[-1]
+                del data_map_line[-1]
                 # the worksheet in the source Excel file needs to be accessible
-                ws = wb[data_map_line[1]]
+                try:
+                    ws = wb[data_map_line[1]]
+                except KeyError as e:
+                    print("{} has no {} sheet! - {}".format(source_file, data_map_line[1], e))
                 # we only want to act query the source Excel file if there is a valid cell reference there
                 # so we use a regex to do that
-                if cell_regex.search(dest_cell_map_list[-1]):
-                    destination_kv = dict(gmpp_key=dest_cell_map_list[0], gmpp_key_value=ws[dest_cell_map_list[-1]].value)
-                    print(destination_kv)
+                if cell_regex.search(data_map_line[-1]):
+                    try:
+                        destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value=ws[data_map_line[-1]].value)
+                    except IndexError:
+                        destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value="OUT OF BOUNDS!")
                     output_excel_map_list.append(destination_kv)
                 # else:
-                #     destination_kv = dict(gmpp_key=dest_cell_map_list[0], gmpp_key_value=[dest_cell_map_list[-1][0]])
+                #     destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value=[data_map_line[-1][0]])
                 #     output_excel_map_list.append(destination_kv)
             # if the DATA_MAP doesn't suggest the data is sourced in the template Excel, we just want to
             # take the default data we have entered there (e.g. 'michelle dawson' as default)
             # OR we return an empty string if there is no data
             else:
-                # just creates a nice list from the split
-                dest_cell_map_list = [w for w in data_map_line]
                 # the end item in the list is a newline - get rid of that
-                del dest_cell_map_list[-1]
-                if len(dest_cell_map_list) > 1:
-                    destination_kv = dict(gmpp_key=dest_cell_map_list[0], gmpp_key_value=dest_cell_map_list[-1])
+                del data_map_line[-1]
+                if len(data_map_line) > 1:
+                    destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value=data_map_line[-1])
                 # if the list has only one item, that means there is no data entered, so we want the value to
                 # be an empty string for now
                 else:
-                    destination_kv = dict(gmpp_key=dest_cell_map_list[0], gmpp_key_value="")
+                    destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value="")
                 output_excel_map_list.append(destination_kv)
 
     return output_excel_map_list

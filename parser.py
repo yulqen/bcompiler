@@ -69,19 +69,20 @@ def parse_source_cells(source_file):
 
         for line in data:
             # split on , allowing us to access useful data from data map file
-            words = line.split(',')
+            data_map_line = line.split(',')
             # if the second word in each MAP line is a named sheet from the template file, we're interested
-            if words[1] in ['Summary', 'Finance & Benefits', 'Resources ', 'Milestones and Assurance', 'Dropdown lists', 'Resources backup']:
+            if data_map_line[1] in ['Summary', 'Finance & Benefits', 'Resources', 'Milestones and Assurance', 'Dropdown lists', 'Resources backup']:
                 # just creates a nice list from the split
-                dest_cell_map_list = [w for w in words]
+                dest_cell_map_list = [w for w in data_map_line]
                 # the end item in the list is a newline - get rid of that
                 del dest_cell_map_list[-1]
                 # the worksheet in the source Excel file needs to be accessible
-                ws = wb[words[1]]
+                ws = wb[data_map_line[1]]
                 # we only want to act query the source Excel file if there is a valid cell reference there
                 # so we use a regex to do that
                 if cell_regex.search(dest_cell_map_list[-1]):
                     destination_kv = dict(gmpp_key=dest_cell_map_list[0], gmpp_key_value=ws[dest_cell_map_list[-1]].value)
+                    print(destination_kv)
                     output_excel_map_list.append(destination_kv)
                 # else:
                 #     destination_kv = dict(gmpp_key=dest_cell_map_list[0], gmpp_key_value=[dest_cell_map_list[-1][0]])
@@ -91,7 +92,7 @@ def parse_source_cells(source_file):
             # OR we return an empty string if there is no data
             else:
                 # just creates a nice list from the split
-                dest_cell_map_list = [w for w in words]
+                dest_cell_map_list = [w for w in data_map_line]
                 # the end item in the list is a newline - get rid of that
                 del dest_cell_map_list[-1]
                 if len(dest_cell_map_list) > 1:

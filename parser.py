@@ -1,4 +1,8 @@
+import fnmatch
+import glob
+import os
 import re
+import sys
 
 from openpyxl import load_workbook, Workbook
 
@@ -6,7 +10,7 @@ cell_regex = re.compile('[A-Z]+[0-9]+')
 
 SOURCE_RETURN_FILE = "source_files/A14 Cambs to Huntington.xlsx"
 DATA_MAP_FILE = 'source_files/data_map'
-OUTPUT_FILE = 'source_files/output.xlsx'
+OUTPUT_FILE = 'DfT_GMPP_Return.xlsx'
 
 def get_sheet_names(source_file):
     wb = load_workbook(source_file, read_only=True)
@@ -101,7 +105,9 @@ def parse_source_cells(source_file):
     return output_excel_map_list
 
 
-def write_excel(source_file, target_file):
+def write_excel(source_file, target_file, count):
+    # count is used to count number of times function is run so that multiple returns can be added
+    # and not overwrite the GMPP key column
     # let's create an Excel file in memory
     wb = Workbook()
     # it will have one worksheet - let's get it
@@ -111,19 +117,33 @@ def write_excel(source_file, target_file):
 
     out_map = parse_source_cells(source_file)
 
-    i = 1
-    for d in out_map:
-        c = ws.cell(row=i, column=1)
-        c.value = d['gmpp_key']
-        i +=1
-    i = 1
-    for d in out_map:
-        c = ws.cell(row=i, column=2)
-        c.value = d['gmpp_key_value']
-        i +=1
+    if count == 1:
+        i = 1
+        for d in out_map:
+            c = ws.cell(row=i, column=1)
+            c.value = d['gmpp_key']
+            i +=1
+        i = 1
+        for d in out_map:
+            c = ws.cell(row=i, column=2)
+            c.value = d['gmpp_key_value']
+            i +=1
+    else:
+        i = 1
+        for d in out_map:
+            c = ws.cell(row=i, column=count+1)
+            c.value = d['gmpp_key_value']
+            i +=1
+
     wb.save(target_file)
 
 
 
 if __name__ == '__main__':
-    write_excel(SOURCE_RETURN_FILE,  OUTPUT_FILE)
+    dir = os.path.dirname(os.path.realpath(__file__))
+    count = 1
+    for file in os.listdir(os.path.join(dir, 'source_files')):
+        if fnmatch.fnmatch(file, '*.xlsx'):
+            write_excel(('source_files/'+file),  OUTPUT_FILE, count=count)
+            count += 1
+

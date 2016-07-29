@@ -64,7 +64,7 @@ def parse_source_cells(source_file):
 
     # load the DATA_MAP_FILE, containing mappings to cells in the form based on key values
     # from GMPP's master template
-    with open(DATA_MAP_FILE, 'r') as f:
+    with open(DATA_MAP_FILE, 'r', encoding='UTF-8') as f:
         data = f.readlines()
 
         for line in data:
@@ -168,6 +168,7 @@ if __name__ == '__main__':
     count = 1
     for file in os.listdir(os.path.join(dir, 'source_files')):
         if fnmatch.fnmatch(file, '*.xlsx'):
+            print("Processing {}".format(file))
             write_excel(('source_files/'+file), count=count, workbook=workbook)
             count += 1
     workbook.save(OUTPUT_FILE)

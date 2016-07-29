@@ -105,13 +105,12 @@ def parse_source_cells(source_file):
     return output_excel_map_list
 
 
-def write_excel(source_file, target_file, count):
+def write_excel(source_file, count, workbook):
     # count is used to count number of times function is run so that multiple returns can be added
     # and not overwrite the GMPP key column
     # let's create an Excel file in memory
-    wb = Workbook()
     # it will have one worksheet - let's get it
-    ws = wb.active
+    ws = workbook.active
     # give it a title
     ws.title = "GMPP Return - DfT"
 
@@ -135,15 +134,46 @@ def write_excel(source_file, target_file, count):
             c.value = d['gmpp_key_value']
             i +=1
 
-    wb.save(target_file)
+def find_variance(source_file):
+    true_map_summary = [
+        ('BICC PORTFOLIO OFFICE - GMPP REPORTING RETURN', 'A5'),
+        ('PD Tenure Start date', 'H17'),
+        ('List Strategic Outcomes (monetised and non-monetised benefits)','A44')
+    ]
+
+    wb = load_workbook(('source_files/' + source_file), read_only=True)
+    # do check summary page
+    ws = wb['Summary']
+    for t in true_map_summary:
+        target_cell = t[1]
+        expected_value = t[0]
+        actual_value = ws[target_cell].value
+        if expected_value == actual_value:
+            print('{}: {} cell {} OK'.format(source_file, ws, target_cell))
+        else:
+            print('{}: {} cell {} should be {} but is reporting {}'.format(
+                source_file,
+                ws,
+                target_cell,
+                expected_value,
+                actual_value
+            ))
+
 
 
 
 if __name__ == '__main__':
+    workbook = Workbook()
     dir = os.path.dirname(os.path.realpath(__file__))
     count = 1
     for file in os.listdir(os.path.join(dir, 'source_files')):
         if fnmatch.fnmatch(file, '*.xlsx'):
-            write_excel(('source_files/'+file),  OUTPUT_FILE, count=count)
+            write_excel(('source_files/'+file), count=count, workbook=workbook)
             count += 1
+    workbook.save(OUTPUT_FILE)
+
+    # find variance
+    for file in os.listdir(os.path.join(dir, 'source_files')):
+        if fnmatch.fnmatch(file, '*.xlsx'):
+            find_variance(file)
 

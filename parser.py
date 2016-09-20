@@ -1,16 +1,13 @@
 import fnmatch
 import os
 import re
-"""
-PROBABLY NEVER GOING TO UNDERSTAND THIS COME SEPTEMBER
-"""
 from openpyxl import load_workbook, Workbook
 
 cell_regex = re.compile('[A-Z]+[0-9]+')
 
-SOURCE_RETURN_FILE = "source_files/A14 Cambs to Huntington.xlsx"
-DATA_MAP_FILE = 'source_files/data_map'
-OUTPUT_FILE = 'DfT_GMPP_Return.xlsx'
+SOURCE_RETURN_FILE = "q1_source_files/A14 Cambs to Huntington.xlsx"
+DATA_MAP_FILE = 'q1_source_files/data_map'
+OUTPUT_FILE = 'output/DfT_GMPP_Return.xlsx'
 
 def get_sheet_names(source_file):
     wb = load_workbook(source_file, read_only=True)
@@ -143,7 +140,7 @@ def find_variance(source_file):
         ('List Strategic Outcomes (monetised and non-monetised benefits)','A44')
     ]
 
-    wb = load_workbook(('source_files/' + source_file), read_only=True)
+    wb = load_workbook(('q1_source_files/' + source_file), read_only=True)
     # do check summary page
     ws = wb['Summary']
     for t in true_map_summary:
@@ -168,15 +165,15 @@ if __name__ == '__main__':
     workbook = Workbook()
     dir = os.path.dirname(os.path.realpath(__file__))
     count = 1
-    for file in os.listdir(os.path.join(dir, 'source_files')):
+    for file in os.listdir(os.path.join(dir, 'q1_source_files')):
         if fnmatch.fnmatch(file, '*.xlsx'):
             print("Processing {}".format(file))
-            write_excel(('source_files/'+file), count=count, workbook=workbook)
+            write_excel(('q1_source_files/'+file), count=count, workbook=workbook)
             count += 1
     workbook.save(OUTPUT_FILE)
 
     # find variance
-    for file in os.listdir(os.path.join(dir, 'source_files')):
+    for file in os.listdir(os.path.join(dir, 'q1_source_files')):
         if fnmatch.fnmatch(file, '*.xlsx'):
             find_variance(file)
 

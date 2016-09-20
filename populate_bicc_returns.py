@@ -22,4 +22,26 @@
     
 """
 
-import openpyxl
+from openpyxl import load_workbook, Workbook
+import re
+
+
+cell_regex = re.compile('[A-Z]+[0-9]+')
+
+SOURCE_MASTER = 'q2_source_files/master_test.xlsx'
+
+def get_sheet_names(source_file):
+    wb = load_workbook(source_file, read_only=True)
+    return wb.get_sheet_names()
+
+
+def get_sheet_data(source_file):
+    wb = load_workbook(source_file, read_only=True)
+    ws = wb['GMPP Return - DfT']
+
+    for row in ws.rows:
+        for cell in row:
+            if cell.value != None:
+                print(cell.value)
+
+

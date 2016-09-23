@@ -13,7 +13,7 @@ class BCMasterCSV(object):
             self.data = self._open_datafile()
 
     @property
-    def header(self):
+    def csv_header(self):
         d = open(self.source_file, 'r')
         header = d.readline()
         d.close()

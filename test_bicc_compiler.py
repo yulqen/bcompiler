@@ -1,7 +1,7 @@
 import unittest
 import pandas as pd
 
-from bicc_compile import BCMasterCSV
+from bcmaster import BCMasterCSV
 
 class TestMasterFunctions(unittest.TestCase):
 
@@ -12,7 +12,7 @@ class TestMasterFunctions(unittest.TestCase):
         self.assertIsInstance(self.master, BCMasterCSV)
 
     def test_check_for_expected_strings(self):
-        header = self.master.header
+        header = self.master.csv_header
         check_string = 'Project name'
         first_word_from_datafile = header.split(',')[0]
         self.assertEqual(check_string, first_word_from_datafile)
@@ -25,7 +25,8 @@ class TestMasterFunctions(unittest.TestCase):
         m_pand_true = pd.read_csv('source_files/master.csv')
         m_pand_true_type = type(m_pand_true)
         m_pand = BCMasterCSV('source_files/master.csv', dataframe=True)
-        self.assertIsInstance(m_pand, m_pand_true_type)
+        m_pand_data = m_pand.data
+        self.assertTrue(type(m_pand_data) == m_pand_true_type)
 
         
 

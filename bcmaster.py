@@ -9,10 +9,9 @@ class BCMasterCSV(object):
         self.source_file = source_file
 
         if dataframe:
-            self.data = self._create_dataframe()
-            self.this_is_dataframe = True
+            self.dataframe = self._create_dataframe()
         else:
-            self.data = self._open_datafile()
+            self.csv = self._open_datafile()
 
     @property
     def csv_header(self):
@@ -23,11 +22,11 @@ class BCMasterCSV(object):
 
     @property
     def projects(self):
-        f = self.data.T
+        f = self.dataframe.T
         return f.index
 
     def flip(self):
-        return self.data.T
+        return self.dataframe.T
 
     def _open_datafile(self):
         d = open(self.source_file, 'r')

@@ -4,11 +4,10 @@ import io
 class BCMasterCSV(object):
 
     def __init__(self, source_file, dataframe=False):
-        
-        self.data = None
+
         self.flipped_data = None
         self.source_file = source_file
-        
+
         if dataframe:
             self.data = self._create_dataframe()
             self.this_is_dataframe = True
@@ -29,7 +28,7 @@ class BCMasterCSV(object):
 
     def flip(self):
         return self.data.T
-        
+
     def _open_datafile(self):
         d = open(self.source_file, 'r')
         data = d.read()

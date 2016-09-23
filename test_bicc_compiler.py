@@ -7,7 +7,7 @@ class TestMasterFunctions(unittest.TestCase):
 
     def setUp(self):
         self.master = BCMasterCSV('source_files/master.csv')
-    
+
     def test_get_master(self):
         self.assertIsInstance(self.master, BCMasterCSV)
 
@@ -27,7 +27,7 @@ class TestMasterFunctions(unittest.TestCase):
         m_pand = BCMasterCSV('source_files/master.csv', dataframe=True)
         m_pand_data = m_pand.data
         self.assertTrue(type(m_pand_data) == m_pand_true_type)
-    
+
     def test_flip_csv(self):
         frame = BCMasterCSV('source_files/master.csv', dataframe=True)
         flipped = frame.flip()

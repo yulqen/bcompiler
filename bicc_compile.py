@@ -1,7 +1,6 @@
 class BCMasterCSV(object):
     def __init__(self, source_file):
        self.source_file = source_file
-       self.data = self.open_datafile()
 
     def open_datafile(self):
         d = open(self.source_file, 'r')
@@ -15,8 +14,8 @@ class BCMasterCSV(object):
         d.close()
         return header
 
-    def __repr__():
-        return self.source_file
+    def __repr__(self):
+        return "BCMasterCSV from {}".format(self.source_file)
 
 
 def get_master(source_file):

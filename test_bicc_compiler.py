@@ -24,18 +24,18 @@ class TestMasterFunctions(unittest.TestCase):
     def test_get_pandas_dataframe_from_master(self):
         m_pand_true = pd.read_csv('source_files/master.csv')
         m_pand_true_type = type(m_pand_true)
-        m_pand = BCMasterCSV('source_files/master.csv', dataframe=True)
-        m_pand_data = m_pand.dataframe
+        m_pand = BCMasterCSV('source_files/master.csv', as_dataframe=True)
+        m_pand_data = m_pand.as_dataframe
         self.assertTrue(type(m_pand_data) == m_pand_true_type)
 
     def test_flip_csv(self):
-        frame = BCMasterCSV('source_files/master.csv', dataframe=True)
+        frame = BCMasterCSV('source_files/master.csv', as_dataframe=True)
         flipped = frame.flip()
         # this test needs to change to something immutable
         self.assertIn('High Speed Rail Programme (HS2) v2', flipped.index)
 
     def test_get_project_list(self):
-        frame = BCMasterCSV('source_files/master.csv', dataframe=True)
+        frame = BCMasterCSV('source_files/master.csv', as_dataframe=True)
         projects = frame.projects
         # this test needs to change to something immutable
         self.assertIn('High Speed Rail Programme (HS2) v2', projects)

@@ -3,22 +3,26 @@ import io
 
 class BCMasterCSV(object):
 
-    def __init__(self, source_file, dataframe=False):
+    def __init__(self, source_file, as_dataframe=False):
 
-        self.flipped_data = None
         self.source_file = source_file
 
-        if dataframe:
+        if as_dataframe:
             self.as_dataframe = self._create_dataframe()
         else:
             self.as_csv = self._open_datafile()
 
     @property
     def csv_header(self):
-        d = open(self.source_file, 'r')
-        header = d.readline()
-        d.close()
-        return header
+        try:
+            d = io.StringIO(self.as_csv)
+        except AttributeError:
+            print("You can only call this when passing as_dataframe=True to constructor")
+        else:
+            header = d.readline()
+            d.close()
+            return header
+
 
     @property
     def projects(self):

@@ -1,8 +1,9 @@
 import unittest
+import pandas as pd
 
 from bicc_compile import BCMasterCSV
 
-class TestImportFunctions(unittest.TestCase):
+class TestMasterFunctions(unittest.TestCase):
 
     def setUp(self):
         self.master = BCMasterCSV('source_files/master.csv')
@@ -11,7 +12,7 @@ class TestImportFunctions(unittest.TestCase):
         self.assertIsInstance(self.master, BCMasterCSV)
 
     def test_check_for_expected_strings(self):
-        header = self.master.header()
+        header = self.master.header
         check_string = 'Project name'
         first_word_from_datafile = header.split(',')[0]
         self.assertEqual(check_string, first_word_from_datafile)
@@ -19,6 +20,13 @@ class TestImportFunctions(unittest.TestCase):
     def test_id_master_object(self):
         m = BCMasterCSV('source_files/master.csv')
         self.assertEqual('BCMasterCSV from source_files/master.csv', str(m))
+
+    def test_get_pandas_dataframe_from_master(self):
+        m_pand_true = pd.read_csv('source_files/master.csv')
+        m_pand_true_type = type(m_pand_true)
+        m_pand = BCMasterCSV('source_files/master.csv', dataframe=True)
+        self.assertIsInstance(m_pand, m_pand_true_type)
+
         
 
 if __name__ == "__main__":

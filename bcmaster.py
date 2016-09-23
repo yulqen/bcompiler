@@ -6,6 +6,7 @@ class BCMasterCSV(object):
     def __init__(self, source_file, dataframe=False):
         
         self.data = None
+        self.flipped_data = None
         self.source_file = source_file
         
         if dataframe:
@@ -21,16 +22,19 @@ class BCMasterCSV(object):
         d.close()
         return header
 
+    @property
+    def projects(self):
+        f = self.data.T
+        return f.index
+
     def flip(self):
         return self.data.T
-        
         
     def _open_datafile(self):
         d = open(self.source_file, 'r')
         data = d.read()
         d.close()
         return data
-
 
     def _create_dataframe(self):
         df = pd.read_csv(self.source_file, index_col=0)

@@ -34,8 +34,12 @@ class TestMasterFunctions(unittest.TestCase):
         # this test needs to change to something immutable
         self.assertIn('High Speed Rail Programme (HS2) v2', flipped.index)
 
+    def test_get_project_list(self):
+        frame = BCMasterCSV('source_files/master.csv', dataframe=True)
+        projects = frame.projects()
+        # this test needs to change to something immutable
+        self.assertIn('High Speed Rail Programme (HS2) v2', projects)
 
-        
 
 if __name__ == "__main__":
     unittest.main()

@@ -27,6 +27,13 @@ class TestMasterFunctions(unittest.TestCase):
         m_pand = BCMasterCSV('source_files/master.csv', dataframe=True)
         m_pand_data = m_pand.data
         self.assertTrue(type(m_pand_data) == m_pand_true_type)
+    
+    def test_flip_csv(self):
+        frame = BCMasterCSV('source_files/master.csv', dataframe=True)
+        flipped = frame.flip()
+        # this test needs to change to something immutable
+        self.assertIn('High Speed Rail Programme (HS2) v2', flipped.index)
+
 
         
 

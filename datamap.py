@@ -1,9 +1,13 @@
 import os
+import re
+
 
 class DataMap(object):
 
+
     def __init__(self, file):
         self.source_file = file
+        self.output_excel_map_list = []
 
         #clean it first
         self._clean()
@@ -36,3 +40,28 @@ class DataMap(object):
                     newline = newline + ',' + '\n'
                     cleaned_datamap.write(newline)
         print("New cleaned_datamap file created from datamap.")
+
+    # we're going to output data from this function as a list of dict items
+
+    def parse(self):
+
+        cell_regex = re.compile('[A-Z]+[0-9]+')
+        f = open('source_files/cleaned_datamap', 'r')
+        data = f.readlines()
+        for line in data:
+            # split on , allowing us to access useful data from data map file
+            data_map_line = line.split(',')
+            if data_map_line[1] in ['Summary', 'Finance & Benefits', 'Resources', 'Milestones and Assurance',
+                                    'Dropdown lists',
+                                    'Resources backup']:
+                # the end item in the list is a newline - get rid of that
+                del data_map_line[-1]
+            if cell_regex.search(data_map_line[-1]):
+                try:
+                    m_map = dict(cell_key=data_map_line[0],
+                                 sheet=data_map_line[1],
+                                 cellref=data_map_line[2])
+                except IndexError:
+                    m_map = dict(cell_key=data_map_line[0],
+                                 sheet="CAN'T FIND SHEET")
+                self.output_excel_map_list.append(m_map)

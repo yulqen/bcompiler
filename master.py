@@ -10,4 +10,5 @@ m = BCMasterCSV('source_files/master.csv', as_dataframe=True)
 m.flip()
 
 dm = DataMap('source_files/datamap')
-
+dm.parse()
+print(dm.output_excel_map_list)

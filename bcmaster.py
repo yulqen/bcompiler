@@ -1,3 +1,5 @@
+import csv
+
 import pandas as pd
 import io
 
@@ -45,7 +47,17 @@ class BCMasterCSV(object):
         if to_file:
             out_f.close()
         else:
+            # be nice
+            out_f.seek(0)
             return out_f
+            out_f.close()
+
+    def create_csv_dict(self):
+        trans = self.transpose_csv(to_file=True)
+        with open('source_files/transposed.csv', 'r', newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                print(row)
 
 
     @property
@@ -54,7 +66,10 @@ class BCMasterCSV(object):
         return f.index
 
     def flip(self):
+        flipped = self.as_dataframe.T
+        flipped.to_csv("source_files/transposed.csv")
         return self.as_dataframe.T
+
 
     def _open_datafile(self):
         d = open(self.source_file, 'r')

@@ -1,10 +1,13 @@
 from bcmaster import BCMasterCSV
+from datamap import DataMap
+from openpyxl import load_workbook, Workbook
 import csv
+import re
+
+cell_regex = re.compile('[A-Z]+[0-9]+')
 
 m = BCMasterCSV('source_files/master.csv', as_dataframe=True)
 m.flip()
 
-with open('source_files/transposed.csv') as csvfile:
-    reader = csv.DictReader(csvfile)
-    for row in reader:
-        print(row[''],"\t\t\t", row['SRO Full Name'])
+dm = DataMap('source_files/datamap')
+

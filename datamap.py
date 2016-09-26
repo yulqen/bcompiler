@@ -51,17 +51,16 @@ class DataMap(object):
         for line in data:
             # split on , allowing us to access useful data from data map file
             data_map_line = line.split(',')
-            if data_map_line[1] in ['Summary', 'Finance & Benefits', 'Resources', 'Milestones and Assurance',
-                                    'Dropdown lists',
-                                    'Resources backup']:
+            if data_map_line[1] in ['Summary', 'Finance & Benefits', 'Resources', 'Approval and Project milestones',
+                                    'Assurance planning']:
                 # the end item in the list is a newline - get rid of that
                 del data_map_line[-1]
             if cell_regex.search(data_map_line[-1]):
                 try:
-                    m_map = dict(cell_key=data_map_line[0],
+                    m_map = dict(cell_description=data_map_line[0],
                                  sheet=data_map_line[1],
-                                 cellref=data_map_line[2])
+                                 cell_coordinates=data_map_line[2])
                 except IndexError:
-                    m_map = dict(cell_key=data_map_line[0],
+                    m_map = dict(cell_description=data_map_line[0],
                                  sheet="CAN'T FIND SHEET")
                 self.output_excel_map_list.append(m_map)

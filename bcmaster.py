@@ -1,7 +1,7 @@
 import csv
+import io
 
 import pandas as pd
-import io
 
 class BCMasterCSV(object):
 

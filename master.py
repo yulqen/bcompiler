@@ -18,22 +18,23 @@ dm.parse()
 
 project1 = list_of_projects[10]
 wb = load_workbook('source_files/template.xlsx')
-summary_worksheet = wb['Summary']
-finance_benefits_worksheet = wb['Finance & Benefits']
-resources_worksheet = wb['Resources']
-approval_project_milestones_worksheet = wb['Approval & Project milestones']
-assurance_planning_worksheet = wb['Assurance planning']
+ws = wb.get_sheet_by_name("Summary")
 
 project1_data = m_dict[project1]
 project1_data['Project/Programme Name'] = project1
 # find relevant project
 
-for item in dm.output_excel_map_list:
-    if item['sheet'] == 'Summary':
-        try:
-            summary_worksheet[item['cell_coordinates']].value = project1_data[item['cell_description']]
-        except KeyError:
-            print("Cannot find {} in master.csv".format(item['cell_description']))
-            pass
+print(ws['A5'].value)
+ws['B5'] = project1_data['Project/Programme Name']
+print("Successfully wrote data")
 wb.save('source_files/test1.xlsx')
+
+#for item in dm.output_excel_map_list:
+#    if item['sheet'] == 'Summary':
+#        try:
+#            summary_worksheet[item['cell_coordinates']].value = project1_data[item['cell_description']]
+#        except KeyError:
+#            print("Cannot find {} in master.csv".format(item['cell_description']))
+#            pass
+#wb.save('source_files/test1.xlsx')
 

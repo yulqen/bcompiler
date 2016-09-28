@@ -91,26 +91,29 @@ def get_datamap():
             output_excel_map_list.append(m_map)
     return output_excel_map_list
 
-def project_data_line(project):
+def project_data_line():
     dict = {}
     with open('source_files/master_transposed.csv', 'r') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if project in row['Project Name']:
-                dict = row
+            key = row.pop('Project Name')
+            if key in dict:
+                pass
+            dict[key] = row
     return dict
 
 
 def populate_blank_bicc_form(source_master_file):
     datamap = get_datamap()
+    proj_data = project_data_line()
     ls = _get_list_projects(source_master_file)
     test_proj = ls[0]
+    test_proj_data = proj_data[test_proj]
     blank = load_workbook('source_files/bicc_template.xlsx')
     ws_summary = blank.get_sheet_by_name('Summary')
     for item in datamap:
         if item['sheet'] == 'Summary':
             try:
-                test_proj_data = project_data_line(test_proj)
                 ws_summary[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
             except KeyError:
                 print("Cannot find {} in master.csv".format(item['cell_description']))

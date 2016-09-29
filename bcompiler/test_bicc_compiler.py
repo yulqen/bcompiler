@@ -1,44 +1,36 @@
+import os
 import unittest
-import pandas as pd
-
-from bcmaster import BCMasterCSV
 
 class TestMasterFunctions(unittest.TestCase):
 
-    def setUp(self):
-        self.master = BCMasterCSV('source_files/master.csv')
+    def test_check_for_cache_location(self):
+        # let's say we'll create a new bcomipler directory in the user space
+        # inside this directory will be a source and an output directory
+        # which is where our key files will go
+        # source/master.csv
+        # source/bicc_template.xlsx
+        # source/datamap
+        # output/West Midlands Franchise Competition.xlsx
 
-    def test_get_master(self):
-        self.assertIsInstance(self.master, BCMasterCSV)
+        docs = os.path.join(os.path.expanduser('~'), 'Documents')
+        bcomp_working_d = 'bcompiler'
+        path = os.path.join(docs, bcomp_working_d)
+        self.assertTrue(os.path.exists(path))
 
-    def test_check_for_expected_strings(self):
-        header = self.master.csv_header
-        check_string = 'Project name'
-        first_word_from_datafile = header.split(',')[0]
-        self.assertEqual(check_string, first_word_from_datafile)
 
-    def test_id_master_object(self):
-        m = BCMasterCSV('source_files/master.csv')
-        self.assertEqual('BCMasterCSV from source_files/master.csv', str(m))
+        pass
 
-    def test_get_pandas_dataframe_from_master(self):
-        m_pand_true = pd.read_csv('source_files/master.csv')
-        m_pand_true_type = type(m_pand_true)
-        m_pand = BCMasterCSV('source_files/master.csv', as_dataframe=True)
-        m_pand_data = m_pand.as_dataframe
-        self.assertTrue(type(m_pand_data) == m_pand_true_type)
+    def test_for_base_master_csv(self):
+        pass
 
-    def test_flip_csv(self):
-        frame = BCMasterCSV('source_files/master.csv', as_dataframe=True)
-        flipped = frame.flip()
-        # this test needs to change to something immutable
-        self.assertIn('High Speed Rail Programme (HS2) v2', flipped.index)
+    def test_for_processed_csv(self):
+        pass
 
-    def test_get_project_list(self):
-        frame = BCMasterCSV('source_files/master.csv', as_dataframe=True)
-        projects = frame.projects
-        # this test needs to change to something immutable
-        self.assertIn('High Speed Rail Programme (HS2) v2', projects)
+    def test_for_individual_project_data_lines(self):
+        pass
+
+    def test_for_data_migrated_to_blank_form(self):
+        pass
 
 
 if __name__ == "__main__":

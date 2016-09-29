@@ -148,12 +148,26 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 print("Cannot find {} in master.csv".format(item['cell_description']))
                 pass
 
-    blank.save('source_files/{}.xlsx'.format(test_proj))
+    blank.save('source_files/{}_Q2_Return.xlsx'.format(test_proj))
 
 def pop_all():
     number_of_projects = len(_get_list_projects('source_files/master.csv'))
     for p in range(number_of_projects):
         populate_blank_bicc_form('source_files/master.csv', p)
+
+
+def _set_up_working_directory():
+    """
+    We need a proper directory to work in.
+    :return:
+    """
+    docs = os.path.join(os.path.expanduser('~'), 'Documents')
+    bcomp_working_d = 'bcompiler'
+    path = os.path.join(docs, bcomp_working_d)
+    if os.path.exists(path):
+
+    else:
+        return
 
 
 def main():

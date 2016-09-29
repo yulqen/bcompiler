@@ -2,19 +2,27 @@ import argparse
 import csv
 import os
 import re
+import shutil
 
 from openpyxl import load_workbook
 
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Compile BICC data or prepare Excel BICC return forms.')
-    parser.add_argument('-c', '--clean-datamap', dest='datamap', metavar='datamap file', nargs=1, help='clean datamap file'
-                                                                                     'whose path is given as string')
+    parser.add_argument('-c', '--clean-datamap', dest='datamap', metavar='datamap file', nargs=1,
+                        help='clean datamap file'
+                             'whose path is given as string')
     parser.add_argument('-v', '--version', help='displays the current version of bcompiler', action="store_true")
     parser.add_argument('-p', '--parse', dest='parse', metavar='source file', nargs=1, help='parse master.csv and flip'
-                                                                     ' to correct orientation')
-    parser.add_argument('-b', '--populate-blank', dest='populate', metavar='project integer', help='populate blank bicc forms from master for project N')
+                                                                                            ' to correct orientation')
+    parser.add_argument('-b', '--populate-blank', dest='populate', metavar='project integer',
+                        help='populate blank bicc forms from master for project N')
     parser.add_argument('-a', '--all', action="store_true")
+    parser.add_argument('-d', '--create-wd', dest='create-wd', action="store_true",
+                        help='create working directory at $HOME/Documents/bcomiler')
+    parser.add_argument('-f', '--force-create-wd', dest='f-create-wd', action="store_true", help='remove existing '
+                                                                                                 'working directory and'
+                                                                                                 'create a new one')
     return parser
 
 def _clean_datamap(source_file):
@@ -156,17 +164,35 @@ def pop_all():
         populate_blank_bicc_form('source_files/master.csv', p)
 
 
-def _set_up_working_directory():
+def _create_working_directory():
     """
     We need a proper directory to work in.
     :return:
     """
     docs = os.path.join(os.path.expanduser('~'), 'Documents')
     bcomp_working_d = 'bcompiler'
-    path = os.path.join(docs, bcomp_working_d)
-    if os.path.exists(path):
-
+    root_path = os.path.join(docs, bcomp_working_d)
+    folders = ['source', 'output']
+    if not os.path.exists(root_path):
+        os.mkdir(root_path)
+        for folder in folders:
+            os.mkdir(os.path.join(root_path, folder))
+        print("Clean working directory created at {}".format(root_path))
     else:
+        print("Working directory exists. You can either run the program like this and files"
+              "will be overwritten, or you should do --force-create-wd to remove the working"
+              "directory and create a new one.\n\nWARNING: this will remove any datamap and master.csv"
+              "files persent.")
+
+
+def _delete_working_directory():
+    docs = os.path.join(os.path.expanduser('~'), 'Documents')
+    bcomp_working_d = 'bcompiler'
+    root_path = os.path.join(docs, bcomp_working_d)
+    try:
+        shutil.rmtree(root_path)
+        return "{} deleted".format(root_path)
+    except FileNotFoundError:
         return
 
 
@@ -187,8 +213,16 @@ def main():
         _clean_datamap('source_files/datamap')
         _parse_csv_to_file('source_files/master.csv')
         populate_blank_bicc_form('source_files/master.csv', args['populate'])
+        return
     if args['all']:
         pop_all()
+        return
+    if args['create-wd']:
+        _create_working_directory()
+        return
+    if args['f-create-wd']:
+        _delete_working_directory()
+        _create_working_directory()
         return
 
 if __name__ == '__main__':

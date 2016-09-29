@@ -8,12 +8,13 @@ from openpyxl import load_workbook
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Compile BICC data or prepare Excel BICC return forms.')
-    parser.add_argument('-c', '--clean-datamap', dest='datamap', nargs=1, help='clean datamap file'
+    parser.add_argument('-c', '--clean-datamap', dest='datamap', metavar='datamap file', nargs=1, help='clean datamap file'
                                                                                      'whose path is given as string')
     parser.add_argument('-v', '--version', help='displays the current version of bcompiler', action="store_true")
-    parser.add_argument('-p', '--parse', dest='parse', nargs=1, help='parse master.csv and flip'
+    parser.add_argument('-p', '--parse', dest='parse', metavar='source file', nargs=1, help='parse master.csv and flip'
                                                                      ' to correct orientation')
-    parser.add_argument('-b', '--populate-blanks', dest='populate', help='populate blank bicc forms from master')
+    parser.add_argument('-b', '--populate-blank', dest='populate', metavar='project integer', help='populate blank bicc forms from master for project N')
+    parser.add_argument('-a', '--all', action="store_true")
     return parser
 
 def _clean_datamap(source_file):
@@ -76,7 +77,7 @@ def get_datamap():
     for line in data:
         # split on , allowing us to access useful data from data map file
         data_map_line = line.split(',')
-        if data_map_line[1] in ['Summary', 'Finance & Benefits', 'Resources', 'Approval and Project milestones',
+        if data_map_line[1] in ['Summary', 'Finance & Benefits', 'Resources', 'Approval & Project milestones',
                                 'Assurance planning']:
             # the end item in the list is a newline - get rid of that
             del data_map_line[-1]
@@ -103,26 +104,56 @@ def project_data_line():
     return dict
 
 
-def populate_blank_bicc_form(source_master_file):
+def populate_blank_bicc_form(source_master_file, proj_num):
     datamap = get_datamap()
     proj_data = project_data_line()
     ls = _get_list_projects(source_master_file)
-    test_proj = ls[0]
+    test_proj = ls[int(proj_num)]
     test_proj_data = proj_data[test_proj]
     blank = load_workbook('source_files/bicc_template.xlsx')
     ws_summary = blank.get_sheet_by_name('Summary')
+    ws_fb = blank.get_sheet_by_name('Finance & Benefits')
+    ws_res = blank.get_sheet_by_name('Resources')
+    ws_apm = blank.get_sheet_by_name('Approval & Project milestones')
+    ws_ap = blank.get_sheet_by_name('Assurance planning')
     for item in datamap:
         if item['sheet'] == 'Summary':
             try:
                 ws_summary[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
+            except KeyError as e:
+                print("Cannot find {} in master.csv".format(item['cell_description']))
+                pass
+        elif item['sheet'] == 'Finance & Benefits':
+            try:
+                ws_fb[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
             except KeyError:
                 print("Cannot find {} in master.csv".format(item['cell_description']))
                 pass
+        elif item['sheet'] == 'Resources':
+            try:
+                ws_res[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
+            except KeyError:
+                print("Cannot find {} in master.csv".format(item['cell_description']))
+                pass
+        elif item['sheet'] == 'Approval & Project milestones':
+            try:
+                ws_apm[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
+            except KeyError:
+                print("Cannot find {} in master.csv".format(item['cell_description']))
+                pass
+        elif item['sheet'] == 'Assurance planning':
+            try:
+                ws_ap[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
+            except KeyError:
+                print("Cannot find {} in master.csv".format(item['cell_description']))
+                pass
+
     blank.save('source_files/{}.xlsx'.format(test_proj))
 
-
-
-
+def pop_all():
+    number_of_projects = len(_get_list_projects('source_files/master.csv'))
+    for p in range(number_of_projects):
+        populate_blank_bicc_form('source_files/master.csv', p)
 
 
 def main():
@@ -139,7 +170,11 @@ def main():
         _parse_csv_to_file(args['parse'][0])
         return
     if args['populate']:
-        populate_blank_bicc_form('source_files/master.csv')
+        _clean_datamap('source_files/datamap')
+        _parse_csv_to_file('source_files/master.csv')
+        populate_blank_bicc_form('source_files/master.csv', args['populate'])
+    if args['all']:
+        pop_all()
         return
 
 if __name__ == '__main__':

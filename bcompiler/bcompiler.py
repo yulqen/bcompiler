@@ -221,9 +221,14 @@ def main():
         _create_working_directory()
         return
     if args['f-create-wd']:
-        _delete_working_directory()
-        _create_working_directory()
-        return
+        print("This will destroy your existing working directory prior to creating a new one.\n\nAre you sure?")
+        response = input('(y/n) --> ')
+        if response in ('y', 'ye', 'yes', 'Y', 'YES'):
+            _delete_working_directory()
+            _create_working_directory()
+            return
+        else:
+            return
 
 if __name__ == '__main__':
     main()

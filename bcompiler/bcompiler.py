@@ -209,8 +209,8 @@ def _get_dropdown_data():
         col_lis2.append(dict(header=c[0].value, data=c[1:]))
     for c in col_lis2:
         for cc in c:
-            if 'Q1' in cc.value:
-                print("Quarter value")
+            if not cc.value:
+                print("Do something with non-blank cell")
     return col_lis2
 
 

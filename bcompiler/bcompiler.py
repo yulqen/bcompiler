@@ -126,6 +126,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     ws_ap = blank.get_sheet_by_name('Assurance planning')
     for item in datamap:
         if item['sheet'] == 'Summary':
+            if 'Project Name' in item['cell_description']:
+                ws_summary[item['cell_coordinates']].value = test_proj
             try:
                 ws_summary[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
             except KeyError as e:

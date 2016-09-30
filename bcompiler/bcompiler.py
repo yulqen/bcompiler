@@ -197,6 +197,24 @@ def _delete_working_directory():
     except FileNotFoundError:
         return
 
+def _get_dropdown_data():
+    wb = load_workbook('bcompiler/source_files/bicc_template.xlsx')
+    ws = wb.get_sheet_by_name('Dropdown List')
+    columns = ws.columns
+    col_lis = []
+    col_lis2 = []
+    for col in columns:
+        col_lis.append(col)
+    for c in col_lis:
+        col_lis2.append(dict(header=c[0].value, data=c[1:]))
+    for c in col_lis2:
+        for cc in c:
+            if 'Q1' in cc.value:
+                print("Quarter value")
+    return col_lis2
+
+
+
 
 def main():
     parser = get_parser()

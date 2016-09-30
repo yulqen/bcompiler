@@ -74,7 +74,7 @@ def create_master_dict_transposed(source_master_csv):
 
 def _get_list_projects(source_master_file):
     reader = create_master_dict_transposed(source_master_file)
-    pl = [row['Project Name'] for row in reader]
+    pl = [row['Project/Programme Name'] for row in reader]
     return pl
 
 def get_datamap():
@@ -105,7 +105,7 @@ def project_data_line():
     with open('source_files/master_transposed.csv', 'r') as f:
         reader = csv.DictReader(f)
         for row in reader:
-            key = row.pop('Project Name')
+            key = row.pop('Project/Programme Name')
             if key in dict:
                 pass
             dict[key] = row
@@ -126,7 +126,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     ws_ap = blank.get_sheet_by_name('Assurance planning')
     for item in datamap:
         if item['sheet'] == 'Summary':
-            if 'Project Name' in item['cell_description']:
+            if 'Project/Programme Name' in item['cell_description']:
                 ws_summary[item['cell_coordinates']].value = test_proj
             try:
                 ws_summary[item['cell_coordinates']].value = test_proj_data[item['cell_description']]

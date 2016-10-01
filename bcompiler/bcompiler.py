@@ -3,8 +3,10 @@ import csv
 import os
 import re
 import shutil
+import threading
 
 from openpyxl import load_workbook
+
 
 
 def get_parser():
@@ -130,7 +132,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 ws_summary[item['cell_coordinates']].value = test_proj
             try:
                 ws_summary[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
-            except KeyError as e:
+            except KeyError:
                 print("Cannot find {} in master.csv".format(item['cell_description']))
                 pass
         elif item['sheet'] == 'Finance & Benefits':
@@ -197,24 +199,41 @@ def _delete_working_directory():
     except FileNotFoundError:
         return
 
-# def _get_dropdown_data():
-#     wb = load_workbook('source_files/bicc_template.xlsx')
-#     ws = wb.get_sheet_by_name('Dropdown List')
-#     columns = ws.columns
-#     col_lis = []
-#     col_lis2 = []
-#     for col in columns:
-#         col_lis.append(col)
-#     for c in col_lis:
-#         col_lis2.append(dict(header=c[0].value, data=c[1:]))
-#     for c in col_lis2:
-#         for cc in c:
-#             if not cc.value:
-#                 print("Do something with non-blank cell")
-#     return col_lis2
+
+def _get_dropdown_data(header=None):
+    """
+    Pull the dropdown data from the Dropdown List sheet in bicc_template.xlsx. Location
+    of this template file might need to be dynamic.
+    :return tuple of column values from sheet, with header value at list[0]:
+    """
+    wb = load_workbook('source_files/bicc_template.xlsx')
+    ws = wb.get_sheet_by_name('Dropdown List')
+    columns = ws.columns
+    col_lis = [col for col in columns]
+    dropdown_data = [[c.value for c in t if c.value] for t in col_lis]
+    if header:
+        h = [h for h in dropdown_data if header in h[0]]
+        h = tuple(h[0])
+        print("Getting {}".format(h))
+        return h
+    else:
+        return dropdown_data
 
 
-
+# Validation data TODO this is perfect for a thread
+#VAL_QUARTER = _get_dropdown_data(header='Quarter')
+#VAL_JOINING_QTR = _get_dropdown_data(header='Joining Qtr')
+#VAL_CLASSIFICATION = _get_dropdown_data(header='Classification')
+#VAL_AGENCIES = _get_dropdown_data(header='Agencies')
+#VAL_GROUP = _get_dropdown_data(header='Group')
+#VAL_DFT_DIVISION = _get_dropdown_data(header='DfT Division')
+#VAL_ENTITY = _get_dropdown_data(header='Entity')
+#VAL_METHODOLOGY = _get_dropdown_data(header='Methodology')
+#VAL_CATEGORY = _get_dropdown_data(header='Category')
+#VAL_SCOPE_CHANGED = _get_dropdown_data(header='Scope Changed')
+#VAL_MONETISED = _get_dropdown_data(header='Monetised / Non Monetised Benefits')
+#VAL_SDP = _get_dropdown_data(header='SDP')
+# TODO continue with this
 
 def main():
     parser = get_parser()
@@ -251,4 +270,9 @@ def main():
             return
 
 if __name__ == '__main__':
-    main()
+    headers = ['Quarter', 'Joining Qtr', 'Classification', 'Agencies', 'Group']
+    for h in headers:
+        t = threading.Thread(target=_get_dropdown_data, args=(h,))
+        print("Starting thread: {}".format(t.getName()))
+        t.start()
+    #main()

@@ -3,9 +3,9 @@ import csv
 import os
 import re
 import shutil
-import threading
 
 from openpyxl import load_workbook
+from openpyxl.worksheet.datavalidation import DataValidation
 
 
 
@@ -206,7 +206,7 @@ def _get_dropdown_data(header=None):
     of this template file might need to be dynamic.
     :return tuple of column values from sheet, with header value at list[0]:
     """
-    wb = load_workbook('source_files/bicc_template.xlsx')
+    wb = load_workbook('source_files/bicc_template.xlsx', data_only=True)
     ws = wb.get_sheet_by_name('Dropdown List')
     columns = ws.columns
     col_lis = [col for col in columns]
@@ -218,6 +218,15 @@ def _get_dropdown_data(header=None):
         return h
     else:
         return dropdown_data
+
+def create_validation(header):
+    t = _get_dropdown_data(header)
+    t = t[1:]
+    t_str = ",".join(t)
+    dv = DataValidation(type='list', formula1=t_str, allow_blank=True)
+    dv.prompt = "Please select from the list"
+    dv.promptTitle = 'List Selection'
+    return dv
 
 
 # Validation data TODO this is perfect for a thread
@@ -270,9 +279,5 @@ def main():
             return
 
 if __name__ == '__main__':
-    headers = ['Quarter', 'Joining Qtr', 'Classification', 'Agencies', 'Group']
-    for h in headers:
-        t = threading.Thread(target=_get_dropdown_data, args=(h,))
-        print("Starting thread: {}".format(t.getName()))
-        t.start()
-    #main()
+    _get_dropdown_data('Quarter')
+    main()

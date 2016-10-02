@@ -81,6 +81,7 @@ def _get_list_projects(source_master_file):
 
 def get_datamap():
     cell_regex = re.compile('[A-Z]+[0-9]+')
+    dropdown_headers = _get_dropdown_headers()
     output_excel_map_list = []
     f = open('source_files/cleaned_datamap', 'r')
     data = f.readlines()
@@ -95,11 +96,24 @@ def get_datamap():
             try:
                 m_map = dict(cell_description=data_map_line[0],
                              sheet=data_map_line[1],
-                             cell_coordinates=data_map_line[2])
+                             cell_coordinates=data_map_line[2],
+                             validation_header='')
             except IndexError:
                 m_map = dict(cell_description=data_map_line[0],
                              sheet="CAN'T FIND SHEET")
             output_excel_map_list.append(m_map)
+        elif data_map_line[-1] in dropdown_headers:
+            try:
+                m_map = dict(cell_description=data_map_line[0],
+                             sheet=data_map_line[1],
+                             cell_coordinates=data_map_line[2],
+                             validation_header=data_map_line[3]
+                             )
+            except IndexError:
+                print("Something wrong with the datamap indexing", m_map.items())
+
+            output_excel_map_list.append(m_map)
+
     return output_excel_map_list
 
 def project_data_line():
@@ -135,6 +149,10 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             except KeyError:
                 print("Cannot find {} in master.csv".format(item['cell_description']))
                 pass
+            if item['validation_header']:
+                dv = create_validation(item['validation_header'])
+                ws_summary.add_data_validation(dv)
+                dv.add(ws_summary[item['cell_coordinates']])
         elif item['sheet'] == 'Finance & Benefits':
             try:
                 ws_fb[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
@@ -219,10 +237,17 @@ def _get_dropdown_data(header=None):
     else:
         return dropdown_data
 
+def _get_dropdown_headers():
+    wb = load_workbook('source_files/bicc_template.xlsx', data_only=True)
+    ws = wb.get_sheet_by_name('Dropdown List')
+    rows = ws.rows
+    a_row = next(rows)
+    return [h.value for h in a_row]
+
 def create_validation(header):
     t = _get_dropdown_data(header)
     t = t[1:]
-    t_str = ",".join(t)
+    t_str = ",".join(map(str, t))
     dv = DataValidation(type='list', formula1=t_str, allow_blank=True)
     dv.prompt = "Please select from the list"
     dv.promptTitle = 'List Selection'

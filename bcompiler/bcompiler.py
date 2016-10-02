@@ -248,7 +248,8 @@ def create_validation(header):
     t = _get_dropdown_data(header)
     t = t[1:]
     t_str = ",".join(map(str, t))
-    dv = DataValidation(type='list', formula1=t_str, allow_blank=True)
+    f_str = '"{}"'.format(t_str)
+    dv = DataValidation(type='list', formula1=f_str, allow_blank=True)
     dv.prompt = "Please select from the list"
     dv.promptTitle = 'List Selection'
     return dv

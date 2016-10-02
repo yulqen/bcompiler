@@ -159,24 +159,40 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             except KeyError:
                 print("Cannot find {} in master.csv".format(item['cell_description']))
                 pass
+            if item['validation_header']:
+                dv = create_validation(item['validation_header'])
+                ws_summary.add_data_validation(dv)
+                dv.add(ws_summary[item['cell_coordinates']])
         elif item['sheet'] == 'Resources':
             try:
                 ws_res[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
             except KeyError:
                 print("Cannot find {} in master.csv".format(item['cell_description']))
                 pass
+            if item['validation_header']:
+                dv = create_validation(item['validation_header'])
+                ws_summary.add_data_validation(dv)
+                dv.add(ws_summary[item['cell_coordinates']])
         elif item['sheet'] == 'Approval & Project milestones':
             try:
                 ws_apm[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
             except KeyError:
                 print("Cannot find {} in master.csv".format(item['cell_description']))
                 pass
+            if item['validation_header']:
+                dv = create_validation(item['validation_header'])
+                ws_summary.add_data_validation(dv)
+                dv.add(ws_summary[item['cell_coordinates']])
         elif item['sheet'] == 'Assurance planning':
             try:
                 ws_ap[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
             except KeyError:
                 print("Cannot find {} in master.csv".format(item['cell_description']))
                 pass
+            if item['validation_header']:
+                dv = create_validation(item['validation_header'])
+                ws_summary.add_data_validation(dv)
+                dv.add(ws_summary[item['cell_coordinates']])
 
     blank.save('source_files/{}_Q2_Return.xlsx'.format(test_proj))
 
@@ -305,5 +321,4 @@ def main():
             return
 
 if __name__ == '__main__':
-    _get_dropdown_data('Quarter')
     main()

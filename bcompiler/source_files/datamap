@@ -7,28 +7,28 @@ Single Point of Contact Email Address,
 Single Point of Contact (SPOC),
 Email Address,
 Snapshot Date,
-Quarter Joined,Summary,I3,
+Quarter Joined,Summary,I3,Joining Qtr
 Sub-portfolio,Summary,
 GMPP,Summary,G5
 IUK top 40,Summary,G6
 Top 37,Summary,I5
 DfT Business Plan,Summary,
-DfT Group,Summary,B8
+DfT Group,Summary,B8,Group,
 IPA ID Number,Summary,C6,
-Current Quarter,Summary,G3,
+Current Quarter,Summary,G3,Quarter
 Quarter formally joined GMPP,
 Portfolio name if applicable,
 Delivery Organisation Primary,Summary,B8,
-Delivery Organisation Secondary,Summary,B10,
-DfT Division,Summary,B8,
+Delivery Organisation Secondary,Summary,B10,Agencies,
+DfT Division,Summary,B9,DfT Division,
 Delivery Structure,Summary,G32,
 Description if 'Other',Summary,G33,
-Change Delivery Methodology,Summary,G39
+Change Delivery Methodology,Summary,G39,Methodology
 Brief project description,Summary,G27,
 Government Policy Alignment,Summary,B26,
-Primary Category,Summary,H41,
-Secondary Category,Summary,H42,
-Tertiary Category,Summary,H42,
+Primary Category,Summary,H41,Category
+Secondary Category,Summary,H42,Category
+Tertiary Category,Summary,H43,Category
 If other please describe,
 Main reason for joining GMPP,
 Has Project Scope Changed?,Summary,G35,

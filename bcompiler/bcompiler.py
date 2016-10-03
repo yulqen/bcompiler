@@ -194,7 +194,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 ws_summary.add_data_validation(dv)
                 dv.add(ws_summary[item['cell_coordinates']])
 
-    blank.save('source_files/{}_Q2_Return.xlsx'.format(test_proj))
+    blank.save('source_files/output/{}_Q2_Return.xlsx'.format(test_proj))
 
 def pop_all():
     number_of_projects = len(_get_list_projects('source_files/master.csv'))

@@ -8,7 +8,6 @@ from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
 
-
 def get_parser():
     parser = argparse.ArgumentParser(description='Compile BICC data or prepare Excel BICC return forms.')
     parser.add_argument('-c', '--clean-datamap', dest='datamap', metavar='datamap file', nargs=1,
@@ -21,26 +20,26 @@ def get_parser():
                         help='populate blank bicc forms from master for project N')
     parser.add_argument('-a', '--all', action="store_true")
     parser.add_argument('-d', '--create-wd', dest='create-wd', action="store_true",
-                        help='create working directory at $HOME/Documents/bcomiler')
+                        help='create working directory at $HOME/Documents/bcompiler')
     parser.add_argument('-f', '--force-create-wd', dest='f-create-wd', action="store_true", help='remove existing '
                                                                                                  'working directory and'
                                                                                                  'create a new one')
     return parser
 
-def _clean_datamap(source_file):
 
-    CLEANED_DATAMAP_FILE = 'source_files/cleaned_datamap'
+def _clean_datamap(source_file):
+    cleaned_datamap_file = 'source_files/cleaned_datamap'
     try:
-        os.remove(CLEANED_DATAMAP_FILE)
+        os.remove(cleaned_datamap_file)
     except FileNotFoundError:
         pass
-    cleaned_datamap = open(CLEANED_DATAMAP_FILE, 'a+')
+    cleaned_datamap = open(cleaned_datamap_file, 'a+')
     with open(source_file, 'r', encoding='UTF-8') as f:
         # make sure every line has a comma at the end
         for line in f.readlines():
             newline = line.rstrip()
             if ',' in newline[-1]:
-                newline = newline + '\n'
+                newline += '\n'
                 cleaned_datamap.write(newline)
             else:
                 newline = newline + ',' + '\n'
@@ -79,6 +78,7 @@ def _get_list_projects(source_master_file):
     pl = [row['Project/Programme Name'] for row in reader]
     return pl
 
+
 def get_datamap():
     cell_regex = re.compile('[A-Z]+[0-9]+')
     dropdown_headers = _get_dropdown_headers()
@@ -116,16 +116,17 @@ def get_datamap():
 
     return output_excel_map_list
 
+
 def project_data_line():
-    dict = {}
+    p_dict = {}
     with open('source_files/master_transposed.csv', 'r') as f:
         reader = csv.DictReader(f)
         for row in reader:
             key = row.pop('Project/Programme Name')
-            if key in dict:
+            if key in p_dict:
                 pass
-            dict[key] = row
-    return dict
+            p_dict[key] = row
+    return p_dict
 
 
 def populate_blank_bicc_form(source_master_file, proj_num):
@@ -196,6 +197,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
 
     blank.save('source_files/output/{}_Q2_Return.xlsx'.format(test_proj))
 
+
 def pop_all():
     number_of_projects = len(_get_list_projects('source_files/master.csv'))
     for p in range(number_of_projects):
@@ -253,6 +255,7 @@ def _get_dropdown_data(header=None):
     else:
         return dropdown_data
 
+
 def _get_dropdown_headers():
     wb = load_workbook('source_files/bicc_template.xlsx', data_only=True)
     ws = wb.get_sheet_by_name('Dropdown List')
@@ -260,8 +263,8 @@ def _get_dropdown_headers():
     a_row = next(rows)
     return [h.value for h in a_row]
 
-def create_validation(header):
 
+def create_validation(header):
     val_references = {
         'Quarter': '"=\'Dropdown List\'!$A$9:$A$2"',
         'Joining Qtr': "=\'Dropdown List\'!$B$25:$B$2",
@@ -300,34 +303,33 @@ def create_validation(header):
     }
 
     # if we need the regex to match the dropdown string - from pythex.org
-    #dropdown_regex = re.compile('"=\\'Dropdown List\\'!\$([A-Z]+)\$(\d+):\$([A-Z]+)\$(\d+)"')
+    # dropdown_regex = re.compile('"=\\'Dropdown List\\'!\$([A-Z]+)\$(\d+):\$([A-Z]+)\$(\d+)"')
     #
 
     try:
         f_str = val_references[header]
+        dv = DataValidation(type='list', formula1=f_str, allow_blank=True)
+        dv.prompt = "Please select from the list"
+        dv.promptTitle = 'List Selection'
+        return dv
     except KeyError:
         print("No validation")
-        pass
-    dv = DataValidation(type='list', formula1=f_str, allow_blank=True)
-    dv.prompt = "Please select from the list"
-    dv.promptTitle = 'List Selection'
-    return dv
-
+        return
 
 
 # Validation data TODO this is perfect for a thread
-#VAL_QUARTER = _get_dropdown_data(header='Quarter')
-#VAL_JOINING_QTR = _get_dropdown_data(header='Joining Qtr')
-#VAL_CLASSIFICATION = _get_dropdown_data(header='Classification')
-#VAL_AGENCIES = _get_dropdown_data(header='Agencies')
-#VAL_GROUP = _get_dropdown_data(header='Group')
-#VAL_DFT_DIVISION = _get_dropdown_data(header='DfT Division')
-#VAL_ENTITY = _get_dropdown_data(header='Entity')
-#VAL_METHODOLOGY = _get_dropdown_data(header='Methodology')
-#VAL_CATEGORY = _get_dropdown_data(header='Category')
-#VAL_SCOPE_CHANGED = _get_dropdown_data(header='Scope Changed')
-#VAL_MONETISED = _get_dropdown_data(header='Monetised / Non Monetised Benefits')
-#VAL_SDP = _get_dropdown_data(header='SDP')
+# VAL_QUARTER = _get_dropdown_data(header='Quarter')
+# VAL_JOINING_QTR = _get_dropdown_data(header='Joining Qtr')
+# VAL_CLASSIFICATION = _get_dropdown_data(header='Classification')
+# VAL_AGENCIES = _get_dropdown_data(header='Agencies')
+# VAL_GROUP = _get_dropdown_data(header='Group')
+# VAL_DFT_DIVISION = _get_dropdown_data(header='DfT Division')
+# VAL_ENTITY = _get_dropdown_data(header='Entity')
+# VAL_METHODOLOGY = _get_dropdown_data(header='Methodology')
+# VAL_CATEGORY = _get_dropdown_data(header='Category')
+# VAL_SCOPE_CHANGED = _get_dropdown_data(header='Scope Changed')
+# VAL_MONETISED = _get_dropdown_data(header='Monetised / Non Monetised Benefits')
+# VAL_SDP = _get_dropdown_data(header='SDP')
 # TODO continue with this
 
 def main():
@@ -363,6 +365,7 @@ def main():
             return
         else:
             return
+
 
 if __name__ == '__main__':
     main()

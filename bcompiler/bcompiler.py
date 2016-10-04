@@ -161,8 +161,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
-                ws_summary.add_data_validation(dv)
-                dv.add(ws_summary[item['cell_coordinates']])
+                ws_fb.add_data_validation(dv)
+                dv.add(ws_apm[item['cell_coordinates']])
         elif item['sheet'] == 'Resources':
             try:
                 ws_res[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
@@ -171,8 +171,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
-                ws_summary.add_data_validation(dv)
-                dv.add(ws_summary[item['cell_coordinates']])
+                ws_res.add_data_validation(dv)
+                dv.add(ws_apm[item['cell_coordinates']])
         elif item['sheet'] == 'Approval & Project milestones':
             try:
                 ws_apm[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
@@ -181,8 +181,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
-                ws_summary.add_data_validation(dv)
-                dv.add(ws_summary[item['cell_coordinates']])
+                ws_apm.add_data_validation(dv)
+                dv.add(ws_apm[item['cell_coordinates']])
         elif item['sheet'] == 'Assurance planning':
             try:
                 ws_ap[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
@@ -191,8 +191,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
-                ws_summary.add_data_validation(dv)
-                dv.add(ws_summary[item['cell_coordinates']])
+                ws_ap.add_data_validation(dv)
+                dv.add(ws_ap[item['cell_coordinates']])
 
     blank.save('source_files/output/{}_Q2_Return.xlsx'.format(test_proj))
 
@@ -261,14 +261,58 @@ def _get_dropdown_headers():
     return [h.value for h in a_row]
 
 def create_validation(header):
-    t = _get_dropdown_data(header)
-    t = t[1:]
-    t_str = ",".join(map(str, t))
-    f_str = '"{}"'.format(t_str)
+
+    val_references = {
+        'Quarter': '"=\'Dropdown List\'!$A$9:$A$2"',
+        'Joining Qtr': "=\'Dropdown List\'!$B$25:$B$2",
+        'Classification': '"=\'Dropdown List\'!$C$4:$C$2"',
+        'Agencies': '"=\'Dropdown List\'!$D$7:$D$2"',
+        'Group': '"=\'Dropdown List\'!$E$7:$E$2"',
+        'DfT Division': '"=\'Dropdown List\'!$F$13:$F$2"',
+        'Entity': '"=\'Dropdown List\'!$G$4:$G$2"',
+        'Methodology': '"=\'Dropdown List\'!$H$10:$H$2"',
+        'Category': '"=\'Dropdown List\'!$I$7:$I$2"',
+        'Scope Changed': '"=\'Dropdown List\'!$J$4:$J$2"',
+        'Monetised / Non Monetised Benefits': '"=\'Dropdown List\'!$K$4:$K$2"',
+        'SDP': '"=\'Dropdown List\'!$L$5:$L$2"',
+        'RAG': '"=\'Dropdown List\'!$M$7:$M$2"',
+        'RAG_Short': '"=\'Dropdown List\'!$N$4:$N$2"',
+        'RPA': '"=\'Dropdown List\'!$O$4:$O$2"',
+        'MPLA / PLP': '"=\'Dropdown List\'!$P$29:$P$2"',
+        'Yes/No': '"=\'Dropdown List\'!$Q$3:$Q$2"',
+        'PL Changes': '"=\'Dropdown List\'!$R$31:$R$2"',
+        'Capability RAG': '"=\'Dropdown List\'!$S$5:$S$2"',
+        'Stage': '"=\'Dropdown List\'!$T$10:$T$2"',
+        'Business Cases': '"=\'Dropdown List\'!$U$10:$U$2"',
+        'Milestone Types': '"=\'Dropdown List\'!$V$4:$V$2"',
+        'Finance figures format': '"=\'Dropdown List\'!$W3:$W$2"',
+        'Index Years': '"=\'Dropdown List\'!$X27:$X$2"',
+        'Discount Rate': '"=\'Dropdown List\'!$Y32:$Y$2"',
+        'Finance type': '"=\'Dropdown List\'!$Z6:$Z$2"',
+        'Years (Spend)': '"=\'Dropdown List\'!$AC89:$AC$2"',
+        'Years (Benefits)': '"=\'Dropdown List\'!$AD91:$AD$2"',
+        'Snapshot Dates': '"=\'Dropdown List\'!$AE5:$AE$2"',
+        'Percentage of time spent on SRO role': '"=\'Dropdown List\'!$AF21:$AF$2"',
+        'AR Category': '"=\'Dropdown List\'!$AG5:$AG$2"',
+        'Project': '"=\'Dropdown List\'!$AH10:$AH$2"',
+        'Programme': '"=\'Dropdown List\'!$AI7:$AI$2"',
+        'Other': '"=\'Dropdown List\'!$AJ19:$AJ$2"'
+    }
+
+    # if we need the regex to match the dropdown string - from pythex.org
+    #dropdown_regex = re.compile('"=\\'Dropdown List\\'!\$([A-Z]+)\$(\d+):\$([A-Z]+)\$(\d+)"')
+    #
+
+    try:
+        f_str = val_references[header]
+    except KeyError:
+        print("No validation")
+        pass
     dv = DataValidation(type='list', formula1=f_str, allow_blank=True)
     dv.prompt = "Please select from the list"
     dv.promptTitle = 'List Selection'
     return dv
+
 
 
 # Validation data TODO this is perfect for a thread

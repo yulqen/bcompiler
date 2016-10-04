@@ -161,8 +161,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
-                ws_summary.add_data_validation(dv)
-                dv.add(ws_summary[item['cell_coordinates']])
+                ws_fb.add_data_validation(dv)
+                dv.add(ws_fb[item['cell_coordinates']])
         elif item['sheet'] == 'Resources':
             try:
                 ws_res[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
@@ -171,8 +171,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
-                ws_summary.add_data_validation(dv)
-                dv.add(ws_summary[item['cell_coordinates']])
+                ws_res.add_data_validation(dv)
+                dv.add(ws_res[item['cell_coordinates']])
         elif item['sheet'] == 'Approval & Project milestones':
             try:
                 ws_apm[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
@@ -181,8 +181,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
-                ws_summary.add_data_validation(dv)
-                dv.add(ws_summary[item['cell_coordinates']])
+                ws_apm.add_data_validation(dv)
+                dv.add(ws_apm[item['cell_coordinates']])
         elif item['sheet'] == 'Assurance planning':
             try:
                 ws_ap[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
@@ -191,8 +191,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
-                ws_summary.add_data_validation(dv)
-                dv.add(ws_summary[item['cell_coordinates']])
+                ws_ap.add_data_validation(dv)
+                dv.add(ws_ap[item['cell_coordinates']])
 
     blank.save('source_files/output/{}_Q2_Return.xlsx'.format(test_proj))
 

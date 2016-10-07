@@ -55,7 +55,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'bcompiler = bcomiler.bcompiler:main',
+            'bcompiler = bcompiler.bcompiler:main',
         ]
     },
     install_requires=[

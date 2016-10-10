@@ -25,10 +25,10 @@ The following table provides a summary of the main tasks:
 +------------------------+-----------------------+
 | Populating             | Compiling             |
 +========================+=======================+
-|Master to BICC Returns  | BICC Returns to Master|
-+-----------------------+------------------------+
-| Master to GMPP Return |                        |
-+-----------------------+------------------------+
+| Master to BICC Returns | BICC Returns to Master|
++------------------------+-----------------------+
+| Master to GMPP Return  |                       |
++------------------------+-----------------------+
 
 Working Directory
 -----------------

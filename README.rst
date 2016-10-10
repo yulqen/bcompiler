@@ -54,9 +54,14 @@ Once you have created the requisite folder structure, you must then ensure the c
 
 The following files are required for the purposes of populating (*Master to BICC* or *Master to GMPP*):
 
-- master.csv                (a CSV version of the master spreadsheet)
-- bicc_template.xlsx        (a blank BICC Return template in Excel)
-- datamap                   (a comma-separated datamap file linking cell)
+**master.csv**
+    a CSV version of the master spreadsheet
+
+**bicc_template.xlsx**
+    a blank BICC Return template in Excel
+
+**datamap**
+    a comma-separated datamap file linking cell
 
 
 master.csv

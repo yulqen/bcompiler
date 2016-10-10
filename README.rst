@@ -48,7 +48,7 @@ If the directory currently exists, this will be reported to you. As you may have
 ``bcompiler --force-create-wd`` which will remove the old directory and create a clean one.
 
 Source files
-+++++++++++++
+^^^^^^^^^^^^^
 
 Once you have created the requisite folder structure, you must then ensure the correct source files have been deposited in the ``bcompiler/source/``.
 

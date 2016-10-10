@@ -22,12 +22,13 @@ Compiling
 
 The following table provides a summary of the main tasks:
 
-==========              ============
-Populating              Compiling
-==========              ============
-Master to BICC Returns  BICC Returns to Master
-Master to GMPP Return
-==========              ============
++------------------------+-----------------------+
+| Populating             | Compiling             |
++========================+=======================+
+|Master to BICC Returns  | BICC Returns to Master|
++-----------------------+------------------------+
+| Master to GMPP Return |                        |
++-----------------------+------------------------+
 
 Working Directory
 -----------------
@@ -60,15 +61,12 @@ master.csv
 This file can be created manually or could be the output from a *BICC Returns to Master* compilaton process. The traditonal structure for this file was a reverse-csv format, such as:
 
 ::
+
     Project/Programme Name,A14 Road Reconstruction,A303 Layby Maintenance,..
     Classification,DfT-102,DfT-102,..
     SRO Name,Jim Smith,Carol Heggarty,...
     SRO Training,SRO Master Practictioner,SRO Novice,...
     ...
-
-
-
-
 
 Compiling Returned BICC Forms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

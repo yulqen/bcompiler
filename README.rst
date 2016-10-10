@@ -103,8 +103,13 @@ The ``datamap`` file is of the form:
 
 The file provides the 'map' between the ``master.csv`` and the ``bicc_template.xlsx``. This file is *HUMAN-CREATED* and requires the system administrator to indicate which CELL_REFERENCE in the ``bicc_template.xlsx`` file is populated by which FIELD_NAME in the ``master.csv``.
 
-Compiling Returned BICC Forms
-------------------------------
+Populating BICC Return Forms from Master
+----------------------------------------
+
+TODO
+
+Compiling Returned BICC Return Forms
+-------------------------------------
 
 Completed BICC return forms (in their native .xlsx format) should be copied into the ``[bcompiler]/source/returns`` folder.
 
@@ -113,3 +118,9 @@ To create a new master csv spreadsheet comprising the data from these returns, r
 ``bcompiler --compile-to-master``
 
 If the xlsx files are not copied to the correct folder (see above), the program will throw a FileNotFound error. A new ``compiled_master_DATE_QUARTER-REF.xlsx`` file will be created in ``[bcompiler]/output/``.
+
+
+Overall Process
+----------------
+
+DIAGRAM HERE

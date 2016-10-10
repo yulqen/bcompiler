@@ -96,7 +96,7 @@ The ``datamap`` file is of the form:
     SRO Sign-Off,Summary,B49,
     ...
 
-The file provides the 'map' between the master data and the BICC Form. This file is *HUMAN-CREATED* and requires the system administrator to indicate which CELL_REFERENCE in the ``bicc_template.xlsx`` file is populated by which FIELD_NAME in the ``master.csv``.
+The file provides the 'map' between the ``master.csv`` and the ``bicc_template.xlsx``. This file is *HUMAN-CREATED* and requires the system administrator to indicate which CELL_REFERENCE in the ``bicc_template.xlsx`` file is populated by which FIELD_NAME in the ``master.csv``.
 
 Compiling Returned BICC Forms
 ------------------------------

@@ -12,8 +12,9 @@ import csv
 import os
 import re
 import shutil
-
 import sys
+
+from parser import main as parser
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
@@ -58,6 +59,8 @@ def get_parser():
     parser.add_argument('-f', '--force-create-wd', dest='f-create-wd', action="store_true", help='remove existing '
                                                                                                  'working directory and'
                                                                                                  'create a new one')
+    parser.add_argument('--compile-to-master', dest='compile-to-master', action="store_true",
+                         help="pull in completed returns and create a compiled_master.csv file")
     return parser
 
 
@@ -369,21 +372,8 @@ def create_validation(header):
         print("No validation")
         return
 
-
-# Validation data TODO this is perfect for a thread
-# VAL_QUARTER = _get_dropdown_data(header='Quarter')
-# VAL_JOINING_QTR = _get_dropdown_data(header='Joining Qtr')
-# VAL_CLASSIFICATION = _get_dropdown_data(header='Classification')
-# VAL_AGENCIES = _get_dropdown_data(header='Agencies')
-# VAL_GROUP = _get_dropdown_data(header='Group')
-# VAL_DFT_DIVISION = _get_dropdown_data(header='DfT Division')
-# VAL_ENTITY = _get_dropdown_data(header='Entity')
-# VAL_METHODOLOGY = _get_dropdown_data(header='Methodology')
-# VAL_CATEGORY = _get_dropdown_data(header='Category')
-# VAL_SCOPE_CHANGED = _get_dropdown_data(header='Scope Changed')
-# VAL_MONETISED = _get_dropdown_data(header='Monetised / Non Monetised Benefits')
-# VAL_SDP = _get_dropdown_data(header='SDP')
-# TODO continue with this
+def compile_to_master():
+    parser()
 
 def main():
     parser = get_parser()
@@ -420,6 +410,10 @@ def main():
             return
         else:
             return
+    if args['compile-to-master']:
+        print("Placeholder for compiling to master from submitted BICC returns.")
+        return
+
 
 
 if __name__ == '__main__':

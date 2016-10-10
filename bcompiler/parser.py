@@ -1,16 +1,15 @@
 import fnmatch
 import os
 import re
-"""
-PROBABLY NEVER GOING TO UNDERSTAND THIS COME SEPTEMBER
-"""
+from datetime import date
+
 from openpyxl import load_workbook, Workbook
 
 cell_regex = re.compile('[A-Z]+[0-9]+')
+today = date.today().isoformat()
 
-SOURCE_RETURN_FILE = "source_files/A14 Cambs to Huntington.xlsx"
-DATA_MAP_FILE = 'source_files/data_map'
-OUTPUT_FILE = 'DfT_GMPP_Return.xlsx'
+DATA_MAP_FILE = 'source_files/datamap'
+
 
 def get_sheet_names(source_file):
     wb = load_workbook(source_file, read_only=True)
@@ -23,15 +22,15 @@ def get_sheet_data(source_file):
 
     for row in ws.rows:
         for cell in row:
-            if cell.value != None:
+            if cell.value is not None:
                 print(cell.value)
 
 
-def get_current_quarter(source_file):
-    wb = load_workbook(source_file, read_only=True)
+def get_current_quarter(source_file, path):
+    wb = load_workbook(path + "/source/returns/" + source_file, read_only=True)
     ws = wb['Summary']
-    q = ws['K6'].value
-    print(q)
+    q = ws['G3'].value
+    return q
 
 
 def get_project_name(source_file):
@@ -57,6 +56,7 @@ def parse_source_cells(source_file):
     """
 
     # first, we load the source file
+    global ws
     wb = load_workbook(source_file, read_only=True, data_only=True)
 
     # we're going to output data from this function as a list of dict items
@@ -71,7 +71,8 @@ def parse_source_cells(source_file):
             # split on , allowing us to access useful data from data map file
             data_map_line = line.split(',')
             # if the second word in each MAP line is a named sheet from the template file, we're interested
-            if data_map_line[1] in ['Summary', 'Finance & Benefits', 'Resources', 'Milestones and Assurance', 'Dropdown lists', 'Resources backup']:
+            if data_map_line[1] in ['Summary', 'Finance & Benefits', 'Resources', 'Approval & Project milestones',
+                                    'Assurance planning']:
                 # the end item in the list is a newline - get rid of that
                 del data_map_line[-1]
                 # the worksheet in the source Excel file needs to be accessible
@@ -107,6 +108,7 @@ def parse_source_cells(source_file):
     return output_excel_map_list
 
 
+# noinspection PyTypeChecker,PyTypeChecker,PyTypeChecker
 def write_excel(source_file, count, workbook):
     # count is used to count number of times function is run so that multiple returns can be added
     # and not overwrite the GMPP key column
@@ -114,68 +116,50 @@ def write_excel(source_file, count, workbook):
     # it will have one worksheet - let's get it
     ws = workbook.active
     # give it a title
-    ws.title = "GMPP Return - DfT"
+    ws.title = "Constructed BICC Data Master"
 
     out_map = parse_source_cells(source_file)
-
     if count == 1:
         i = 1
         for d in out_map:
             c = ws.cell(row=i, column=1)
             c.value = d['gmpp_key']
-            i +=1
+            i += 1
         i = 1
         for d in out_map:
             c = ws.cell(row=i, column=2)
             c.value = d['gmpp_key_value']
-            i +=1
+            i += 1
     else:
         i = 1
         for d in out_map:
-            c = ws.cell(row=i, column=count+1)
+            c = ws.cell(row=i, column=count + 1)
             c.value = d['gmpp_key_value']
-            i +=1
-
-def find_variance(source_file):
-    true_map_summary = [
-        ('BICC PORTFOLIO OFFICE - GMPP REPORTING RETURN', 'A5'),
-        ('PD Tenure Start date', 'H17'),
-        ('List Strategic Outcomes (monetised and non-monetised benefits)','A44')
-    ]
-
-    wb = load_workbook(('source_files/' + source_file), read_only=True)
-    # do check summary page
-    ws = wb['Summary']
-    for t in true_map_summary:
-        target_cell = t[1]
-        expected_value = t[0]
-        actual_value = ws[target_cell].value
-        if expected_value == actual_value:
-            print('{}: {} cell {} OK'.format(source_file, ws, target_cell))
-        else:
-            print('{}: {} cell {} should be {} but is reporting {}'.format(
-                source_file,
-                ws,
-                target_cell,
-                expected_value,
-                actual_value
-            ))
+            i += 1
 
 
+def main():
+    workbook = Workbook()
+
+    docs = os.path.join(os.path.expanduser('~'), 'Documents')
+    try:
+        bcomp_working_d = 'bcompiler'
+    except FileNotFoundError:
+        print("You need to run with --create-wd to create the working directory")
+    root_path = os.path.join(docs, bcomp_working_d)
+    count = 1
+    for file in os.listdir(os.path.join(root_path, 'source/returns')):
+        if fnmatch.fnmatch(file, '*.xlsx'):
+            print("Processing {}".format(file))
+            write_excel((root_path + '/source/returns/' + file), count=count, workbook=workbook)
+            count += 1
+    for file in os.listdir(os.path.join(root_path, 'source/returns')):
+        cq = get_current_quarter(file, root_path)
+        if cq is not None:
+            break
+    OUTPUT_FILE = '{}/output/compiled_master_{}_{}.xlsx'.format(root_path, today, cq)
+    workbook.save(OUTPUT_FILE)
 
 
 if __name__ == '__main__':
-    workbook = Workbook()
-    dir = os.path.dirname(os.path.realpath(__file__))
-    count = 1
-    for file in os.listdir(os.path.join(dir, 'source_files')):
-        if fnmatch.fnmatch(file, '*.xlsx'):
-            print("Processing {}".format(file))
-            write_excel(('source_files/'+file), count=count, workbook=workbook)
-            count += 1
-    workbook.save(OUTPUT_FILE)
-
-    # find variance
-    for file in os.listdir(os.path.join(dir, 'source_files')):
-        if fnmatch.fnmatch(file, '*.xlsx'):
-            find_variance(file)
+    main()

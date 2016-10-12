@@ -6,6 +6,13 @@ BCompiler
     :backlinks: top
     :local:
 
+Quick Start
+-----------
+
+* Clone the project (or download the zip file)
+* pip install -r requirements
+* Run setup.py
+
 
 Introduction
 -------------

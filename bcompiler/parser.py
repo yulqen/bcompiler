@@ -6,6 +6,7 @@ from datetime import date
 from openpyxl import load_workbook, Workbook
 
 cell_regex = re.compile('[A-Z]+[0-9]+')
+dropdown_regex = re.compile('^\D*$')
 today = date.today().isoformat()
 
 DATA_MAP_FILE = 'source_files/datamap'
@@ -82,15 +83,23 @@ def parse_source_cells(source_file):
                     print("{} has no {} sheet! - {}".format(source_file, data_map_line[1], e))
                 # we only want to act query the source Excel file if there is a valid cell reference there
                 # so we use a regex to do that
+
+                # if the last entry is a cell reference
                 if cell_regex.search(data_map_line[-1]):
                     try:
                         destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value=ws[data_map_line[-1]].value)
                     except IndexError:
                         destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value="OUT OF BOUNDS!")
                     output_excel_map_list.append(destination_kv)
-                    # else:
-                    #     destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value=[data_map_line[-1][0]])
-                    #     output_excel_map_list.append(destination_kv)
+
+                # or if the last entry is likely dropdown text and the preceeding text is a cell reference...
+                elif cell_regex.search(data_map_line[-2]) and dropdown_regex.search(data_map_line[-1]):
+                    try:
+                        destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value=ws[data_map_line[-2]].value)
+                    except IndexError:
+                        destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value="OUT OF BOUNDS!")
+                    output_excel_map_list.append(destination_kv)
+
             # if the DATA_MAP doesn't suggest the data is sourced in the template Excel, we just want to
             # take the default data we have entered there (e.g. 'michelle dawson' as default)
             # OR we return an empty string if there is no data

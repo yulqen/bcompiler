@@ -14,7 +14,6 @@ import re
 import shutil
 import sys
 
-from parser import main as parser
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
@@ -41,6 +40,7 @@ def working_directory(type=None):
 SOURCE_DIR = working_directory('source')
 OUTPUT_DIR = working_directory('output')
 DATAMAP = SOURCE_DIR + 'datamap'
+CLEANED_DATAMAP = SOURCE_DIR + 'cleaned_datamap'
 MASTER = SOURCE_DIR + 'master.csv'
 TEMPLATE = SOURCE_DIR + 'bicc_template.csv'
 
@@ -59,23 +59,17 @@ def get_parser():
     parser.add_argument('-f', '--force-create-wd', dest='f-create-wd', action="store_true", help='remove existing '
                                                                                                  'working directory and'
                                                                                                  'create a new one')
-    parser.add_argument('--compile-to-master', dest='compile-to-master', action="store_true",
-                         help="pull in completed returns and create a compiled_master.csv file")
     return parser
 
 
-def clean_datamap():
-    dm = SOURCE_DIR + 'datamap'
-    cleaned_datamap_file = SOURCE_DIR + 'cleaned_datamap'
+def clean_datamap(dm_file):
+    cleaned_datamap_file = CLEANED_DATAMAP
     try:
         os.remove(cleaned_datamap_file)
     except FileNotFoundError:
         pass
-    try:
-        cleaned_datamap = open(cleaned_datamap_file, 'a+')
-    except FileNotFoundError:
-        create_working_directory()
-    with open(dm, 'r', encoding='UTF-8') as f:
+    cleaned_datamap = open(cleaned_datamap_file, 'a+')
+    with open(dm_file, 'r', encoding='UTF-8') as f:
         # make sure every line has a comma at the end
         for line in f.readlines():
             newline = line.rstrip()
@@ -85,6 +79,7 @@ def clean_datamap():
             else:
                 newline = newline + ',' + '\n'
                 cleaned_datamap.write(newline)
+        return cleaned_datamap
 
 
 def parse_csv_to_file(source_file):
@@ -372,8 +367,6 @@ def create_validation(header):
         print("No validation")
         return
 
-def compile_to_master():
-    parser()
 
 def main():
     parser = get_parser()
@@ -383,7 +376,7 @@ def main():
         print("1.0")
         return
     if args['clean-datamap']:
-        clean_datamap()
+        clean_datamap(DATAMAP)
         print("datamap cleaned")
         return
     if args['parse']:
@@ -391,7 +384,7 @@ def main():
         return
     if args['populate']:
         master = '{}master.csv'.format(working_directory('source'))
-        clean_datamap()
+        clean_datamap(DATAMAP)
         parse_csv_to_file(master)
         populate_blank_bicc_form(master, args['populate'])
         return
@@ -410,10 +403,6 @@ def main():
             return
         else:
             return
-    if args['compile-to-master']:
-        print("Placeholder for compiling to master from submitted BICC returns.")
-        return
-
 
 
 if __name__ == '__main__':

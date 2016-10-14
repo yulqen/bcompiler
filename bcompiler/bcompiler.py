@@ -13,6 +13,7 @@ import os
 import re
 import shutil
 import sys
+from collections import namedtuple
 
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
@@ -81,6 +82,35 @@ def clean_datamap(dm_file):
                 cleaned_datamap.write(newline)
         return cleaned_datamap
 
+def create_datamap_n_tuples():
+    cell_regex = re.compile('[A-Z]+[0-9]+')
+    datalines = []
+    DataMapLine = namedtuple('DataMapLine', 'key value cellref dropdown')
+    try:
+        os._exists(CLEANED_DATAMAP)
+    except FileNotFoundError:
+        print("No cleaned_datamap")
+        return
+    with open(CLEANED_DATAMAP, 'r') as f:
+        data = [line for line in f.readlines()]
+        data = [line.rstrip() for line in data]
+        data = [line[:-1] for line in data]
+        data = [line.split(',') for line in data]
+        for line in data:
+            if cell_regex.search(line[-1]):
+                try:
+                    datalines.append(DataMapLine(key=line[0], value=line[1], cellref=line[2], dropdown=None))
+                except IndexError as e:
+                    print("Getting {} for {}".format(e, line))
+
+                    pass
+            else:
+                try:
+                    datalines.append(DataMapLine._make(line))
+                except TypeError as e:
+                    print("Getting this error {} - dm: {}".format(e, line))
+                    pass
+    return datalines
 
 def parse_csv_to_file(source_file):
     """

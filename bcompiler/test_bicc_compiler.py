@@ -2,7 +2,8 @@ import csv
 import os
 import unittest
 
-from bcompiler import create_master_dict_transposed, clean_datamap
+from bcompiler import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
+from bcompiler import DATAMAP
 from parser import parse_source_cells
 
 
@@ -86,6 +87,12 @@ class TestMasterFunctions(unittest.TestCase):
         example_validated_cell = "IO1 - Monetised?"
         matches = [x for x in data if x['gmpp_key'] == example_validated_cell]
         self.assertEqual(matches[0]['gmpp_key'], example_validated_cell)
+
+    # trial of creating list of named tuples from the datamap - not sure why yet
+    def test_list_of_named_tuples_from_datamap(self):
+        clean_datamap(DATAMAP)
+        datamap_data = create_datamap_n_tuples()
+        self.assertEqual(datamap_data[0][0], 'Project/Programme Name')
 
 
 

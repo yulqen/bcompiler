@@ -5,11 +5,13 @@ from datetime import date
 
 from openpyxl import load_workbook, Workbook
 
+from bcompiler.workingdir import DATAMAP
+
 cell_regex = re.compile('[A-Z]+[0-9]+')
 dropdown_regex = re.compile('^\D*$')
 today = date.today().isoformat()
 
-DATA_MAP_FILE = 'source_files/datamap'
+DATA_MAP_FILE = DATAMAP
 
 
 def get_sheet_names(source_file):
@@ -147,7 +149,7 @@ def write_excel(source_file, count, workbook):
             i += 1
 
 
-def main():
+def run():
     workbook = Workbook()
 
     docs = os.path.join(os.path.expanduser('~'), 'Documents')
@@ -168,7 +170,3 @@ def main():
             break
     OUTPUT_FILE = '{}/output/compiled_master_{}_{}.xlsx'.format(root_path, today, cq)
     workbook.save(OUTPUT_FILE)
-
-
-if __name__ == '__main__':
-    main()

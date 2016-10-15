@@ -18,37 +18,14 @@ from collections import namedtuple
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
-
-def working_directory(type=None):
-    """
-    Returns the working direct for source files
-    :return: path to the working directory intended for the source files
-    """
-    docs = os.path.join(os.path.expanduser('~'), 'Documents')
-    try:
-        bcomp_working_d = 'bcompiler'
-    except FileNotFoundError:
-        print("You need to run with --create-wd to create the working directory")
-    root_path = os.path.join(docs, bcomp_working_d)
-    if type == 'source':
-        return root_path + "/source/"
-    elif type == 'output':
-        return root_path + "/output/"
-    else:
-        return
-
-
-SOURCE_DIR = working_directory('source')
-OUTPUT_DIR = working_directory('output')
-DATAMAP = SOURCE_DIR + 'datamap'
-CLEANED_DATAMAP = SOURCE_DIR + 'cleaned_datamap'
-MASTER = SOURCE_DIR + 'master.csv'
-TEMPLATE = SOURCE_DIR + 'bicc_template.csv'
+import bcompiler.compile as compile_returns
+from bcompiler.workingdir import SOURCE_DIR, OUTPUT_DIR, DATAMAP, CLEANED_DATAMAP, working_directory
 
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Compile BICC data or prepare Excel BICC return forms.')
-    parser.add_argument('-c', '--clean-datamap', dest="clean-datamap", action="store_true", help='clean datamap file whose path is given as string')
+    parser.add_argument('-c', '--clean-datamap', dest="clean-datamap", action="store_true",
+                        help='clean datamap file whose path is given as string')
     parser.add_argument('-v', '--version', help='displays the current version of bcompiler', action="store_true")
     parser.add_argument('-p', '--parse', dest='parse', metavar='source file', nargs=1, help='parse master.csv and flip'
                                                                                             ' to correct orientation')
@@ -60,6 +37,7 @@ def get_parser():
     parser.add_argument('-f', '--force-create-wd', dest='f-create-wd', action="store_true", help='remove existing '
                                                                                                  'working directory and'
                                                                                                  'create a new one')
+    parser.add_argument('--compile', action="store_true", dest='compile', help='compile returns to master')
     return parser
 
 
@@ -82,12 +60,13 @@ def clean_datamap(dm_file):
                 cleaned_datamap.write(newline)
         return cleaned_datamap
 
+
 def create_datamap_n_tuples():
     cell_regex = re.compile('[A-Z]+[0-9]+')
     datalines = []
     DataMapLine = namedtuple('DataMapLine', 'key value cellref dropdown')
     try:
-        os._exists(CLEANED_DATAMAP)
+        os.path.exists(CLEANED_DATAMAP)
     except FileNotFoundError:
         print("No cleaned_datamap")
         return
@@ -111,6 +90,7 @@ def create_datamap_n_tuples():
                     print("Getting this error {} - dm: {}".format(e, line))
                     pass
     return datalines
+
 
 def parse_csv_to_file(source_file):
     """
@@ -433,6 +413,9 @@ def main():
             return
         else:
             return
+    if args['compile']:
+        compile_returns.run()
+        return
 
 
 if __name__ == '__main__':

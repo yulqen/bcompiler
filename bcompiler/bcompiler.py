@@ -26,6 +26,7 @@ from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
 import bcompiler.compile as compile_returns
+from bcompiler import __version__
 from bcompiler.workingdir import SOURCE_DIR, OUTPUT_DIR, DATAMAP, CLEANED_DATAMAP, working_directory
 
 
@@ -390,7 +391,7 @@ def main():
     args = vars(parser.parse_args())
     check_for_correct_source_files()
     if args['version']:
-        print("1.0")
+        print("{}".format(__version__))
         return
     if args['clean-datamap']:
         clean_datamap(DATAMAP)

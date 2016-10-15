@@ -2,9 +2,9 @@ import csv
 import os
 import unittest
 
-from bcompiler import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
-from bcompiler import DATAMAP
-from parser import parse_source_cells
+from bcompiler.bcompiler import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
+from bcompiler.compile import parse_source_cells
+from bcompiler.workingdir import DATAMAP
 
 
 class TestMasterFunctions(unittest.TestCase):

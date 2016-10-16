@@ -16,19 +16,30 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR TH
 """
 import argparse
 import csv
+import logging
 import os
 import re
 import shutil
 import sys
 from collections import namedtuple
 
-from openpyxl import load_workbook
-from openpyxl.worksheet.datavalidation import DataValidation
-
 import bcompiler.compile as compile_returns
 from bcompiler import __version__
 from bcompiler.workingdir import SOURCE_DIR, OUTPUT_DIR, DATAMAP, CLEANED_DATAMAP, working_directory
+from openpyxl import load_workbook
+from openpyxl.worksheet.datavalidation import DataValidation
 
+logger = logging.getLogger('bcompiler')
+logger.setLevel(logging.DEBUG)
+fh = logging.FileHandler('/home/lemon/Desktop/bcompiler.log')
+fh.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+logger.addHandler(fh)
+logger.addHandler(ch)
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Compile BICC data or prepare Excel BICC return forms.')
@@ -50,10 +61,12 @@ def get_parser():
 
 
 def clean_datamap(dm_file):
+    logger.info('setting clean datamap')
     cleaned_datamap_file = CLEANED_DATAMAP
     try:
         os.remove(cleaned_datamap_file)
     except FileNotFoundError:
+        logger.info('existing clean_datamap file not there')
         pass
     cleaned_datamap = open(cleaned_datamap_file, 'a+')
     with open(dm_file, 'r', encoding='UTF-8') as f:
@@ -64,8 +77,10 @@ def clean_datamap(dm_file):
                 newline += '\n'
                 cleaned_datamap.write(newline)
             else:
+                logger.info('no comma in datamap line {}'.format(newline))
                 newline = newline + ',' + '\n'
                 cleaned_datamap.write(newline)
+        logger.info('created cleaned_datamap at {}'.format(CLEANED_DATAMAP))
         return cleaned_datamap
 
 

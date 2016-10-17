@@ -4,7 +4,7 @@ import unittest
 
 from bcompiler.bcompiler import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
 from bcompiler.compile import parse_source_cells
-from bcompiler.workingdir import DATAMAP
+from bcompiler.workingdir import DATAMAP_RETURN_TO_MASTER
 
 
 class TestMasterFunctions(unittest.TestCase):
@@ -90,7 +90,7 @@ class TestMasterFunctions(unittest.TestCase):
 
     # trial of creating list of named tuples from the datamap - not sure why yet
     def test_list_of_named_tuples_from_datamap(self):
-        clean_datamap(DATAMAP)
+        clean_datamap(DATAMAP_RETURN_TO_MASTER)
         datamap_data = create_datamap_n_tuples()
         self.assertEqual(datamap_data[0][0], 'Project/Programme Name')
 

@@ -22,7 +22,8 @@ def working_directory(dir_type=None):
 
 SOURCE_DIR = working_directory('source')
 OUTPUT_DIR = working_directory('output')
-DATAMAP = SOURCE_DIR + 'datamap'
+DATAMAP_RETURN_TO_MASTER = SOURCE_DIR + 'datamap-returns-to-master'
+DATAMAP_MASTER_TO_RETURN = SOURCE_DIR + 'datamap-master-to-returns'
 CLEANED_DATAMAP = SOURCE_DIR + 'cleaned_datamap'
 MASTER = SOURCE_DIR + 'master.csv'
 TEMPLATE = SOURCE_DIR + 'bicc_template.csv'

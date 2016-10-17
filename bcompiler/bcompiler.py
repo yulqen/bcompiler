@@ -25,7 +25,8 @@ from collections import namedtuple
 
 import bcompiler.compile as compile_returns
 from bcompiler import __version__
-from bcompiler.workingdir import SOURCE_DIR, OUTPUT_DIR, DATAMAP, CLEANED_DATAMAP, working_directory
+from bcompiler.workingdir import SOURCE_DIR, OUTPUT_DIR, DATAMAP_MASTER_TO_RETURN, CLEANED_DATAMAP, working_directory, \
+    DATAMAP_RETURN_TO_MASTER
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
@@ -282,7 +283,7 @@ def check_for_correct_source_files():
         print("Please ensure the correct source files are installed:\n"
               "\t\tsource/bicc_template.xlsx\n"
               "\t\tsource/master.csv\n"
-              "\t\tsource/datamap\n")
+              "\t\tsource/datamap-master-to-returns\n")
         sys.exit()
     else:
         return
@@ -409,7 +410,10 @@ def main():
         print("{}".format(__version__))
         return
     if args['clean-datamap']:
-        clean_datamap(DATAMAP)
+        # THIS NEEDS TO BE SORTED OUT. We need to be able to clean based on the task (RETURN -> MASTER; MASTER -> RETURN)
+        # DO WE NEED THIS FUNCTION AT ALL?
+        clean_datamap(DATAMAP_RETURN_TO_MASTER)
+        clean_datamap(DATAMAP_MASTER_TO_RETURN)
         print("datamap cleaned")
         return
     if args['parse']:
@@ -417,7 +421,7 @@ def main():
         return
     if args['populate']:
         master = '{}master.csv'.format(working_directory('source'))
-        clean_datamap(DATAMAP)
+        clean_datamap(DATAMAP_MASTER_TO_RETURN)
         parse_csv_to_file(master)
         populate_blank_bicc_form(master, args['populate'])
         return

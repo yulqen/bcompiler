@@ -4,7 +4,7 @@ import os
 import re
 from datetime import date
 
-from bcompiler.workingdir import DATAMAP
+from bcompiler.workingdir import DATAMAP_RETURN_TO_MASTER
 from openpyxl import load_workbook, Workbook
 
 cell_regex = re.compile('[A-Z]+[0-9]+')
@@ -13,7 +13,7 @@ today = date.today().isoformat()
 
 logger = logging.getLogger('bcompiler')
 
-DATA_MAP_FILE = DATAMAP
+DATA_MAP_FILE = DATAMAP_RETURN_TO_MASTER
 
 
 def get_sheet_names(source_file):
@@ -79,7 +79,6 @@ def parse_source_cells(source_file):
             if data_map_line[1] in ['Summary', 'Finance & Benefits', 'Resources', 'Approval & Project milestones',
                                     'Assurance planning']:
                 # the end item in the list is a newline - get rid of that
-                logger.info('newline at the end of {}'.format(line.rstrip()))
                 del data_map_line[-1]
                 # the worksheet in the source Excel file needs to be accessible
                 try:

@@ -14,7 +14,8 @@ class TestMasterFunctions(unittest.TestCase):
         self.path = os.path.join(self.docs, bcomp_working_d)
         self.source_path = os.path.join(self.path, 'source')
         self.output_path = os.path.join(self.path, 'output')
-        self.datamap = os.path.join(self.source_path, 'datamap')
+        self.datamap_master_to_returns = os.path.join(self.source_path, 'datamap-master-to-returns')
+        self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
         self.master = os.path.join(self.source_path, 'master.csv')
         self.transposed_master = os.path.join(self.source_path, 'master_transposed.csv')
         self.example_return = os.path.join(self.source_path, 'returns/Q2 16-17 BICC SAR H - Final.xlsx')
@@ -47,7 +48,7 @@ class TestMasterFunctions(unittest.TestCase):
             self.assertEqual(f_line, test_st)
 
     def test_presence_datamap(self):
-        self.assertTrue(os.path.exists(self.datamap))
+        self.assertTrue(os.path.exists(self.datamap_master_to_returns))
 
     def test_clean_datamap(self):
         dirty_text = "Project/Programme Name,Summary,B5,\n" \

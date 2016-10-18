@@ -2,10 +2,13 @@ import csv
 import os
 import unittest
 
+import sys
+
 from bcompiler.bcompiler import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
+from bcompiler.utils import VALIDATION_REFERENCES
 from bcompiler.compile import parse_source_cells
 from bcompiler.datamap import Datamap, DatamapLine
-from bcompiler.workingdir import DATAMAP_RETURN_TO_MASTER
+from bcompiler.utils import DATAMAP_RETURN_TO_MASTER
 
 
 class TestMasterFunctions(unittest.TestCase):
@@ -115,13 +118,23 @@ class TestDatamapFunctionality(unittest.TestCase):
         # dropdown text
         self.assertEqual(self.dm.verified_lines, 116)
 
+    def test_verified_lines_for_dropdown_text(self):
+        # we're expecting the dropdown_txt attr in the DatamapLine object to be what we expect
+        for item in self.dm.dml_with_verification:
+            print(item.dropdown_txt)
+            self.assertTrue(item.dropdown_txt in VALIDATION_REFERENCES.keys())
+
     def test_non_verified_lines(self):
         # these are DatamapLine objects that have 3 attributes, the last of which is a regex
         self.assertEqual(self.dm.non_verified_lines, 715)
 
     def test_cells_that_will_not_migrate(self):
         # these are DatamapLine objects that have 2 attributes, the last of which is a sheet ref
-        self.assertEqual(self.dm.non_tranferring_value_lines, 6)
+        self.assertEqual(self.dm.non_tranferring_value_lines, 20)
+
+    def test_single_item_lines(self):
+        # DatamapLines that have a single attribute
+        self.assertEqual(self.dm.single_item_lines, 20)
 
     def test_datamap_is_cleaned_attr(self):
         self.assertTrue(self.dm.is_cleaned)

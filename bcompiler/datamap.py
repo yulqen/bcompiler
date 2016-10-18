@@ -33,6 +33,7 @@ class Datamap(object):
         self.dml_with_verification = []
         self.dml_with_no_verification = []
         self.dml_non_transferring_value_lines = []
+        self.dml_single_item_lines = []
         self._clean()
 
     def _clean(self):
@@ -40,11 +41,10 @@ class Datamap(object):
         that missing trailing commas as included."""
         with open(self.source_file, 'r', encoding='utf-8') as sf:
             for line in sf.readlines():
-                # we're going to create new DatamapLine objects for each line
-                dml_data = line.rstrip()
-                dml_data = dml_data[:-1]
-                dml_data = dml_data.split(',')
-
+                newline = line.rstrip()
+                if ',' in newline[-1]:
+                    newline = newline[:-1]
+                dml_data = newline.split(',')
                 # we're expecting three values for non-dropdown cells, four otherwise
                 # if we get less than that, we have dead data
                 if len(dml_data) == 4:
@@ -71,6 +71,12 @@ class Datamap(object):
                     dml.sheet = dml_data[1]
                     self.dml_non_transferring_value_lines.append(dml)
 
+                if len(dml_data) == 1:
+                    # only one item in the line
+                    dml = DatamapLine()
+                    dml.cellname = dml_data[0]
+                    self.dml_single_item_lines.append(dml)
+
             self.is_cleaned = True
 
     @property
@@ -96,3 +102,11 @@ class Datamap(object):
         :return:
         """
         return len(self.dml_non_transferring_value_lines)
+
+    @property
+    def single_item_lines(self):
+        """
+        Count of the number of datamap non-transferring lines in the datamap.
+        :return:
+        """
+        return len(self.dml_single_item_lines)

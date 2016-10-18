@@ -4,7 +4,7 @@ import os
 import re
 from datetime import date
 
-from bcompiler.workingdir import DATAMAP_RETURN_TO_MASTER
+from bcompiler.utils import DATAMAP_RETURN_TO_MASTER
 from openpyxl import load_workbook, Workbook
 
 cell_regex = re.compile('[A-Z]+[0-9]+')

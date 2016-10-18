@@ -24,8 +24,10 @@ import sys
 from collections import namedtuple
 
 import bcompiler.compile as compile_returns
+
 from bcompiler import __version__
-from bcompiler.workingdir import SOURCE_DIR, OUTPUT_DIR, DATAMAP_MASTER_TO_RETURN, CLEANED_DATAMAP, working_directory, \
+from bcompiler.utils import VALIDATION_REFERENCES
+from bcompiler.utils import SOURCE_DIR, OUTPUT_DIR, DATAMAP_MASTER_TO_RETURN, CLEANED_DATAMAP, working_directory, \
     DATAMAP_RETURN_TO_MASTER
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
@@ -163,7 +165,7 @@ def get_datamap():
                 m_map = dict(cell_description=data_map_line[0],
                              sheet=data_map_line[1],
                              cell_coordinates=data_map_line[2],
-                             validation_header='')
+                                validation_header='')
             except IndexError:
                 m_map = dict(cell_description=data_map_line[0],
                              sheet="CAN'T FIND SHEET")
@@ -346,49 +348,12 @@ def get_dropdown_headers():
 
 
 def create_validation(header):
-    val_references = {
-        'Quarter': '"=\'Dropdown List\'!$A$9:$A$2"',
-        'Joining Qtr': "=\'Dropdown List\'!$B$25:$B$2",
-        'Classification': '"=\'Dropdown List\'!$C$4:$C$2"',
-        'Agencies': '"=\'Dropdown List\'!$D$7:$D$2"',
-        'Group': '"=\'Dropdown List\'!$E$7:$E$2"',
-        'DfT Division': '"=\'Dropdown List\'!$F$13:$F$2"',
-        'Entity': '"=\'Dropdown List\'!$G$4:$G$2"',
-        'Methodology': '"=\'Dropdown List\'!$H$10:$H$2"',
-        'Category': '"=\'Dropdown List\'!$I$7:$I$2"',
-        'Scope Changed': '"=\'Dropdown List\'!$J$4:$J$2"',
-        'Monetised / Non Monetised Benefits': '"=\'Dropdown List\'!$K$4:$K$2"',
-        'SDP': '"=\'Dropdown List\'!$L$5:$L$2"',
-        'RAG': '"=\'Dropdown List\'!$M$7:$M$2"',
-        'RAG_Short': '"=\'Dropdown List\'!$N$4:$N$2"',
-        'RPA': '"=\'Dropdown List\'!$O$4:$O$2"',
-        'MPLA / PLP': '"=\'Dropdown List\'!$P$29:$P$2"',
-        'Yes/No': '"=\'Dropdown List\'!$Q$3:$Q$2"',
-        'PL Changes': '"=\'Dropdown List\'!$R$31:$R$2"',
-        'Capability RAG': '"=\'Dropdown List\'!$S$5:$S$2"',
-        'Stage': '"=\'Dropdown List\'!$T$10:$T$2"',
-        'Business Cases': '"=\'Dropdown List\'!$U$10:$U$2"',
-        'Milestone Types': '"=\'Dropdown List\'!$V$4:$V$2"',
-        'Finance figures format': '"=\'Dropdown List\'!$W3:$W$2"',
-        'Index Years': '"=\'Dropdown List\'!$X27:$X$2"',
-        'Discount Rate': '"=\'Dropdown List\'!$Y32:$Y$2"',
-        'Finance type': '"=\'Dropdown List\'!$Z6:$Z$2"',
-        'Years (Spend)': '"=\'Dropdown List\'!$AC89:$AC$2"',
-        'Years (Benefits)': '"=\'Dropdown List\'!$AD91:$AD$2"',
-        'Snapshot Dates': '"=\'Dropdown List\'!$AE5:$AE$2"',
-        'Percentage of time spent on SRO role': '"=\'Dropdown List\'!$AF21:$AF$2"',
-        'AR Category': '"=\'Dropdown List\'!$AG5:$AG$2"',
-        'Project': '"=\'Dropdown List\'!$AH10:$AH$2"',
-        'Programme': '"=\'Dropdown List\'!$AI7:$AI$2"',
-        'Other': '"=\'Dropdown List\'!$AJ19:$AJ$2"'
-    }
-
     # if we need the regex to match the dropdown string - from pythex.org
     # dropdown_regex = re.compile('"=\\'Dropdown List\\'!\$([A-Z]+)\$(\d+):\$([A-Z]+)\$(\d+)"')
     #
 
     try:
-        f_str = val_references[header]
+        f_str = VALIDATION_REFERENCES[header]
         dv = DataValidation(type='list', formula1=f_str, allow_blank=True)
         dv.prompt = "Please select from the list"
         dv.promptTitle = 'List Selection'

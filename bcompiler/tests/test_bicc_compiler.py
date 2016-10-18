@@ -4,7 +4,7 @@ import unittest
 
 from bcompiler.bcompiler import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
 from bcompiler.compile import parse_source_cells
-from bcompiler.datamap import Datamap
+from bcompiler.datamap import Datamap, DatamapLine
 from bcompiler.workingdir import DATAMAP_RETURN_TO_MASTER
 
 
@@ -108,22 +108,27 @@ class TestDatamapFunctionality(unittest.TestCase):
         self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
         self.master = os.path.join(self.source_path, 'master.csv')
         self.transposed_master = os.path.join(self.source_path, 'master_transposed.csv')
+        self.dm = Datamap(type='returns-to-master', source_file=self.datamap_returns_to_master)
 
-    def test_new_datamap_object(self):
-        dm = Datamap(type='returns-to-master', source_file=self.datamap_returns_to_master)
-        self.assertEqual(dm.lines, 858)
-        self.assertEqual(dm.source_file, self.datamap_returns_to_master)
-        self.assertTrue(dm.is_cleaned)
-        # test that each line has a comma at the end
-        for line in dm.datamap_lines:
-            # remember, there's a '\n' at position [-1]
-            self.assertEqual(line[-2], ',')
+    def test_verified_lines(self):
+        # these are DatamapLine objects that have 4 attributes, the last of which is verification
+        # dropdown text
+        self.assertEqual(self.dm.verified_lines, 116)
+
+    def test_non_verified_lines(self):
+        # these are DatamapLine objects that have 3 attributes, the last of which is a regex
+        self.assertEqual(self.dm.non_verified_lines, 715)
+
+    def test_cells_that_will_not_migrate(self):
+        # these are DatamapLine objects that have 2 attributes, the last of which is a sheet ref
+        self.assertEqual(self.dm.non_tranferring_value_lines, 6)
+
+    def test_datamap_is_cleaned_attr(self):
+        self.assertTrue(self.dm.is_cleaned)
 
     def test_dataline_object(self):
+        dml = DatamapLine()
         pass
-
-
-
 
 
 if __name__ == "__main__":

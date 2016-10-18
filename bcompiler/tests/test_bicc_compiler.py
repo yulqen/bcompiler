@@ -4,6 +4,7 @@ import unittest
 
 from bcompiler.bcompiler import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
 from bcompiler.compile import parse_source_cells
+from bcompiler.datamap import Datamap
 from bcompiler.workingdir import DATAMAP_RETURN_TO_MASTER
 
 
@@ -96,6 +97,24 @@ class TestMasterFunctions(unittest.TestCase):
         self.assertEqual(datamap_data[0][0], 'Project/Programme Name')
 
 
+class TestDatamapFunctionality(unittest.TestCase):
+    def setUp(self):
+        self.docs = os.path.join(os.path.expanduser('~'), 'Documents')
+        bcomp_working_d = 'bcompiler'
+        self.path = os.path.join(self.docs, bcomp_working_d)
+        self.source_path = os.path.join(self.path, 'source')
+        self.output_path = os.path.join(self.path, 'output')
+        self.datamap_master_to_returns = os.path.join(self.source_path, 'datamap-master-to-returns')
+        self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
+        self.master = os.path.join(self.source_path, 'master.csv')
+        self.transposed_master = os.path.join(self.source_path, 'master_transposed.csv')
+
+    def test_new_datamap_object(self):
+        dm = Datamap(type='returns-to-master', source_file=self.datamap_returns_to_master)
+        self.assertEqual(dm.get_datamap_lines(), 858)
+        self.assertEqual(dm.source_file, self.datamap_returns_to_master)
+        self.assertTrue(dm.cleaned)
+        pass
 
 
 

@@ -62,12 +62,10 @@ def get_parser():
 
 
 def clean_datamap(dm_file):
-    logger.info('setting clean datamap')
     cleaned_datamap_file = CLEANED_DATAMAP
     try:
         os.remove(cleaned_datamap_file)
     except FileNotFoundError:
-        logger.info('existing clean_datamap file not there')
         pass
     cleaned_datamap = open(cleaned_datamap_file, 'a+')
     with open(dm_file, 'r', encoding='UTF-8') as f:
@@ -78,10 +76,8 @@ def clean_datamap(dm_file):
                 newline += '\n'
                 cleaned_datamap.write(newline)
             else:
-                logger.info('no comma in datamap line {}'.format(newline))
                 newline = newline + ',' + '\n'
                 cleaned_datamap.write(newline)
-        logger.info('created cleaned_datamap at {}'.format(CLEANED_DATAMAP))
         return cleaned_datamap
 
 

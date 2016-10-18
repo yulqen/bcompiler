@@ -16,10 +16,9 @@ class Datamap(object):
     """
 
     def __init__(self, type=None, source_file=None):
-
         self.type = type
         self.source_file = source_file
-        self.cleaned = False
+        self.is_cleaned = False
         self.datamap_lines = []
         self._clean()
 
@@ -37,9 +36,10 @@ class Datamap(object):
                 else:
                     newline = newline + ',' + '\n'
                     self.datamap_lines.append(newline)
-            self.cleaned = True
+            self.is_cleaned = True
 
-    def get_datamap_lines(self):
+    @property
+    def lines(self):
         """
         Count of the number of datamap lines in the datamap.
         :return:

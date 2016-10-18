@@ -111,11 +111,16 @@ class TestDatamapFunctionality(unittest.TestCase):
 
     def test_new_datamap_object(self):
         dm = Datamap(type='returns-to-master', source_file=self.datamap_returns_to_master)
-        self.assertEqual(dm.get_datamap_lines(), 858)
+        self.assertEqual(dm.lines, 858)
         self.assertEqual(dm.source_file, self.datamap_returns_to_master)
-        self.assertTrue(dm.cleaned)
-        pass
+        self.assertTrue(dm.is_cleaned)
+        # test that each line has a comma at the end
+        for line in dm.datamap_lines:
+            # remember, there's a '\n' at position [-1]
+            self.assertEqual(line[-2], ',')
 
+    def test_dataline_object(self):
+        pass
 
 
 

@@ -103,6 +103,7 @@ def get_parser():
 
 
 def clean_datamap(dm_file):
+    logger.info("Cleaning {}.".format(dm_file))
     cleaned_datamap_file = CLEANED_DATAMAP
     try:
         os.remove(cleaned_datamap_file)

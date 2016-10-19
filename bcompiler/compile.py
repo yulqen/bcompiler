@@ -5,6 +5,7 @@ import re
 from datetime import date
 
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, SHEETS
+from bcompiler.datamap import Datamap
 from openpyxl import load_workbook, Workbook
 
 cell_regex = re.compile('[A-Z]+[0-9]+')
@@ -22,70 +23,18 @@ def get_current_quarter(source_file, path):
     q = ws['G3'].value
     return q
 
-def parse_source_cells(source_file):
-    """
-    :param source_file: an Excel file containing project return data
-    :return: a list of dict items mapping each key:value pair for the output column in GMPP's template
-    """
 
-    # first, we load the source file
-    global ws
+def parse_source_cells(source_file, datamap_source_file):
+    ls_of_dataline_dicts = []
     wb = load_workbook(source_file, read_only=True, data_only=True)
-
-    # we're going to output data from this function as a list of dict items
-    output_excel_map_list = []
-
-    # load the DATA_MAP_FILE, containing mappings to cells in the form based on key values
-    # from GMPP's master template
-    with open(DATA_MAP_FILE, 'r', encoding='UTF-8') as f:
-        data = f.readlines()
-
-        for line in data:
-            # split on , allowing us to access useful data from data map file
-            data_map_line = line.split(',')
-            # if the second word in each MAP line is a named sheet from the template file, we're interested
-            if data_map_line[1] in SHEETS:
-                # the end item in the list is a newline - get rid of that
-                del data_map_line[-1]
-                # the worksheet in the source Excel file needs to be accessible
-                try:
-                    ws = wb[data_map_line[1]]
-                except KeyError as e:
-                    print("{} has no {} sheet! - {}".format(source_file, data_map_line[1], e))
-                # we only want to act query the source Excel file if there is a valid cell reference there
-                # so we use a regex to do that
-
-                # if the last entry is a cell reference
-                if cell_regex.search(data_map_line[-1]):
-                    try:
-                        destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value=ws[data_map_line[-1]].value)
-                    except IndexError:
-                        destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value="OUT OF BOUNDS!")
-                    output_excel_map_list.append(destination_kv)
-
-                # or if the last entry is likely dropdown text and the preceeding text is a cell reference...
-                elif cell_regex.search(data_map_line[-2]) and dropdown_regex.search(data_map_line[-1]):
-                    try:
-                        destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value=ws[data_map_line[-2]].value)
-                    except IndexError:
-                        destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value="OUT OF BOUNDS!")
-                    output_excel_map_list.append(destination_kv)
-
-            # if the DATA_MAP doesn't suggest the data is sourced in the template Excel, we just want to
-            # take the default data we have entered there (e.g. 'michelle dawson' as default)
-            # OR we return an empty string if there is no data
-            else:
-                # the end item in the list is a newline - get rid of that
-                del data_map_line[-1]
-                if len(data_map_line) > 1:
-                    destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value=data_map_line[-1])
-                # if the list has only one item, that means there is no data entered, so we want the value to
-                # be an empty string for now
-                else:
-                    destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value="")
-                output_excel_map_list.append(destination_kv)
-
-    return output_excel_map_list
+    datamap_obj = Datamap(type='returns-to-master', source_file=datamap_source_file)
+    for item in datamap_obj.data:
+        if item.sheet is not None:
+            ws = wb[item.sheet]
+            if item.cellref is not None:
+                destination_kv = dict(gmpp_key=item.cellname, gmpp_key_value=str(ws[item.cellref].value).rstrip())
+                ls_of_dataline_dicts.append(destination_kv)
+    return ls_of_dataline_dicts
 
 
 # noinspection PyTypeChecker,PyTypeChecker,PyTypeChecker

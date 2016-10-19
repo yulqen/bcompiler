@@ -39,6 +39,7 @@ class Datamap(object):
         self.dml_with_no_verification = []
         self.dml_no_regex = []
         self.dml_single_item_lines = []
+        self.data = []
         self._clean()
 
     def _clean(self):
@@ -60,6 +61,7 @@ class Datamap(object):
                     dml.cellref = dml_data[2]
                     dml.dropdown_txt = dml_data[3]
                     self.dml_with_verification.append(dml)
+                    self.data.append(dml)
 
                 if len(dml_data) == 3:
                     # MOST LIKELY we've got a normal cell reference - but we test for a regex at end
@@ -68,6 +70,7 @@ class Datamap(object):
                     dml.sheet = dml_data[1]
                     dml.cellref = dml_data[2]
                     self.dml_with_no_verification.append(dml)
+                    self.data.append(dml)
 
                 if len(dml_data) == 2:
                     # only two items in the line
@@ -75,12 +78,14 @@ class Datamap(object):
                     dml.cellname = dml_data[0]
                     dml.sheet = dml_data[1]
                     self.dml_no_regex.append(dml)
+                    self.data.append(dml)
 
                 if len(dml_data) == 1:
                     # only one item in the line
                     dml = DatamapLine()
                     dml.cellname = dml_data[0]
                     self.dml_single_item_lines.append(dml)
+                    self.data.append(dml)
 
             self.is_cleaned = True
 

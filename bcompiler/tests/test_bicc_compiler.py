@@ -102,6 +102,27 @@ class TestMasterFunctions(unittest.TestCase):
         self.assertEqual(datamap_data[0][0], 'Project/Programme Name')
 
 
+class TestCompilationFromReturns(unittest.TestCase):
+    def setUp(self):
+        self.cell_regex = re.compile('[A-Z]+[0-9]+')
+        self.dropdown_regex = re.compile('^\D*$')
+        self.docs = os.path.join(os.path.expanduser('~'), 'Documents')
+        bcomp_working_d = 'bcompiler'
+        self.path = os.path.join(self.docs, bcomp_working_d)
+        self.source_path = os.path.join(self.path, 'source')
+        self.output_path = os.path.join(self.path, 'output')
+        self.returns_path = os.path.join(self.source_path, 'returns')
+        self.source_excel = os.path.join(self.returns_path, 'DVSA IT Sourcing _Q2_Return v1.1.xlsx')
+        self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
+        self.dm = Datamap(type='returns-to-master', source_file=self.datamap_returns_to_master)
+
+    def test_parse_source_excel_file(self):
+        parsed_data = parse_source_cells(self.source_excel, self.datamap_returns_to_master)
+        self.assertEqual('Project/Programme Name', parsed_data[0]['gmpp_key'])
+        self.assertEqual('DVSA IT Sourcing', parsed_data[0]['gmpp_key_value'])
+
+
+@unittest.skip("Skipping all Datamap tests for now")
 class TestDatamapFunctionality(unittest.TestCase):
     def setUp(self):
         self.cell_regex = re.compile('[A-Z]+[0-9]+')

@@ -90,6 +90,11 @@ class TestCompilationFromReturns(unittest.TestCase):
         self.assertEqual('Project/Programme Name', parsed_data[0]['gmpp_key'])
         self.assertEqual('DVSA IT Sourcing', parsed_data[0]['gmpp_key_value'])
 
+    def test_no_none_values_in_final_parsed_data(self):
+        parsed_data = parse_source_cells(self.source_excel, self.datamap_returns_to_master)
+        self.assertEqual('', parsed_data[2]['gmpp_key_value'])
+
+
     def test_run_compilation_run(self):
         pass
 

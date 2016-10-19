@@ -33,7 +33,7 @@ def parse_source_cells(source_file, datamap_source_file):
         if item.sheet is not None:
             ws = wb[item.sheet]
             if item.cellref is not None:
-                destination_kv = dict(gmpp_key=item.cellname, gmpp_key_value=str(ws[item.cellref].value).rstrip())
+                destination_kv = dict(gmpp_key=item.cellname, gmpp_key_value=ws[item.cellref].value)
                 ls_of_dataline_dicts.append(destination_kv)
     return ls_of_dataline_dicts
 
@@ -48,7 +48,7 @@ def write_excel(source_file, count, workbook):
     # give it a title
     ws.title = "Constructed BICC Data Master"
 
-    out_map = parse_source_cells(source_file)
+    out_map = parse_source_cells(source_file, DATAMAP_RETURN_TO_MASTER)
     if count == 1:
         i = 1
         for d in out_map:
@@ -80,5 +80,5 @@ def run():
         cq = get_current_quarter(file)
         if cq is not None:
             break
-    OUTPUT_FILE = '{}/output/compiled_master_{}_{}.xlsx'.format(OUTPUT_DIR, today, cq)
+    OUTPUT_FILE = '{}compiled_master_{}_{}.xlsx'.format(OUTPUT_DIR, today, cq)
     workbook.save(OUTPUT_FILE)

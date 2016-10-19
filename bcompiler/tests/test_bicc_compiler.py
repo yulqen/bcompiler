@@ -1,4 +1,5 @@
 import csv
+import fnmatch
 import os
 import unittest
 
@@ -6,6 +7,7 @@ import re
 from bcompiler.bcompiler import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
 from bcompiler.utils import VALIDATION_REFERENCES, SHEETS
 from bcompiler.compile import parse_source_cells
+from bcompiler.compile import run as compile_run
 from bcompiler.datamap import Datamap, DatamapLine
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER
 
@@ -120,6 +122,10 @@ class TestCompilationFromReturns(unittest.TestCase):
         parsed_data = parse_source_cells(self.source_excel, self.datamap_returns_to_master)
         self.assertEqual('Project/Programme Name', parsed_data[0]['gmpp_key'])
         self.assertEqual('DVSA IT Sourcing', parsed_data[0]['gmpp_key_value'])
+
+    def test_run_compilation_run(self):
+        pass
+
 
 
 @unittest.skip("Skipping all Datamap tests for now")

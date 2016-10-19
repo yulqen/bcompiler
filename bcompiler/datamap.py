@@ -32,6 +32,7 @@ class Datamap(object):
     """
 
     def __init__(self, type=None, source_file=None):
+        # TODO 'type' param is redundant at the moment
         self.type = type
         self.source_file = source_file
         self.is_cleaned = False
@@ -86,7 +87,6 @@ class Datamap(object):
                     dml.cellname = dml_data[0]
                     self.dml_single_item_lines.append(dml)
                     self.data.append(dml)
-
             self.is_cleaned = True
 
     @property

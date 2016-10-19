@@ -33,7 +33,10 @@ def parse_source_cells(source_file, datamap_source_file):
         if item.sheet is not None:
             ws = wb[item.sheet]
             if item.cellref is not None:
-                destination_kv = dict(gmpp_key=item.cellname, gmpp_key_value=ws[item.cellref].value)
+                v = ws[item.cellref].value
+                if type(v) == str:
+                    v = v.rstrip()
+                destination_kv = dict(gmpp_key=item.cellname, gmpp_key_value=v)
                 ls_of_dataline_dicts.append(destination_kv)
     return ls_of_dataline_dicts
 

@@ -1,5 +1,4 @@
 import csv
-import fnmatch
 import os
 import unittest
 
@@ -7,7 +6,6 @@ import re
 from bcompiler.bcompiler import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
 from bcompiler.utils import VALIDATION_REFERENCES, SHEETS
 from bcompiler.compile import parse_source_cells, get_current_quarter
-from bcompiler.compile import run as compile_run
 from bcompiler.datamap import Datamap, DatamapLine
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER
 
@@ -38,7 +36,6 @@ class TestMasterFunctions(unittest.TestCase):
         with open(self.transposed_master, 'r') as f:
             f_line = f.readline(len_test_st)
             self.assertEqual(f_line, test_st)
-
 
     def test_for_data_migrated_to_blank_form(self):
         selected_data = {}
@@ -89,11 +86,6 @@ class TestCompilationFromReturns(unittest.TestCase):
         parsed_data = parse_source_cells(self.source_excel, self.datamap_returns_to_master)
         self.assertEqual('Project/Programme Name', parsed_data[0]['gmpp_key'])
         self.assertEqual('DVSA IT Sourcing', parsed_data[0]['gmpp_key_value'])
-
-    def test_no_none_values_in_final_parsed_data(self):
-        parsed_data = parse_source_cells(self.source_excel, self.datamap_returns_to_master)
-        self.assertEqual('', parsed_data[2]['gmpp_key_value'])
-
 
     def test_run_compilation_run(self):
         pass

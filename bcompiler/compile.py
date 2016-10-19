@@ -4,8 +4,9 @@ import os
 import re
 from datetime import date
 
-from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, SHEETS
+from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, SHEETS, OUTPUT_DIR
 from bcompiler.datamap import Datamap
+from bcompiler.utils import RETURNS_DIR
 from openpyxl import load_workbook, Workbook
 
 cell_regex = re.compile('[A-Z]+[0-9]+')
@@ -17,8 +18,8 @@ logger = logging.getLogger('bcompiler')
 DATA_MAP_FILE = DATAMAP_RETURN_TO_MASTER
 
 
-def get_current_quarter(source_file, path):
-    wb = load_workbook(path + "/source/returns/" + source_file, read_only=True)
+def get_current_quarter(source_file):
+    wb = load_workbook(RETURNS_DIR + source_file, read_only=True)
     ws = wb['Summary']
     q = ws['G3'].value
     return q
@@ -69,22 +70,15 @@ def write_excel(source_file, count, workbook):
 
 def run():
     workbook = Workbook()
-
-    docs = os.path.join(os.path.expanduser('~'), 'Documents')
-    try:
-        bcomp_working_d = 'bcompiler'
-    except FileNotFoundError:
-        print("You need to run with --create-wd to create the working directory")
-    root_path = os.path.join(docs, bcomp_working_d)
     count = 1
-    for file in os.listdir(os.path.join(root_path, 'source/returns')):
+    for file in os.listdir(RETURNS_DIR):
         if fnmatch.fnmatch(file, '*.xlsx'):
             print("Processing {}".format(file))
-            write_excel((root_path + '/source/returns/' + file), count=count, workbook=workbook)
+            write_excel((RETURNS_DIR + file), count=count, workbook=workbook)
             count += 1
-    for file in os.listdir(os.path.join(root_path, 'source/returns')):
-        cq = get_current_quarter(file, root_path)
+    for file in os.listdir(RETURNS_DIR):
+        cq = get_current_quarter(file)
         if cq is not None:
             break
-    OUTPUT_FILE = '{}/output/compiled_master_{}_{}.xlsx'.format(root_path, today, cq)
+    OUTPUT_FILE = '{}/output/compiled_master_{}_{}.xlsx'.format(OUTPUT_DIR, today, cq)
     workbook.save(OUTPUT_FILE)

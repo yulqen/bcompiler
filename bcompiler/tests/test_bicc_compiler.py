@@ -6,13 +6,12 @@ import unittest
 import re
 from bcompiler.bcompiler import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
 from bcompiler.utils import VALIDATION_REFERENCES, SHEETS
-from bcompiler.compile import parse_source_cells
+from bcompiler.compile import parse_source_cells, get_current_quarter
 from bcompiler.compile import run as compile_run
 from bcompiler.datamap import Datamap, DatamapLine
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER
 
 
-@unittest.skip("Skipping all master tests for now")
 class TestMasterFunctions(unittest.TestCase):
     def setUp(self):
         self.docs = os.path.join(os.path.expanduser('~'), 'Documents')
@@ -25,19 +24,6 @@ class TestMasterFunctions(unittest.TestCase):
         self.master = os.path.join(self.source_path, 'master.csv')
         self.transposed_master = os.path.join(self.source_path, 'master_transposed.csv')
         self.example_return = os.path.join(self.source_path, 'returns/Q2 16-17 BICC SAR H - Final.xlsx')
-
-    #    def test_presence_working_directory_location(self):
-    #        # let's say we'll create a new bcomipler directory in the user space
-    #        # inside this directory will be a source and an output directory
-    #        # which is where our key files will go
-    #        # source/master.csv
-    #        # source/bicc_template.xlsx
-    #        # source/datamap
-    #        # output/West Midlands Franchise Competition.xlsx
-    #        create_working_directory()
-    #        self.assertTrue(os.path.exists(self.path))
-    #        self.assertTrue(os.path.exists(self.source_path))
-    #        self.assertTrue(os.path.exists(self.output_path))
 
     def test_presence_base_master_csv(self):
         self.assertTrue(os.path.exists(self.master))
@@ -53,24 +39,6 @@ class TestMasterFunctions(unittest.TestCase):
             f_line = f.readline(len_test_st)
             self.assertEqual(f_line, test_st)
 
-    def test_presence_datamap(self):
-        self.assertTrue(os.path.exists(self.datamap_master_to_returns))
-
-    def test_clean_datamap(self):
-        dirty_text = "Project/Programme Name,Summary,B5,\n" \
-                     "Project/Programme Name,Classification,SRO Sign-Off,FD Sign-Off\n"
-        clean_text = "Project/Programme Name,Summary,B5,\n" \
-                     "Project/Programme Name,Classification,SRO Sign-Off,FD Sign-Off,\n"
-        tmp_dirty = open('/tmp/dirty_temp', mode='w+', encoding='utf-8')
-        tmp_dirty.write(dirty_text)
-        tmp_dirty.close()
-        tmp_clean = open('/tmp/clean_temp', mode='w+', encoding='utf-8')
-        tmp_clean.write(clean_text)
-        cmdm = clean_datamap('/tmp/dirty_temp')
-        self.assertEqual(cmdm.read(), tmp_clean.read())
-        tmp_clean.close()
-        os.unlink('/tmp/dirty_temp')
-        os.unlink('/tmp/clean_temp')
 
     def test_for_data_migrated_to_blank_form(self):
         selected_data = {}
@@ -83,16 +51,14 @@ class TestMasterFunctions(unittest.TestCase):
         # pass for now
         pass
 
-    @unittest.skip("Skipping tests that reference old datamap file")
     def test_parse_returned_form(self):
         return_f = self.example_return
-        data = parse_source_cells(return_f)
+        data = parse_source_cells(return_f, self.datamap_master_to_returns)
         self.assertEqual(data[0]['gmpp_key'], 'Project/Programme Name')
 
-    @unittest.skip("Skipping tests that reference old datamap file")
     def test_dropdown_not_passing_to_master_bug(self):
         return_f = self.example_return
-        data = parse_source_cells(return_f)
+        data = parse_source_cells(return_f, self.datamap_master_to_returns)
         example_validated_cell = "IO1 - Monetised?"
         matches = [x for x in data if x['gmpp_key'] == example_validated_cell]
         self.assertEqual(matches[0]['gmpp_key'], example_validated_cell)
@@ -114,7 +80,8 @@ class TestCompilationFromReturns(unittest.TestCase):
         self.source_path = os.path.join(self.path, 'source')
         self.output_path = os.path.join(self.path, 'output')
         self.returns_path = os.path.join(self.source_path, 'returns')
-        self.source_excel = os.path.join(self.returns_path, 'DVSA IT Sourcing _Q2_Return v1.1.xlsx')
+        self.source_file_name = 'DVSA IT Sourcing _Q2_Return v1.1.xlsx'
+        self.source_excel = os.path.join(self.returns_path, self.source_file_name)
         self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
         self.dm = Datamap(type='returns-to-master', source_file=self.datamap_returns_to_master)
 
@@ -126,9 +93,10 @@ class TestCompilationFromReturns(unittest.TestCase):
     def test_run_compilation_run(self):
         pass
 
+    def test_get_quarter(self):
+        self.assertEqual(get_current_quarter(self.source_file_name), 'Q1 Apr - Jun')
 
 
-@unittest.skip("Skipping all Datamap tests for now")
 class TestDatamapFunctionality(unittest.TestCase):
     def setUp(self):
         self.cell_regex = re.compile('[A-Z]+[0-9]+')

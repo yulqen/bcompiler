@@ -16,12 +16,15 @@ def working_directory(dir_type=None):
         return root_path + "/source/"
     elif dir_type == 'output':
         return root_path + "/output/"
+    elif dir_type == 'returns':
+        return root_path + "/source/returns/"
     else:
         return
 
 
 SOURCE_DIR = working_directory('source')
 OUTPUT_DIR = working_directory('output')
+RETURNS_DIR = working_directory('returns')
 DATAMAP_RETURN_TO_MASTER = SOURCE_DIR + 'datamap-returns-to-master'
 DATAMAP_MASTER_TO_RETURN = SOURCE_DIR + 'datamap-master-to-returns'
 CLEANED_DATAMAP = SOURCE_DIR + 'cleaned_datamap'

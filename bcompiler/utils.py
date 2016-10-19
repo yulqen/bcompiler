@@ -65,3 +65,5 @@ VALIDATION_REFERENCES = {
     'Programme': '"=\'Dropdown List\'!$AI7:$AI$2"',
     'Other': '"=\'Dropdown List\'!$AJ19:$AJ$2"'
 }
+SHEETS = ['Summary', 'Finance & Benefits', 'Resources', 'Approval & Project milestones',
+          'Assurance planning']

@@ -64,7 +64,6 @@ def get_parser():
 
 
 def clean_datamap(dm_file):
-    logger.info("Cleaning {}.".format(dm_file))
     cleaned_datamap_file = CLEANED_DATAMAP
     try:
         os.remove(cleaned_datamap_file)
@@ -103,14 +102,13 @@ def create_datamap_n_tuples():
                 try:
                     datalines.append(DataMapLine(key=line[0], value=line[1], cellref=line[2], dropdown=None))
                 except IndexError as e:
-                    print("Getting {} for {}".format(e, line))
-
+                    # print("Getting {} for {}".format(e, line))
                     pass
             else:
                 try:
                     datalines.append(DataMapLine._make(line))
                 except TypeError as e:
-                    print("Getting this error {} - dm: {}".format(e, line))
+                    # print("Getting this error {} - dm: {}".format(e, line))
                     pass
     return datalines
 
@@ -334,7 +332,7 @@ def get_dropdown_data(header=None):
     if header:
         h = [h for h in dropdown_data if header in h[0]]
         h = tuple(h[0])
-        print("Getting {}".format(h))
+        # print("Getting {}".format(h))
         return h
     else:
         return dropdown_data

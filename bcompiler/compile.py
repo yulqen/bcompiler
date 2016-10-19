@@ -4,7 +4,7 @@ import os
 import re
 from datetime import date
 
-from bcompiler.utils import DATAMAP_RETURN_TO_MASTER
+from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, SHEETS
 from openpyxl import load_workbook, Workbook
 
 cell_regex = re.compile('[A-Z]+[0-9]+')
@@ -76,8 +76,7 @@ def parse_source_cells(source_file):
             # split on , allowing us to access useful data from data map file
             data_map_line = line.split(',')
             # if the second word in each MAP line is a named sheet from the template file, we're interested
-            if data_map_line[1] in ['Summary', 'Finance & Benefits', 'Resources', 'Approval & Project milestones',
-                                    'Assurance planning']:
+            if data_map_line[1] in SHEETS:
                 # the end item in the list is a newline - get rid of that
                 del data_map_line[-1]
                 # the worksheet in the source Excel file needs to be accessible

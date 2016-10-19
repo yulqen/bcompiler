@@ -413,7 +413,7 @@ def main():
         # THIS NEEDS TO BE SORTED OUT. We need to be able to clean based on the task (RETURN -> MASTER; MASTER -> RETURN)
         # DO WE NEED THIS FUNCTION AT ALL?
         clean_datamap(DATAMAP_RETURN_TO_MASTER)
-        clean_datamap(DATAMAP_MASTER_TO_RETURN)
+        # clean_datamap(DATAMAP_MASTER_TO_RETURN)
         print("datamap cleaned")
         return
     if args['parse']:
@@ -441,6 +441,7 @@ def main():
         else:
             return
     if args['compile']:
+        clean_datamap(DATAMAP_RETURN_TO_MASTER)
         compile_returns.run()
         return
 

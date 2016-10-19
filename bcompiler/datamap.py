@@ -1,6 +1,9 @@
 # datamap classes
 
 class DatamapLine(object):
+    """
+    The object containing the data with the Datamap.
+    """
 
     def __init__(self):
         self.cellname = None

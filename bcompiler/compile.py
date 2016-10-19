@@ -16,43 +16,11 @@ logger = logging.getLogger('bcompiler')
 DATA_MAP_FILE = DATAMAP_RETURN_TO_MASTER
 
 
-def get_sheet_names(source_file):
-    wb = load_workbook(source_file, read_only=True)
-    return wb.get_sheet_names()
-
-
-def get_sheet_data(source_file):
-    wb = load_workbook(source_file, read_only=True)
-    ws = wb['Finance & Benefits']
-
-    for row in ws.rows:
-        for cell in row:
-            if cell.value is not None:
-                print(cell.value)
-
-
 def get_current_quarter(source_file, path):
     wb = load_workbook(path + "/source/returns/" + source_file, read_only=True)
     ws = wb['Summary']
     q = ws['G3'].value
     return q
-
-
-def get_project_name(source_file):
-    wb = load_workbook(source_file, read_only=True)
-    ws = wb['Summary']
-    cn = ws['C10'].value
-    print(cn)
-
-
-def parse_data_file():
-    with open(DATA_MAP_FILE, 'r') as f:
-        data = f.readlines()
-
-        for line in data:
-            words = line.split(',')
-            print(words)
-
 
 def parse_source_cells(source_file):
     """

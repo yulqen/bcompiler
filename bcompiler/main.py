@@ -486,6 +486,7 @@ def main():
         else:
             return
     if args['compile']:
+        clean_datamap(DATAMAP_RETURN_TO_MASTER)
         compile_returns.run()
 
 

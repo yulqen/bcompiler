@@ -1,14 +1,16 @@
 # datamap classes
 
 class DatamapLine(object):
-    sheets = ['Summary', 'Finance & Benefits', 'Resources', 'Approval & Project milestones',
-              'Assurance planning']
 
     def __init__(self):
         self.cellname = None
         self.sheet = None
         self.cellref = None
         self.dropdown_txt = None
+
+    def pretty_print(self):
+        return ("Name: {} | Sheet: {} | Cellref: {} | Dropdown: {}".format(self.cellname, self.sheet, self.cellref,
+                                                                           self.dropdown_txt))
 
 
 class Datamap(object):
@@ -32,7 +34,7 @@ class Datamap(object):
         self.is_cleaned = False
         self.dml_with_verification = []
         self.dml_with_no_verification = []
-        self.dml_non_transferring_value_lines = []
+        self.dml_no_regex = []
         self.dml_single_item_lines = []
         self._clean()
 
@@ -69,7 +71,7 @@ class Datamap(object):
                     dml = DatamapLine()
                     dml.cellname = dml_data[0]
                     dml.sheet = dml_data[1]
-                    self.dml_non_transferring_value_lines.append(dml)
+                    self.dml_no_regex.append(dml)
 
                 if len(dml_data) == 1:
                     # only one item in the line
@@ -101,7 +103,7 @@ class Datamap(object):
         Count of the number of datamap non-transferring lines in the datamap.
         :return:
         """
-        return len(self.dml_non_transferring_value_lines)
+        return len(self.dml_no_regex)
 
     @property
     def single_item_lines(self):

@@ -2,8 +2,6 @@ import csv
 import os
 import unittest
 
-import sys
-
 import re
 from bcompiler.bcompiler import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
 from bcompiler.utils import VALIDATION_REFERENCES, SHEETS
@@ -138,7 +136,7 @@ class TestDatamapFunctionality(unittest.TestCase):
 
     def test_cells_that_will_not_migrate(self):
         # these are DatamapLine objects that have 2 attributes, the last of which is a sheet ref
-        for item in self.dm.dml_non_transferring_value_lines:
+        for item in self.dm.dml_no_regex:
             self.assertTrue(item.sheet in SHEETS)
 
     def test_single_item_lines(self):
@@ -150,9 +148,14 @@ class TestDatamapFunctionality(unittest.TestCase):
     def test_datamap_is_cleaned_attr(self):
         self.assertTrue(self.dm.is_cleaned)
 
-    def test_dataline_object(self):
+    def test_pretty_dataline_print(self):
         dml = DatamapLine()
-        pass
+        dml.cellname = 'Test cellname'
+        dml.sheet = 'Summary'
+        dml.cellref = 'C12'
+        dml.dropdown_txt = 'Finance Figures'
+        self.assertEqual(dml.pretty_print(),
+                         "Name: Test cellname | Sheet: Summary | Cellref: C12 | Dropdown: Finance Figures")
 
 
 if __name__ == "__main__":

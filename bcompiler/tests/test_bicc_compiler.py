@@ -116,29 +116,29 @@ class TestDatamapFunctionality(unittest.TestCase):
         # these are DatamapLine objects that have 4 attributes, the last of which is verification
         # dropdown text
         # the last element in each should be a dropdown text string
-        for item in self.dm.dml_with_verification:
+        for item in self.dm._dml_cname_sheet_cref_ddown:
             self.assertTrue(self.dropdown_regex, item.dropdown_txt)
 
     def test_verified_lines_for_dropdown_text(self):
         # we're expecting the dropdown_txt attr in the DatamapLine object to be what we expect
-        for item in self.dm.dml_with_verification:
+        for item in self.dm._dml_cname_sheet_cref_ddown:
             self.assertTrue(item.dropdown_txt in VALIDATION_REFERENCES.keys())
 
     def test_non_verified_lines(self):
         # these are DatamapLine objects that have 3 attributes, the last of which is a regex
-        for item in self.dm.dml_with_no_verification:
+        for item in self.dm._dml_cname_sheet_cref:
             self.assertTrue(self.cell_regex, item.cellref)
 
     def test_cells_that_will_not_migrate(self):
         # these are DatamapLine objects that have 2 attributes, the last of which is a sheet ref
-        for item in self.dm.dml_no_regex:
+        for item in self.dm._dml_cname_sheet:
             self.assertTrue(item.sheet in SHEETS)
 
     def test_single_item_lines(self):
         # DatamapLines that have a single attribute
-        for item in self.dm.dml_single_item_lines:
+        for item in self.dm._dml_cname:
             # TODO this is fragile - shouldn't be counting lines in this test
-            self.assertEqual(self.dm.single_item_lines, 21)
+            self.assertEqual(self.dm.count_dml_cellname_only, 21)
 
     def test_datamap_is_cleaned_attr(self):
         self.assertTrue(self.dm.is_cleaned)
@@ -162,8 +162,6 @@ class TestGMPPExport(unittest.TestCase):
         self.path = os.path.join(self.docs, bcomp_working_d)
         self.source_path = os.path.join(self.path, 'source')
         self.output_path = os.path.join(self.path, 'output')
-        self.datamap_master_to_returns = os.path.join(self.source_path, 'datamap-master-to-returns')
-        self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
         self.datamap_master_to_gmpp = os.path.join(self.source_path, 'datamap-master-to-gmpp')
         self.master = os.path.join(self.source_path, 'master.csv')
         self.transposed_master = os.path.join(self.source_path, 'master_transposed.csv')
@@ -184,11 +182,11 @@ class TestGMPPExport(unittest.TestCase):
 
     def test_object_attrs(self):
         # there shouldn't be any single item lines in the DatamapGMPP
-        self.assertEqual(self.dm.dml_single_item_lines, [])
+        self.assertEqual(self.dm._dml_cname, [])
         # there shouldn't be any 2 item lines either
-        self.assertEqual(self.dm.dml_no_regex, [])
+        self.assertEqual(self.dm._dml_cname_sheet, [])
         # there should be lots of 3 item lines though!
-        self.assertGreater(len(self.dm.dml_with_no_verification), 0)
+        self.assertGreater(len(self.dm._dml_cname_sheet_cref), 0)
 
 
 if __name__ == "__main__":

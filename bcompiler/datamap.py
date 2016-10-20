@@ -18,7 +18,8 @@ class DatamapLine(object):
                                                                            self.dropdown_txt))
 
     def __repr__(self):
-        return "DatamapLine object keyed on {}".format(self.cellname)
+        return "DatamapLine(cellname={}, sheet={}, cellref={}, dropdowntext={})".format(self.cellname, self.sheet,
+                                                                                        self.cellref, self.dropdown_txt)
 
 
 class Datamap(object):
@@ -41,10 +42,10 @@ class Datamap(object):
         self.type = type
         self.source_file = source_file
         self.is_cleaned = False
-        self.dml_with_verification = []
-        self.dml_with_no_verification = []
-        self.dml_no_regex = []
-        self.dml_single_item_lines = []
+        self._dml_cname_sheet_cref_ddown = []
+        self._dml_cname_sheet_cref = []
+        self._dml_cname_sheet = []
+        self._dml_cname = []
         self.data = []
         self._clean()
 
@@ -67,7 +68,7 @@ class Datamap(object):
                         dml.sheet = dml_data[1]
                         dml.cellref = dml_data[2]
                         dml.dropdown_txt = dml_data[3]
-                        self.dml_with_verification.append(dml)
+                        self._dml_cname_sheet_cref_ddown.append(dml)
                         self.data.append(dml)
 
                     if len(dml_data) == 3:
@@ -76,7 +77,7 @@ class Datamap(object):
                         dml.cellname = dml_data[0]
                         dml.sheet = dml_data[1]
                         dml.cellref = dml_data[2]
-                        self.dml_with_no_verification.append(dml)
+                        self._dml_cname_sheet_cref.append(dml)
                         self.data.append(dml)
 
                     if len(dml_data) == 2:
@@ -84,55 +85,58 @@ class Datamap(object):
                         dml = DatamapLine()
                         dml.cellname = dml_data[0]
                         dml.sheet = dml_data[1]
-                        self.dml_no_regex.append(dml)
+                        self._dml_cname_sheet.append(dml)
                         self.data.append(dml)
 
                     if len(dml_data) == 1:
                         # only one item in the line
                         dml = DatamapLine()
                         dml.cellname = dml_data[0]
-                        self.dml_single_item_lines.append(dml)
+                        self._dml_cname.append(dml)
                         self.data.append(dml)
                 self.is_cleaned = True
         except FileNotFoundError:
             print("There is no applicable datemap file - in this case {}".format(self.source_file))
 
     @property
-    def verified_lines(self):
+    def count_dml_with_dropdown_text(self):
         """
-        Count of the number of datamap verified_lines in the datamap. Four items.
+        Count of the number of datamap count_dml_with_dropdown_text in the datamap. Four items.
         :return:
         """
-        return len(self.dml_with_verification)
+        return len(self._dml_cname_sheet_cref_ddown)
 
     @property
-    def non_verified_lines(self):
+    def count_dml_with_cell_reference_no_dropdown(self):
         """
-        Count of the number of datamap non-verified_lines in the datamap. Three items.
+        Count of the number of datamap non-count_dml_with_dropdown_text in the datamap. Three items.
         :return:
         """
-        return len(self.dml_with_no_verification)
+        return len(self._dml_cname_sheet_cref)
 
     @property
-    def non_tranferring_value_lines(self):
+    def count_dml_sheet_no_cellref(self):
         """
         Count of the number of datamap non-transferring lines in the datamap. Two items.
         :return:
         """
-        return len(self.dml_no_regex)
+        return len(self._dml_cname_sheet)
 
     @property
-    def single_item_lines(self):
+    def count_dml_cellname_only(self):
         """
         Count of the number of datamap non-transferring lines in the datamap. One item.
         :return:
         """
-        return len(self.dml_single_item_lines)
+        return len(self._dml_cname)
+
+    def __repr__(self):
+        return "Datamap(type={}, source_file={}".format(self.type, self.source_file)
 
 
 class DatamapGMPP(Datamap):
     def __init__(self, type='master-to-gmpp', source_file=None):
-        super(DatamapGMPP, self).__init__(type, source_file)
+        Datamap.__init__(self, type, source_file)
 
     def _clean(self):
         """The implementation here is based on testing the datamap as a CSV file, therefore the treatment of commas
@@ -147,9 +151,9 @@ class DatamapGMPP(Datamap):
                     dml.sheet = row[1]
                     dml.cellref = row[2]
                     self.data.append(dml)
-                    self.dml_with_no_verification.append(dml)
+                    self._dml_cname_sheet_cref.append(dml)
                 else:
                     print("You can only have three cells in the GMPP datamap")
 
     def __repr__(self):
-        return "DatamapGMPP {}".format(__name__)
+        return "DatamapGMPP(type={}, source_file={}".format(self.type, self.source_file)

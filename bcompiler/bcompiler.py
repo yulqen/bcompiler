@@ -26,8 +26,10 @@ from collections import namedtuple
 import bcompiler.compile as compile_returns
 
 from bcompiler import __version__
+from bcompiler.datamap import Datamap
 from bcompiler.utils import VALIDATION_REFERENCES
-from bcompiler.utils import SOURCE_DIR, OUTPUT_DIR, DATAMAP_MASTER_TO_RETURN, CLEANED_DATAMAP, working_directory, \
+from bcompiler.utils import SOURCE_DIR, OUTPUT_DIR, DATAMAP_MASTER_TO_RETURN, DATAMAP_MASTER_TO_GMPP, CLEANED_DATAMAP, \
+    working_directory, \
     DATAMAP_RETURN_TO_MASTER
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
@@ -194,6 +196,15 @@ def project_data_line():
                 pass
             p_dict[key] = row
     return p_dict
+
+
+def parse_master_to_gmpp_datamap_csv():
+    """
+    Parse the datamap using csv.Reader
+    :return: list of dicts, each of which is a line in the datamap
+    """
+    with open(DATAMAP_MASTER_TO_GMPP, 'r', encoding='utf-8') as sf:
+        return list([line for line in csv.DictReader(sf)])
 
 
 def populate_blank_bicc_form(source_master_file, proj_num):

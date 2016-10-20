@@ -10,6 +10,7 @@ from bcompiler.datamap import Datamap, DatamapLine
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER
 
 
+@unittest.skip("only running GMPP tests for now")
 class TestMasterFunctions(unittest.TestCase):
     def setUp(self):
         self.docs = os.path.join(os.path.expanduser('~'), 'Documents')
@@ -67,6 +68,7 @@ class TestMasterFunctions(unittest.TestCase):
         self.assertEqual(datamap_data[0][0], 'Project/Programme Name')
 
 
+@unittest.skip("only running GMPP tests for now")
 class TestCompilationFromReturns(unittest.TestCase):
     def setUp(self):
         self.cell_regex = re.compile('[A-Z]+[0-9]+')
@@ -94,6 +96,7 @@ class TestCompilationFromReturns(unittest.TestCase):
         self.assertEqual(get_current_quarter(self.source_file_name), 'Q1 Apr - Jun')
 
 
+@unittest.skip("only running GMPP tests for now")
 class TestDatamapFunctionality(unittest.TestCase):
     def setUp(self):
         self.cell_regex = re.compile('[A-Z]+[0-9]+')
@@ -148,6 +151,39 @@ class TestDatamapFunctionality(unittest.TestCase):
         dml.dropdown_txt = 'Finance Figures'
         self.assertEqual(dml.pretty_print(),
                          "Name: Test cellname | Sheet: Summary | Cellref: C12 | Dropdown: Finance Figures")
+
+
+class TestGMPPExport(unittest.TestCase):
+    def setUp(self):
+        self.cell_regex = re.compile('[A-Z]+[0-9]+')
+        self.dropdown_regex = re.compile('^\D*$')
+        self.docs = os.path.join(os.path.expanduser('~'), 'Documents')
+        bcomp_working_d = 'bcompiler'
+        self.path = os.path.join(self.docs, bcomp_working_d)
+        self.source_path = os.path.join(self.path, 'source')
+        self.output_path = os.path.join(self.path, 'output')
+        self.datamap_master_to_returns = os.path.join(self.source_path, 'datamap-master-to-returns')
+        self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
+        self.datamap_master_to_gmpp = os.path.join(self.source_path, 'datamap-master-to-gmpp')
+        self.master = os.path.join(self.source_path, 'master.csv')
+        self.transposed_master = os.path.join(self.source_path, 'master_transposed.csv')
+        self.dm = Datamap(type='master-to-gmpp', source_file=self.datamap_master_to_gmpp)
+
+    def test_there_is_the_correct_datamap_source_file(self):
+        self.assertTrue(os.path.exists(self.datamap_master_to_gmpp))
+
+    def test_parse_csv_gmpp_datamap(self):
+        with open(self.datamap_master_to_gmpp, 'r', encoding='utf-8') as sf:
+            line_items = list([line for line in csv.DictReader(sf)])
+            print(line_items)
+
+    def test_create_gmpp_datamap_object(self):
+        dm = self.dm
+        self.assertEqual(dm.data[1].cellname, 'Project/Programme Name')
+        self.assertEqual(dm.data[1].sheet, 'GMPP Return')
+        self.assertEqual(dm.data[1].cellref, 'C25')
+        self.assertEqual(dm.data[1].dropdown_txt, None)
+
 
 
 if __name__ == "__main__":

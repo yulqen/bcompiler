@@ -27,6 +27,7 @@ OUTPUT_DIR = working_directory('output')
 RETURNS_DIR = working_directory('returns')
 DATAMAP_RETURN_TO_MASTER = SOURCE_DIR + 'datamap-returns-to-master'
 DATAMAP_MASTER_TO_RETURN = SOURCE_DIR + 'datamap-master-to-returns'
+DATAMAP_MASTER_TO_GMPP = SOURCE_DIR + 'datamap-master-to-gmpp'
 CLEANED_DATAMAP = SOURCE_DIR + 'cleaned_datamap'
 MASTER = SOURCE_DIR + 'master.csv'
 TEMPLATE = SOURCE_DIR + 'bicc_template.csv'

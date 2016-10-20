@@ -46,48 +46,51 @@ class Datamap(object):
     def _clean(self):
         """First thing that happens on initialisation is that the datamap gets a clean. This means
         that missing trailing commas as included."""
-        with open(self.source_file, 'r', encoding='utf-8') as sf:
-            for line in sf.readlines():
-                newline = line.rstrip()
-                if ',' in newline[-1]:
-                    newline = newline[:-1]
-                dml_data = newline.split(',')
-                # we're expecting three values for non-dropdown cells, four otherwise
-                # if we get less than that, we have dead data
-                if len(dml_data) == 4:
-                    # we've got a verified/dropdown cell
-                    dml = DatamapLine()
-                    dml.cellname = dml_data[0]
-                    dml.sheet = dml_data[1]
-                    dml.cellref = dml_data[2]
-                    dml.dropdown_txt = dml_data[3]
-                    self.dml_with_verification.append(dml)
-                    self.data.append(dml)
+        try:
+            with open(self.source_file, 'r', encoding='utf-8') as sf:
+                for line in sf.readlines():
+                    newline = line.rstrip()
+                    if ',' in newline[-1]:
+                        newline = newline[:-1]
+                    dml_data = newline.split(',')
+                    # we're expecting three values for non-dropdown cells, four otherwise
+                    # if we get less than that, we have dead data
+                    if len(dml_data) == 4:
+                        # we've got a verified/dropdown cell
+                        dml = DatamapLine()
+                        dml.cellname = dml_data[0]
+                        dml.sheet = dml_data[1]
+                        dml.cellref = dml_data[2]
+                        dml.dropdown_txt = dml_data[3]
+                        self.dml_with_verification.append(dml)
+                        self.data.append(dml)
 
-                if len(dml_data) == 3:
-                    # MOST LIKELY we've got a normal cell reference - but we test for a regex at end
-                    dml = DatamapLine()
-                    dml.cellname = dml_data[0]
-                    dml.sheet = dml_data[1]
-                    dml.cellref = dml_data[2]
-                    self.dml_with_no_verification.append(dml)
-                    self.data.append(dml)
+                    if len(dml_data) == 3:
+                        # MOST LIKELY we've got a normal cell reference - but we test for a regex at end
+                        dml = DatamapLine()
+                        dml.cellname = dml_data[0]
+                        dml.sheet = dml_data[1]
+                        dml.cellref = dml_data[2]
+                        self.dml_with_no_verification.append(dml)
+                        self.data.append(dml)
 
-                if len(dml_data) == 2:
-                    # only two items in the line
-                    dml = DatamapLine()
-                    dml.cellname = dml_data[0]
-                    dml.sheet = dml_data[1]
-                    self.dml_no_regex.append(dml)
-                    self.data.append(dml)
+                    if len(dml_data) == 2:
+                        # only two items in the line
+                        dml = DatamapLine()
+                        dml.cellname = dml_data[0]
+                        dml.sheet = dml_data[1]
+                        self.dml_no_regex.append(dml)
+                        self.data.append(dml)
 
-                if len(dml_data) == 1:
-                    # only one item in the line
-                    dml = DatamapLine()
-                    dml.cellname = dml_data[0]
-                    self.dml_single_item_lines.append(dml)
-                    self.data.append(dml)
-            self.is_cleaned = True
+                    if len(dml_data) == 1:
+                        # only one item in the line
+                        dml = DatamapLine()
+                        dml.cellname = dml_data[0]
+                        self.dml_single_item_lines.append(dml)
+                        self.data.append(dml)
+                self.is_cleaned = True
+        except FileNotFoundError:
+            print("There is no applicable datemap file - in this case {}".format(self.source_file))
 
     @property
     def verified_lines(self):

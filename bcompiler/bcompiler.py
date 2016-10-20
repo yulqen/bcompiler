@@ -198,15 +198,6 @@ def project_data_line():
     return p_dict
 
 
-def parse_master_to_gmpp_datamap_csv():
-    """
-    Parse the datamap using csv.Reader
-    :return: list of dicts, each of which is a line in the datamap
-    """
-    with open(DATAMAP_MASTER_TO_GMPP, 'r', encoding='utf-8') as sf:
-        return list([line for line in csv.DictReader(sf)])
-
-
 def populate_blank_bicc_form(source_master_file, proj_num):
     datamap = get_datamap()
     proj_data = project_data_line()

@@ -6,7 +6,7 @@ import re
 from bcompiler.bcompiler import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
 from bcompiler.utils import VALIDATION_REFERENCES, SHEETS
 from bcompiler.compile import parse_source_cells, get_current_quarter
-from bcompiler.datamap import Datamap, DatamapLine
+from bcompiler.datamap import Datamap, DatamapLine, DatamapGMPP
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER
 
 
@@ -167,23 +167,28 @@ class TestGMPPExport(unittest.TestCase):
         self.datamap_master_to_gmpp = os.path.join(self.source_path, 'datamap-master-to-gmpp')
         self.master = os.path.join(self.source_path, 'master.csv')
         self.transposed_master = os.path.join(self.source_path, 'master_transposed.csv')
-        self.dm = Datamap(type='master-to-gmpp', source_file=self.datamap_master_to_gmpp)
+        self.dm = DatamapGMPP(type='master-to-gmpp', source_file=self.datamap_master_to_gmpp)
 
     def test_there_is_the_correct_datamap_source_file(self):
         self.assertTrue(os.path.exists(self.datamap_master_to_gmpp))
 
-    def test_parse_csv_gmpp_datamap(self):
-        with open(self.datamap_master_to_gmpp, 'r', encoding='utf-8') as sf:
-            line_items = list([line for line in csv.DictReader(sf)])
-            print(line_items)
-
     def test_create_gmpp_datamap_object(self):
-        dm = self.dm
-        self.assertEqual(dm.data[1].cellname, 'Project/Programme Name')
-        self.assertEqual(dm.data[1].sheet, 'GMPP Return')
-        self.assertEqual(dm.data[1].cellref, 'C25')
-        self.assertEqual(dm.data[1].dropdown_txt, None)
+        self.assertEqual(self.dm.data[0].cellname, 'Project/Programme Name')
+        self.assertEqual(self.dm.data[0].sheet, 'GMPP Return')
+        self.assertEqual(self.dm.data[0].cellref, 'C25')
+        self.assertEqual(self.dm.data[0].dropdown_txt, None)
+        self.assertEqual(self.dm.data[1].cellname, 'SRO Sign-Off')
+        self.assertEqual(self.dm.data[1].sheet, 'GMPP Return')
+        self.assertEqual(self.dm.data[1].cellref, 'C5')
+        self.assertEqual(self.dm.data[1].dropdown_txt, None)
 
+    def test_object_attrs(self):
+        # there shouldn't be any single item lines in the DatamapGMPP
+        self.assertEqual(self.dm.dml_single_item_lines, [])
+        # there shouldn't be any 2 item lines either
+        self.assertEqual(self.dm.dml_no_regex, [])
+        # there should be lots of 3 item lines though!
+        self.assertGreater(len(self.dm.dml_with_no_verification), 0)
 
 
 if __name__ == "__main__":

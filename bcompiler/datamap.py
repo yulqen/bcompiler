@@ -1,4 +1,6 @@
 # datamap classes
+import csv
+
 
 class DatamapLine(object):
     """
@@ -14,6 +16,9 @@ class DatamapLine(object):
     def pretty_print(self):
         return ("Name: {} | Sheet: {} | Cellref: {} | Dropdown: {}".format(self.cellname, self.sheet, self.cellref,
                                                                            self.dropdown_txt))
+
+    def __repr__(self):
+        return "DatamapLine object keyed on {}".format(self.cellname)
 
 
 class Datamap(object):
@@ -95,7 +100,7 @@ class Datamap(object):
     @property
     def verified_lines(self):
         """
-        Count of the number of datamap verified_lines in the datamap.
+        Count of the number of datamap verified_lines in the datamap. Four items.
         :return:
         """
         return len(self.dml_with_verification)
@@ -103,7 +108,7 @@ class Datamap(object):
     @property
     def non_verified_lines(self):
         """
-        Count of the number of datamap non-verified_lines in the datamap.
+        Count of the number of datamap non-verified_lines in the datamap. Three items.
         :return:
         """
         return len(self.dml_with_no_verification)
@@ -111,7 +116,7 @@ class Datamap(object):
     @property
     def non_tranferring_value_lines(self):
         """
-        Count of the number of datamap non-transferring lines in the datamap.
+        Count of the number of datamap non-transferring lines in the datamap. Two items.
         :return:
         """
         return len(self.dml_no_regex)
@@ -119,7 +124,32 @@ class Datamap(object):
     @property
     def single_item_lines(self):
         """
-        Count of the number of datamap non-transferring lines in the datamap.
+        Count of the number of datamap non-transferring lines in the datamap. One item.
         :return:
         """
         return len(self.dml_single_item_lines)
+
+
+class DatamapGMPP(Datamap):
+    def __init__(self, type='master-to-gmpp', source_file=None):
+        super(DatamapGMPP, self).__init__(type, source_file)
+
+    def _clean(self):
+        """The implementation here is based on testing the datamap as a CSV file, therefore the treatment of commas
+        is different. The CSV file from a spreadsheet program does not include a trailing comma, so we have to use a
+        DictReader."""
+        with open(self.source_file, 'r', encoding='utf-8') as sf:
+            sd_data_reader = csv.reader(sf)
+            for row in sd_data_reader:
+                if len(row) == 3:
+                    dml = DatamapLine()
+                    dml.cellname = row[0]
+                    dml.sheet = row[1]
+                    dml.cellref = row[2]
+                    self.data.append(dml)
+                    self.dml_with_no_verification.append(dml)
+                else:
+                    print("You can only have three cells in the GMPP datamap")
+
+    def __repr__(self):
+        return "DatamapGMPP {}".format(__name__)

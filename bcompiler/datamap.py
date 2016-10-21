@@ -50,7 +50,6 @@ class Datamap(object):
     def __init__(self, type: str = None, source_file: Filename = None) -> None:
         # TODO 'type' param is redundant at the moment
         self.type = type
-        """type: Filename"""
         self.source_file = source_file
         self.is_cleaned = False
         self._dml_cname_sheet_cref_ddown = []

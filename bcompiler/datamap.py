@@ -1,6 +1,7 @@
 # datamap classes
 import csv
 
+Filename = str
 
 class DatamapLine(object):
     """
@@ -8,12 +9,21 @@ class DatamapLine(object):
     """
 
     def __init__(self):
+        """
+        :type cellname: str
+        :type sheet: str
+        :type cellref: str
+        :type dropdown_txt: str
+        """
         self.cellname = None
         self.sheet = None
         self.cellref = None
         self.dropdown_txt = None
 
-    def pretty_print(self):
+    def pretty_print(self) -> str:
+        """
+        :return str: a nicely formated but barely useful string of the components of the object
+        """
         return ("Name: {} | Sheet: {} | Cellref: {} | Dropdown: {}".format(self.cellname, self.sheet, self.cellref,
                                                                            self.dropdown_txt))
 
@@ -37,9 +47,10 @@ class Datamap(object):
 
     """
 
-    def __init__(self, type=None, source_file=None):
+    def __init__(self, type: str = None, source_file: Filename = None) -> None:
         # TODO 'type' param is redundant at the moment
         self.type = type
+        """type: Filename"""
         self.source_file = source_file
         self.is_cleaned = False
         self._dml_cname_sheet_cref_ddown = []
@@ -49,7 +60,7 @@ class Datamap(object):
         self.data = []
         self._clean()
 
-    def _clean(self):
+    def _clean(self) -> None:
         """First thing that happens on initialisation is that the datamap gets a clean. This means
         that missing trailing commas as included."""
         try:
@@ -99,7 +110,7 @@ class Datamap(object):
             print("There is no applicable datemap file - in this case {}".format(self.source_file))
 
     @property
-    def count_dml_with_dropdown_text(self):
+    def count_dml_with_dropdown_text(self) -> int:
         """
         Count of the number of datamap count_dml_with_dropdown_text in the datamap. Four items.
         :return:

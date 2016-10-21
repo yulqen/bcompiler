@@ -78,6 +78,7 @@ class Datamap(object):
                     # if we get less than that, we have dead data
                     if len(dml_data) == 4:
                         # we've got a verified/dropdown cell
+                        logger.debug('Line starting "{}" has verification text: "{}"'.format(dml_data[0], dml_data[-1]))
                         dml = DatamapLine()
                         dml.cellname = dml_data[0]
                         dml.sheet = dml_data[1]
@@ -100,6 +101,7 @@ class Datamap(object):
                         dml = DatamapLine()
                         dml.cellname = dml_data[0]
                         dml.sheet = dml_data[1]
+                        logger.warning("Datamap line: {} -- only TWO items. It will not migrate.".format(dml_data[0]))
                         self._dml_cname_sheet.append(dml)
                         self.data.append(dml)
 
@@ -107,6 +109,7 @@ class Datamap(object):
                         # only one item in the line
                         dml = DatamapLine()
                         dml.cellname = dml_data[0]
+                        logger.warning("Datamap line: {} -- only ONE item. It will not migrate.".format(dml_data[0]))
                         self._dml_cname.append(dml)
                         self.data.append(dml)
                 self.is_cleaned = True

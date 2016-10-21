@@ -17,6 +17,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR TH
 import argparse
 import csv
 import logging
+import colorlog
 import os
 import re
 import shutil
@@ -34,17 +35,28 @@ from bcompiler.utils import SOURCE_DIR, OUTPUT_DIR, DATAMAP_MASTER_TO_RETURN, DA
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
-logger = logging.getLogger('bcompiler')
-logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler('/home/lemon/Desktop/bcompiler.log')
-fh.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
-fh.setFormatter(formatter)
-ch.setFormatter(formatter)
-logger.addHandler(fh)
-logger.addHandler(ch)
+logger = colorlog.getLogger('bcompiler')
+logger.setLevel(colorlog.colorlog.logging.DEBUG)
+
+handler = colorlog.StreamHandler()
+handler.setFormatter(colorlog.ColoredFormatter())
+logger.addHandler(handler)
+
+
+
+# Pre-colorlog logger set-up
+
+#logger = logging.getLogger('bcompiler')
+#logger.setLevel(logging.DEBUG)
+#fh = logging.FileHandler('/home/lemon/Desktop/bcompiler.log')
+#fh.setLevel(logging.DEBUG)
+#ch = logging.StreamHandler()
+#ch.setLevel(logging.DEBUG)
+#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+#fh.setFormatter(formatter)
+#ch.setFormatter(formatter)
+#logger.addHandler(fh)
+#logger.addHandler(ch)
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Compile BICC data or prepare Excel BICC return forms.')

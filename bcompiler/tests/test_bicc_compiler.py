@@ -68,7 +68,6 @@ class TestMasterFunctions(unittest.TestCase):
         self.assertEqual(datamap_data[0][0], 'Project/Programme Name')
 
 
-@unittest.skip("only running GMPP tests for now")
 class TestCompilationFromReturns(unittest.TestCase):
     def setUp(self):
         self.cell_regex = re.compile('[A-Z]+[0-9]+')
@@ -187,6 +186,8 @@ class TestDatamapFunctionality(unittest.TestCase):
                                                      'Recurring old costs,' \
                                                      'Whole Life Cost breakdown'.split(',')
         cellname_non_gov = 'Non-Gov both Revenue and Capital'
+
+        rdel_baseline_block = []
 
         l_cell_refs = []
         with open(DATAMAP_RETURN_TO_MASTER, 'r') as f:

@@ -1,5 +1,6 @@
 import fnmatch
 import logging
+import colorlog
 import os
 import re
 from datetime import date
@@ -14,7 +15,7 @@ dropdown_regex = re.compile('^\D*$')
 today = date.today().isoformat()
 Filename = str
 
-logger = logging.getLogger('bcompiler')
+logger = colorlog.getLogger('bcompiler')
 
 DATA_MAP_FILE = DATAMAP_RETURN_TO_MASTER
 
@@ -23,6 +24,7 @@ def get_current_quarter(source_file: Filename) -> str:
     wb = load_workbook(RETURNS_DIR + source_file, read_only=True)
     ws = wb['Summary']
     q = ws['G3'].value
+    logger.info('Getting current Quarter as {}'.format(q))
     return q
 
 

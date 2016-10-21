@@ -1,7 +1,9 @@
 # datamap classes
 import csv
+import colorlog
 
 Filename = str
+logger = colorlog.getLogger('bcompiler')
 
 class DatamapLine(object):
     """
@@ -68,7 +70,10 @@ class Datamap(object):
                     newline = line.rstrip()
                     if ',' in newline[-1]:
                         newline = newline[:-1]
+                    else:
+                        logger.debug('No COMMA at end of line starting "{}..." ending ->"{}"'.format(newline[:15], newline[-7:]))
                     dml_data = newline.split(',')
+
                     # we're expecting three values for non-dropdown cells, four otherwise
                     # if we get less than that, we have dead data
                     if len(dml_data) == 4:

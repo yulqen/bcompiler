@@ -378,11 +378,22 @@ def main():
     check_for_correct_source_files()
     if args['loglevel']:
         log_lev = args['loglevel']
-        logger.setLevel(log_lev)
+        logger.setLevel(logging.DEBUG)
         fh = logging.FileHandler(OUTPUT_DIR + 'bcompiler.log', mode='w')
         fh.setLevel(logging.DEBUG)
         console = logging.StreamHandler()
         console.setLevel(log_lev)
+        formatter = logging.Formatter('%(levelname)s - %(name)s - %(message)s')
+        fh.setFormatter(formatter)
+        console.setFormatter(formatter)
+        logger.addHandler(fh)
+        logger.addHandler(console)
+    else:
+        logger.setLevel(logging.DEBUG)
+        fh = logging.FileHandler(OUTPUT_DIR + 'bcompiler.log', mode='w')
+        fh.setLevel(logging.DEBUG)
+        console = logging.StreamHandler()
+        console.setLevel(logging.INFO)
         formatter = logging.Formatter('%(levelname)s - %(name)s - %(message)s')
         fh.setFormatter(formatter)
         console.setFormatter(formatter)
@@ -426,7 +437,6 @@ def main():
     if args['compile']:
         clean_datamap(DATAMAP_RETURN_TO_MASTER)
         compile_returns.run()
-        return
 
 
 if __name__ == '__main__':

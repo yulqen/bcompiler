@@ -4,7 +4,7 @@ import logging
 #import colorlog
 
 Filename = str
-logger = logging.getLogger('bcompiler')
+logger = logging.getLogger('bcompiler.datamap')
 
 class DatamapLine(object):
     """
@@ -90,6 +90,7 @@ class Datamap(object):
 
                     if len(dml_data) == 3:
                         # MOST LIKELY we've got a normal cell reference - but we test for a regex at end
+                        logger.debug('Line starting "{}" ends in cellref: {}'.format(dml_data[0], dml_data[-1]))
                         dml = DatamapLine()
                         dml.cellname = dml_data[0]
                         dml.sheet = dml_data[1]

@@ -15,7 +15,7 @@ dropdown_regex = re.compile('^\D*$')
 today = date.today().isoformat()
 Filename = str
 
-logger = logging.getLogger('bcompiler')
+logger = logging.getLogger('bcompiler.compiler')
 
 DATA_MAP_FILE = DATAMAP_RETURN_TO_MASTER
 
@@ -39,12 +39,10 @@ def parse_source_cells(source_file: Filename, datamap_source_file: Filename) -> 
                 try:
                     v = ws[item.cellref].value
                 except IndexError as e:
-                    logger.warn("""
-                    Datamap wants sheet:{} cellref:{} but this is
-                            out of range in source file:{}.\n\n This means that
-                            {} will not migrate""".format(item.sheet,
-                                item.cellref, source_file, ws[item.sheet].value))
-                    pass
+                    logger.error("Datamap wants sheet: {}; cellref: {} but this "
+                            "is out of range.\n\tFile: {}".format(item.sheet,
+                                item.cellref, source_file))
+                    v = ""
                 if type(v) == str:
                     v = v.rstrip()
                 destination_kv = dict(gmpp_key=item.cellname, gmpp_key_value=v)
@@ -87,7 +85,7 @@ def run() -> None:
     count = 1
     for file in os.listdir(RETURNS_DIR):
         if fnmatch.fnmatch(file, '*.xlsx'):
-            logger.info("Starting to process {}".format(file))
+            logger.info("Processing {}".format(file))
             write_excel((RETURNS_DIR + file), count=count, workbook=workbook)
             count += 1
     for file in os.listdir(RETURNS_DIR):

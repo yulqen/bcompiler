@@ -1,6 +1,6 @@
 import fnmatch
 import logging
-import colorlog
+#import colorlog
 import os
 import re
 from datetime import date
@@ -15,7 +15,7 @@ dropdown_regex = re.compile('^\D*$')
 today = date.today().isoformat()
 Filename = str
 
-logger = colorlog.getLogger('bcompiler')
+logger = logging.getLogger('bcompiler')
 
 DATA_MAP_FILE = DATAMAP_RETURN_TO_MASTER
 

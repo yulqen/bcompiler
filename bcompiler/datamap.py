@@ -1,9 +1,10 @@
 # datamap classes
 import csv
-import colorlog
+import logging
+#import colorlog
 
 Filename = str
-logger = colorlog.getLogger('bcompiler')
+logger = logging.getLogger('bcompiler')
 
 class DatamapLine(object):
     """

@@ -50,15 +50,6 @@ from openpyxl.worksheet.datavalidation import DataValidation
 
 logger = logging.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler(OUTPUT_DIR + 'bcompiler.log', mode='w')
-fh.setLevel(logging.DEBUG)
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-formatter = logging.Formatter('%(levelname)s - %(name)s - %(message)s')
-fh.setFormatter(formatter)
-console.setFormatter(formatter)
-logger.addHandler(fh)
-logger.addHandler(console)
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Compile BICC data or prepare Excel BICC return forms.')
@@ -73,9 +64,10 @@ def get_parser():
     parser.add_argument('-d', '--create-wd', dest='create-wd', action="store_true",
                         help='create working directory at $HOME/Documents/bcompiler')
     parser.add_argument('-f', '--force-create-wd', dest='f-create-wd', action="store_true", help='remove existing '
-                                                                                                 'working directory and'
-                                                                                                 'create a new one')
+            'working directory and'
+            'create a new one')
     parser.add_argument('--compile', action="store_true", dest='compile', help='compile returns to master')
+    parser.add_argument('-ll', '--loglevel', type=str, choices=['DEBUG','INFO', 'WARNING', 'ERROR', 'CRITICAL'], help='Set the logging level for the console. The log file is set to DEBUG.')
     return parser
 
 
@@ -382,6 +374,19 @@ def main():
     parser = get_parser()
     args = vars(parser.parse_args())
     check_for_correct_source_files()
+    if args['loglevel']:
+        log_lev = args['loglevel']
+        logger.setLevel(log_lev)
+        fh = logging.FileHandler(OUTPUT_DIR + 'bcompiler.log', mode='w')
+        fh.setLevel(logging.DEBUG)
+        console = logging.StreamHandler()
+        console.setLevel(log_lev)
+        formatter = logging.Formatter('%(levelname)s - %(name)s - %(message)s')
+        fh.setFormatter(formatter)
+        console.setFormatter(formatter)
+        logger.addHandler(fh)
+        logger.addHandler(console)
+
     if args['version']:
         print("{}".format(__version__))
         return

@@ -36,6 +36,7 @@ def parse_source_cells(source_file: Filename, datamap_source_file: Filename) -> 
         if item.sheet is not None:
             ws = wb[item.sheet]
             if item.cellref is not None:
+                logger.debug("S: {} CR: {} V: {}".format(item.sheet, item.cellref, ws[item.cellref].value))
                 v = ws[item.cellref].value
                 if type(v) == str:
                     v = v.rstrip()

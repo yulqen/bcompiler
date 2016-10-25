@@ -67,7 +67,9 @@ def get_parser():
             'working directory and'
             'create a new one')
     parser.add_argument('--compile', action="store_true", dest='compile', help='compile returns to master')
-    parser.add_argument('-ll', '--loglevel', type=str, choices=['DEBUG','INFO', 'WARNING', 'ERROR', 'CRITICAL'], help='Set the logging level for the console. The log file is set to DEBUG.')
+    parser.add_argument('-ll', '--loglevel', type=str, choices=['DEBUG','INFO',
+        'WARNING', 'ERROR', 'CRITICAL'], \
+            help='Set the logging level for the console. The log file is set to DEBUG.')
     return parser
 
 

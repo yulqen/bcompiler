@@ -1,6 +1,5 @@
 import fnmatch
 import logging
-#import colorlog
 import os
 import re
 from datetime import date

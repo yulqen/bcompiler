@@ -17,7 +17,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR TH
 import argparse
 import csv
 import logging
-# import colorlog
+import colorlog
 import os
 import re
 import shutil
@@ -48,7 +48,7 @@ from openpyxl.worksheet.datavalidation import DataValidation
 
 # Pre-colorlog logger set-up
 
-logger = logging.getLogger('bcompiler')
+logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
 
 def get_parser():
@@ -385,7 +385,7 @@ def main():
         console.setLevel(log_lev)
         formatter = logging.Formatter('%(levelname)s - %(name)s - %(message)s')
         fh.setFormatter(formatter)
-        console.setFormatter(formatter)
+        console.setFormatter(colorlog.colorlog.ColoredFormatter())
         logger.addHandler(fh)
         logger.addHandler(console)
     else:
@@ -396,7 +396,7 @@ def main():
         console.setLevel(logging.INFO)
         formatter = logging.Formatter('%(levelname)s - %(name)s - %(message)s')
         fh.setFormatter(formatter)
-        console.setFormatter(formatter)
+        console.setFormatter(colorlog.colorlog.ColoredFormatter())
         logger.addHandler(fh)
         logger.addHandler(console)
 

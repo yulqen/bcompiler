@@ -1,7 +1,6 @@
 # datamap classes
 import csv
 import logging
-#import colorlog
 
 Filename = str
 logger = logging.getLogger('bcompiler.datamap')

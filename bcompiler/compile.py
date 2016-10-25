@@ -79,7 +79,7 @@ def run() -> None:
     count = 1
     for file in os.listdir(RETURNS_DIR):
         if fnmatch.fnmatch(file, '*.xlsx'):
-            print("Processing {}".format(file))
+            logger.info("Starting to process {}".format(file))
             write_excel((RETURNS_DIR + file), count=count, workbook=workbook)
             count += 1
     for file in os.listdir(RETURNS_DIR):

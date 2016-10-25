@@ -50,7 +50,7 @@ from openpyxl.worksheet.datavalidation import DataValidation
 
 logger = logging.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler(OUTPUT_DIR + 'bcompiler.log')
+fh = logging.FileHandler(OUTPUT_DIR + 'bcompiler.log', mode='w')
 fh.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)

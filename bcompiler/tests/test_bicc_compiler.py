@@ -78,7 +78,7 @@ class TestCompilationFromReturns(unittest.TestCase):
         self.source_path = os.path.join(self.path, 'source')
         self.output_path = os.path.join(self.path, 'output')
         self.returns_path = os.path.join(self.source_path, 'returns')
-        self.source_file_name = 'DVSA IT Sourcing _Q2_Return v1.1.xlsx'
+        self.source_file_name = 'DVSA IT Sourcing _Q2_Return Final.xlsx'
         self.source_excel = os.path.join(self.returns_path, self.source_file_name)
         self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
         self.dm = Datamap(type='returns-to-master', source_file=self.datamap_returns_to_master)

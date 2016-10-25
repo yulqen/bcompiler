@@ -49,16 +49,16 @@ from openpyxl.worksheet.datavalidation import DataValidation
 # Pre-colorlog logger set-up
 
 logger = logging.getLogger('bcompiler')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler(OUTPUT_DIR + 'bcompiler.log', mode='w')
 fh.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
 fh.setFormatter(formatter)
-ch.setFormatter(formatter)
+console.setFormatter(formatter)
 logger.addHandler(fh)
-logger.addHandler(ch)
+logger.addHandler(console)
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Compile BICC data or prepare Excel BICC return forms.')

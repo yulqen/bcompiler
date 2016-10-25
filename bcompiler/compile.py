@@ -36,8 +36,15 @@ def parse_source_cells(source_file: Filename, datamap_source_file: Filename) -> 
         if item.sheet is not None:
             ws = wb[item.sheet]
             if item.cellref is not None:
-                logger.debug("S: {} CR: {} V: {}".format(item.sheet, item.cellref, ws[item.cellref].value))
-                v = ws[item.cellref].value
+                try:
+                    v = ws[item.cellref].value
+                except IndexError as e:
+                    logger.warn("""
+                    Datamap wants sheet:{} cellref:{} but this is
+                            out of range in source file:{}.\n\n This means that
+                            {} will not migrate""".format(item.sheet,
+                                item.cellref, source_file, ws[item.sheet].value))
+                    pass
                 if type(v) == str:
                     v = v.rstrip()
                 destination_kv = dict(gmpp_key=item.cellname, gmpp_key_value=v)

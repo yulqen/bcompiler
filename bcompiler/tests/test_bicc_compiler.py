@@ -10,7 +10,7 @@ from bcompiler.datamap import Datamap, DatamapLine, DatamapGMPP
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER
 
 
-@unittest.skip("only running GMPP tests for now")
+#@unittest.skip("only running GMPP tests for now")
 class TestMasterFunctions(unittest.TestCase):
     def setUp(self):
         self.docs = os.path.join(os.path.expanduser('~'), 'Documents')
@@ -22,7 +22,8 @@ class TestMasterFunctions(unittest.TestCase):
         self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
         self.master = os.path.join(self.source_path, 'master.csv')
         self.transposed_master = os.path.join(self.source_path, 'master_transposed.csv')
-        self.example_return = os.path.join(self.source_path, 'returns/Q2 16-17 BICC SAR H - Final.xlsx')
+        self.example_return = os.path.join(self.source_path,
+                'returns/SARH_Q2_Return_Final.xlsx')
 
     def test_presence_base_master_csv(self):
         self.assertTrue(os.path.exists(self.master))
@@ -136,7 +137,7 @@ class TestDatamapFunctionality(unittest.TestCase):
         # DatamapLines that have a single attribute
         for item in self.dm._dml_cname:
             # TODO this is fragile - shouldn't be counting lines in this test
-            self.assertEqual(self.dm.count_dml_cellname_only, 20)
+            self.assertEqual(self.dm.count_dml_cellname_only, 18)
 
     def test_datamap_is_cleaned_attr(self):
         self.assertTrue(self.dm.is_cleaned)
@@ -149,52 +150,6 @@ class TestDatamapFunctionality(unittest.TestCase):
         dml.dropdown_txt = 'Finance Figures'
         self.assertEqual(dml.pretty_print(),
                          "Name: Test cellname | Sheet: Summary | Cellref: C12 | Dropdown: Finance Figures")
-
-    def test_blocks_of_finance_blocks(self):
-        """
-        The datamap needs to contain blocks like this in this order:
-
-        16-17 RDEL Baseline - One off new costs - investment in change
-        16-17 RDEL Baseline - Recurring new costs - investment in change
-        16-17 RDEL Baseline - Recurring old costs
-        16-17 RDEL Baseline - Whole Life Cost breakdown
-
-        16-17 RDEL Forecast - One off new costs - investment in change
-        16-17 RDEL Forecast - Recurring new costs - investment in change
-        16-17 RDEL Forecast - Recurring old costs
-        16-17 RDEL Forecast - Whole Life Cost breakdown
-
-        16-17 CDEL Baseline - One off new costs - investment in change
-        16-17 CDEL Baseline - Recurring new costs - investment in change
-        16-17 CDEL Baseline - Recurring old costs
-        16-17 CDEL Baseline - Whole Life Cost breakdown
-
-        16-17 CDEL Forecast - One off new costs - investment in change
-        16-17 CDEL Forecast - Recurring new costs - investment in change
-        16-17 CDEL Forecast - Recurring old costs
-        16-17 CDEL Forecast - Whole Life Cost breakdown
-
-        16-17 RDEL Baseline - Non-Gov both Revenue and Capital
-        16-17 RDEL Forecast - Non-Gov both Revenue and Capital
-        16-17 CDEL Baseline - Non-Gov both Revenue and Capital
-        16-17 CDEL Forecast - Non-Gov both Revenue and Capital
-        """
-        quarter_regex = re.compile('(\d\d)-(\d\d)')
-        rdel_str, cdel_str, baseline_str, forecast_str = 'RDEL,CDEL,Baseline,Forecast'.split(',')
-        cellname1, cellname2, cellname3, cellname4 = 'One off new costs - investment in change,' \
-                                                     'Recurring new costs - investment in change,' \
-                                                     'Recurring old costs,' \
-                                                     'Whole Life Cost breakdown'.split(',')
-        cellname_non_gov = 'Non-Gov both Revenue and Capital'
-
-        rdel_baseline_block = []
-
-        l_cell_refs = []
-        with open(DATAMAP_RETURN_TO_MASTER, 'r') as f:
-            for line in f.readlines():
-                line = line.split(',')
-                l_cell_refs.append(line[0])
-
 
 
 

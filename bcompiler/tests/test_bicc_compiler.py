@@ -3,7 +3,7 @@ import os
 import unittest
 
 import re
-from bcompiler.bcompiler import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
+from bcompiler.main import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
 from bcompiler.utils import VALIDATION_REFERENCES, SHEETS
 from bcompiler.compile import parse_source_cells, get_current_quarter
 from bcompiler.datamap import Datamap, DatamapLine, DatamapGMPP

@@ -3,27 +3,36 @@ import os
 import unittest
 
 import re
-from bcompiler.main import create_master_dict_transposed, clean_datamap, create_datamap_n_tuples
+from bcompiler.main import create_master_dict_transposed, clean_datamap
+from bcompiler.main import create_datamap_n_tuples
 from bcompiler.utils import VALIDATION_REFERENCES, SHEETS
 from bcompiler.compile import parse_source_cells, get_current_quarter
 from bcompiler.datamap import Datamap, DatamapLine, DatamapGMPP
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER
 
 
-#@unittest.skip("only running GMPP tests for now")
+# @unittest.skip("only running GMPP tests for now")
 class TestMasterFunctions(unittest.TestCase):
     def setUp(self):
-        self.docs = os.path.join(os.path.expanduser('~'), 'Documents')
+        self.docs = os.path.join(
+            os.path.expanduser('~'), 'Documents')
         bcomp_working_d = 'bcompiler'
-        self.path = os.path.join(self.docs, bcomp_working_d)
-        self.source_path = os.path.join(self.path, 'source')
-        self.output_path = os.path.join(self.path, 'output')
-        self.datamap_master_to_returns = os.path.join(self.source_path, 'datamap-master-to-returns')
-        self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
-        self.master = os.path.join(self.source_path, 'master.csv')
-        self.transposed_master = os.path.join(self.source_path, 'master_transposed.csv')
-        self.example_return = os.path.join(self.source_path,
-                'returns/SARH_Q2_Return_Final.xlsx')
+        self.path = os.path.join(
+            self.docs, bcomp_working_d)
+        self.source_path = os.path.join(
+            self.path, 'source')
+        self.output_path = os.path.join(
+            self.path, 'output')
+        self.datamap_master_to_returns = os.path.join(
+            self.source_path, 'datamap-master-to-returns')
+        self.datamap_returns_to_master = os.path.join(
+            self.source_path, 'datamap-returns-to-master')
+        self.master = os.path.join(
+            self.source_path, 'master.csv')
+        self.transposed_master = os.path.join(
+            self.source_path, 'master_transposed.csv')
+        self.example_return = os.path.join(
+            self.source_path, 'returns/SARH_Q2_Return_Final.xlsx')
 
     def test_presence_base_master_csv(self):
         self.assertTrue(os.path.exists(self.master))
@@ -44,9 +53,11 @@ class TestMasterFunctions(unittest.TestCase):
         with open(self.transposed_master, 'r') as f:
             projects = list([row for row in csv.DictReader(f)])
             project = projects[0]
-            selected_data['Project/Programme Name'] = project['Project/Programme Name']
+            selected_data['Project/Programme Name'] = project[
+                'Project/Programme Name']
             selected_data['SRO Sign-Off'] = project['SRO Sign-Off']
-            selected_data['Change Delivery Methodology'] = project['Change Delivery Methodology']
+            selected_data['Change Delivery Methodology'] = project[
+                'Change Delivery Methodology']
         # pass for now
         pass
 
@@ -62,7 +73,8 @@ class TestMasterFunctions(unittest.TestCase):
         matches = [x for x in data if x['gmpp_key'] == example_validated_cell]
         self.assertEqual(matches[0]['gmpp_key'], example_validated_cell)
 
-    # trial of creating list of named tuples from the datamap - not sure why yet
+    # trial of creating list of named tuples from the datamap - not sure
+    # why yet
     def test_list_of_named_tuples_from_datamap(self):
         clean_datamap(DATAMAP_RETURN_TO_MASTER)
         datamap_data = create_datamap_n_tuples()
@@ -80,12 +92,18 @@ class TestCompilationFromReturns(unittest.TestCase):
         self.output_path = os.path.join(self.path, 'output')
         self.returns_path = os.path.join(self.source_path, 'returns')
         self.source_file_name = 'DVSA IT Sourcing _Q2_Return Final.xlsx'
-        self.source_excel = os.path.join(self.returns_path, self.source_file_name)
-        self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
-        self.dm = Datamap(datamap_type='returns-to-master', source_file=self.datamap_returns_to_master)
+        self.source_excel = os.path.join(
+            self.returns_path, self.source_file_name)
+        self.datamap_returns_to_master = os.path.join(
+            self.source_path, 'datamap-returns-to-master')
+        self.dm = Datamap(
+            datamap_type='returns-to-master',
+            source_file=self.datamap_returns_to_master)
 
     def test_parse_source_excel_file(self):
-        parsed_data = parse_source_cells(self.source_excel, self.datamap_returns_to_master)
+        parsed_data = parse_source_cells(
+            self.source_excel,
+            self.datamap_returns_to_master)
         self.assertEqual('Project/Programme Name', parsed_data[0]['gmpp_key'])
         self.assertEqual('DVSA IT Sourcing', parsed_data[0]['gmpp_key_value'])
 
@@ -93,7 +111,8 @@ class TestCompilationFromReturns(unittest.TestCase):
         pass
 
     def test_get_quarter(self):
-        self.assertEqual(get_current_quarter(self.source_file_name), 'Q1 Apr - Jun')
+        self.assertEqual(get_current_quarter(
+            self.source_file_name), 'Q1 Apr - Jun')
 
 
 class TestDatamapFunctionality(unittest.TestCase):
@@ -105,31 +124,39 @@ class TestDatamapFunctionality(unittest.TestCase):
         self.path = os.path.join(self.docs, bcomp_working_d)
         self.source_path = os.path.join(self.path, 'source')
         self.output_path = os.path.join(self.path, 'output')
-        self.datamap_master_to_returns = os.path.join(self.source_path, 'datamap-master-to-returns')
-        self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
+        self.datamap_master_to_returns = os.path.join(
+            self.source_path, 'datamap-master-to-returns')
+        self.datamap_returns_to_master = os.path.join(
+            self.source_path, 'datamap-returns-to-master')
         self.master = os.path.join(self.source_path, 'master.csv')
-        self.transposed_master = os.path.join(self.source_path, 'master_transposed.csv')
-        self.dm = Datamap(datamap_type='returns-to-master', source_file=self.datamap_returns_to_master)
+        self.transposed_master = os.path.join(
+            self.source_path, 'master_transposed.csv')
+        self.dm = Datamap(
+            datamap_type='returns-to-master',
+            source_file=self.datamap_returns_to_master)
 
     def test_verified_lines(self):
-        # these are DatamapLine objects that have 4 attributes, the last of which is verification
-        # dropdown text
+        # these are DatamapLine objects that have 4 attributes, the last of
+        # which is verification dropdown text
         # the last element in each should be a dropdown text string
         for item in self.dm._dml_cname_sheet_cref_ddown:
             self.assertTrue(self.dropdown_regex, item.dropdown_txt)
 
     def test_verified_lines_for_dropdown_text(self):
-        # we're expecting the dropdown_txt attr in the DatamapLine object to be what we expect
+        # we're expecting the dropdown_txt attr in the DatamapLine object
+        # to be what we expect
         for item in self.dm._dml_cname_sheet_cref_ddown:
             self.assertTrue(item.dropdown_txt in VALIDATION_REFERENCES.keys())
 
     def test_non_verified_lines(self):
-        # these are DatamapLine objects that have 3 attributes, the last of which is a regex
+        # these are DatamapLine objects that have 3 attributes, the
+        # last of which is a regex
         for item in self.dm._dml_cname_sheet_cref:
             self.assertTrue(self.cell_regex, item.cellref)
 
     def test_cells_that_will_not_migrate(self):
-        # these are DatamapLine objects that have 2 attributes, the last of which is a sheet ref
+        # these are DatamapLine objects that have 2 attributes,
+        # the last of which is a sheet ref
         for item in self.dm._dml_cname_sheet:
             self.assertTrue(item.sheet in SHEETS)
 
@@ -152,8 +179,10 @@ class TestDatamapFunctionality(unittest.TestCase):
                          "Name: Test cellname | Sheet: Summary | Cellref: C12 | Dropdown: Finance Figures")
 
 
-
 class TestGMPPExport(unittest.TestCase):
+    """
+    DOCSTRING
+    """
     def setUp(self):
         self.cell_regex = re.compile('[A-Z]+[0-9]+')
         self.dropdown_regex = re.compile('^\D*$')
@@ -162,10 +191,14 @@ class TestGMPPExport(unittest.TestCase):
         self.path = os.path.join(self.docs, bcomp_working_d)
         self.source_path = os.path.join(self.path, 'source')
         self.output_path = os.path.join(self.path, 'output')
-        self.datamap_master_to_gmpp = os.path.join(self.source_path, 'datamap-master-to-gmpp')
+        self.datamap_master_to_gmpp = os.path.join(
+            self.source_path, 'datamap-master-to-gmpp')
         self.master = os.path.join(self.source_path, 'master.csv')
-        self.transposed_master = os.path.join(self.source_path, 'master_transposed.csv')
-        self.dm = DatamapGMPP(datamap_type='master-to-gmpp', source_file=self.datamap_master_to_gmpp)
+        self.transposed_master = os.path.join(
+            self.source_path, 'master_transposed.csv')
+        self.dm = DatamapGMPP(
+            datamap_type='master-to-gmpp',
+            source_file=self.datamap_master_to_gmpp)
 
     def test_there_is_the_correct_datamap_source_file(self):
         self.assertTrue(os.path.exists(self.datamap_master_to_gmpp))

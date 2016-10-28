@@ -37,7 +37,7 @@ class DatamapLine(object):
     def __repr__(self):
         return "DatamapLine(cellname={}, sheet={}, cellref={},\
             dropdowntext={})".format(
-            self.cellname, self.sheet, self.cellref, self.dropdown_txt)
+                self.cellname, self.sheet, self.cellref, self.dropdown_txt)
 
 
 class Datamap(object):
@@ -58,9 +58,9 @@ class Datamap(object):
 
     """
 
-    def __init__(self, type, source_file):
+    def __init__(self, datamap_type, source_file):
         # TODO 'type' param is redundant at the moment
-        self.type = type
+        self.datamap_type = datamap_type
         self.source_file = source_file
         self.is_cleaned = False
         self._dml_cname_sheet_cref_ddown = []
@@ -82,7 +82,9 @@ class Datamap(object):
                     else:
                         logger.debug(
                             'No COMMA at end of line starting "{}..." ',
-                            'ending ->"{}"'.format(newline[:15], newline[-7:]))
+                            'ending ->"{}"'.format(
+                                newline[:15],
+                                newline[-7:]))
                     dml_data = newline.split(',')
 
                     # we're expecting three values for non-dropdown cells,
@@ -179,14 +181,14 @@ class Datamap(object):
         return len(self._dml_cname)
 
     def __repr__(self):
-        return "Datamap(type={}, source_file={}".format(
-            self.type, self.source_file)
+        return "Datamap(datamap_type={}, source_file={}".format(
+            self.datamap_type, self.source_file)
 
 
 class DatamapGMPP(Datamap):
 
-    def __init__(self, type='master-to-gmpp', source_file=None):
-        Datamap.__init__(self, type, source_file)
+    def __init__(self, datamap_type='master-to-gmpp', source_file=None):
+        Datamap.__init__(self, datamap_type, source_file)
 
     def _clean(self):
         """The implementation here is based on testing the datamap as a
@@ -208,5 +210,5 @@ class DatamapGMPP(Datamap):
                     print("You can only have three cells in the GMPP datamap")
 
     def __repr__(self):
-        return "DatamapGMPP(type={}, source_file={}".format(
-            self.type, self.source_file)
+        return "DatamapGMPP(datamap_type={}, source_file={}".format(
+            self.datamap_type, self.source_file)

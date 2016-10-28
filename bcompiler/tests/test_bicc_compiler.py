@@ -82,7 +82,7 @@ class TestCompilationFromReturns(unittest.TestCase):
         self.source_file_name = 'DVSA IT Sourcing _Q2_Return Final.xlsx'
         self.source_excel = os.path.join(self.returns_path, self.source_file_name)
         self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
-        self.dm = Datamap(type='returns-to-master', source_file=self.datamap_returns_to_master)
+        self.dm = Datamap(datamap_type='returns-to-master', source_file=self.datamap_returns_to_master)
 
     def test_parse_source_excel_file(self):
         parsed_data = parse_source_cells(self.source_excel, self.datamap_returns_to_master)
@@ -109,7 +109,7 @@ class TestDatamapFunctionality(unittest.TestCase):
         self.datamap_returns_to_master = os.path.join(self.source_path, 'datamap-returns-to-master')
         self.master = os.path.join(self.source_path, 'master.csv')
         self.transposed_master = os.path.join(self.source_path, 'master_transposed.csv')
-        self.dm = Datamap(type='returns-to-master', source_file=self.datamap_returns_to_master)
+        self.dm = Datamap(datamap_type='returns-to-master', source_file=self.datamap_returns_to_master)
 
     def test_verified_lines(self):
         # these are DatamapLine objects that have 4 attributes, the last of which is verification
@@ -165,7 +165,7 @@ class TestGMPPExport(unittest.TestCase):
         self.datamap_master_to_gmpp = os.path.join(self.source_path, 'datamap-master-to-gmpp')
         self.master = os.path.join(self.source_path, 'master.csv')
         self.transposed_master = os.path.join(self.source_path, 'master_transposed.csv')
-        self.dm = DatamapGMPP(type='master-to-gmpp', source_file=self.datamap_master_to_gmpp)
+        self.dm = DatamapGMPP(datamap_type='master-to-gmpp', source_file=self.datamap_master_to_gmpp)
 
     def test_there_is_the_correct_datamap_source_file(self):
         self.assertTrue(os.path.exists(self.datamap_master_to_gmpp))

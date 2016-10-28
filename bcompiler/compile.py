@@ -39,7 +39,7 @@ def parse_source_cells(source_file, datamap_source_file):
     ls_of_dataline_dicts = []
     wb = load_workbook(source_file, read_only=True, data_only=True)
     datamap_obj = Datamap(
-        type='returns-to-master',
+        datamap_type='returns-to-master',
         source_file=datamap_source_file)
     for item in datamap_obj.data:
         if item.sheet is not None:

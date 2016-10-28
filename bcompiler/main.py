@@ -95,7 +95,7 @@ def clean_datamap(dm_file):
 
 
 def create_datamap_n_tuples():
-    cell_regex = re.compile('[A-Z]+[0-9]+')
+    CELL_REGEX = re.compile('[A-Z]+[0-9]+')
     datalines = []
     DataMapLine = namedtuple('DataMapLine', 'key value cellref dropdown')
     try:
@@ -109,7 +109,7 @@ def create_datamap_n_tuples():
         data = [line[:-1] for line in data]
         data = [line.split(',') for line in data]
         for line in data:
-            if cell_regex.search(line[-1]):
+            if CELL_REGEX.search(line[-1]):
                 try:
                     datalines.append(DataMapLine(key=line[0], value=line[1], cellref=line[2], dropdown=None))
                 except IndexError as e:

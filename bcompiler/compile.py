@@ -1,25 +1,30 @@
+"""
+Initial Docstring.
+"""
 import fnmatch
 import logging
 import os
 import re
 from datetime import date
 
-from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR
 from bcompiler.datamap import Datamap
-from bcompiler.utils import RETURNS_DIR
+from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
 from openpyxl import load_workbook, Workbook
 
-cell_regex = re.compile('[A-Z]+[0-9]+')
-dropdown_regex = re.compile('^\D*$')
-today = date.today().isoformat()
-Filename = str
+
+CELL_REGEX = re.compile('[A-Z]+[0-9]+')
+DROPDOWN_REGEX = re.compile('^\D*$')
+TODAY = date.today().isoformat()
 
 logger = logging.getLogger('bcompiler.compiler')
 
 DATA_MAP_FILE = DATAMAP_RETURN_TO_MASTER
 
 
-def get_current_quarter(source_file: Filename) -> str:
+def get_current_quarter(source_file):
+    """
+    DOCSTRING HERE
+    """
     wb = load_workbook(RETURNS_DIR + source_file, read_only=True)
     ws = wb['Summary']
     q = ws['G3'].value
@@ -27,20 +32,30 @@ def get_current_quarter(source_file: Filename) -> str:
     return q
 
 
-def parse_source_cells(source_file: Filename, datamap_source_file: Filename) -> list:
+def parse_source_cells(source_file, datamap_source_file):
+    """
+    Doc string in here.
+    """
     ls_of_dataline_dicts = []
     wb = load_workbook(source_file, read_only=True, data_only=True)
-    datamap_obj = Datamap(type='returns-to-master', source_file=datamap_source_file)
+    datamap_obj = Datamap(
+        type='returns-to-master',
+        source_file=datamap_source_file)
     for item in datamap_obj.data:
         if item.sheet is not None:
             ws = wb[item.sheet]
             if item.cellref is not None:
                 try:
                     v = ws[item.cellref].value
-                except IndexError as e:
-                    logger.error("Datamap wants sheet: {}; cellref: {} but this "
-                            "is out of range.\n\tFile: {}".format(item.sheet,
-                                item.cellref, source_file))
+                except IndexError:
+                    logger.error(
+                        "Datamap wants sheet: {};",
+                        "cellref: {} but this",
+                        "is out of range.",
+                        "\n\tFile: {}".format(
+                            item.sheet,
+                            item.cellref,
+                            source_file))
                     v = ""
                 if type(v) == str:
                     v = v.rstrip()
@@ -50,11 +65,14 @@ def parse_source_cells(source_file: Filename, datamap_source_file: Filename) -> 
 
 
 # noinspection PyTypeChecker,PyTypeChecker,PyTypeChecker
-def write_excel(source_file: Filename, count: int, workbook: Workbook) -> None:
-    # count is used to count number of times function is run so that multiple returns can be added
-    # and not overwrite the GMPP key column
-    # let's create an Excel file in memory
-    # it will have one worksheet - let's get it
+def write_excel(source_file, count, workbook):
+    """
+    count is used to count number of times function is run so that multiple
+    returns can be added
+    and not overwrite the GMPP key column
+    let's create an Excel file in memory
+    it will have one worksheet - let's get it
+    """
     ws = workbook.active
     # give it a title
     ws.title = "Constructed BICC Data Master"
@@ -79,7 +97,10 @@ def write_excel(source_file: Filename, count: int, workbook: Workbook) -> None:
             i += 1
 
 
-def run() -> None:
+def run():
+    """
+    Doc string here.
+    """
     workbook = Workbook()
     count = 1
     for file in os.listdir(RETURNS_DIR):
@@ -91,5 +112,5 @@ def run() -> None:
         cq = get_current_quarter(file)
         if cq is not None:
             break
-    OUTPUT_FILE = '{}compiled_master_{}_{}.xlsx'.format(OUTPUT_DIR, today, cq)
+    OUTPUT_FILE = '{}compiled_master_{}_{}.xlsx'.format(OUTPUT_DIR, TODAY, cq)
     workbook.save(OUTPUT_FILE)

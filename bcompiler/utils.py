@@ -1,3 +1,6 @@
+"""
+Docstring here
+"""
 import os
 
 
@@ -10,7 +13,8 @@ def working_directory(dir_type=None):
     try:
         bcomp_working_d = 'bcompiler'
     except FileNotFoundError:
-        print("You need to run with --create-wd to create the working directory")
+        print("You need to run with --create-wd to",
+              "create the working directory")
     root_path = os.path.join(docs, bcomp_working_d)
     if dir_type == 'source':
         return root_path + "/source/"
@@ -69,5 +73,6 @@ VALIDATION_REFERENCES = {
     'Programme': '"=\'Dropdown List\'!$AI7:$AI$2"',
     'Other': '"=\'Dropdown List\'!$AJ19:$AJ$2"'
 }
-SHEETS = ['Summary', 'Finance & Benefits', 'Resources', 'Approval & Project milestones',
+SHEETS = ['Summary', 'Finance & Benefits', 'Resources',
+          'Approval & Project milestones',
           'Assurance planning']

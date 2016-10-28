@@ -1,3 +1,6 @@
+"""
+Docstring here
+"""
 # datamap classes
 import csv
 import logging
@@ -25,28 +28,33 @@ class DatamapLine(object):
 
     def pretty_print(self):
         """
-        :return str: a nicely formated but barely useful string of the components of the object
+        :return str: a nicely formated but barely useful string of the
+        components of the object
         """
         return ("Name: {} | Sheet: {} | Cellref: {} | Dropdown: {}".format(
             self.cellname, self.sheet, self.cellref, self.dropdown_txt))
 
     def __repr__(self):
-        return "DatamapLine(cellname={}, sheet={}, cellref={}, dropdowntext={})".format(
+        return "DatamapLine(cellname={}, sheet={}, cellref={},\
+            dropdowntext={})".format(
             self.cellname, self.sheet, self.cellref, self.dropdown_txt)
 
 
 class Datamap(object):
     """
-    The link between the source of the data and the output, which maps field values to MS Excel sheets
-    and cell references.
+    The link between the source of the data and the output, which maps field
+    values to MS Excel sheet and cell references.
 
     There are three implementations of Datamap:
 
-    1. Returns to Master    (how to build a compiled Master spreadsheet (xlsx) from multiple Return Excel files; includes
+    1. Returns to Master    (how to build a compiled Master spreadsheet (xlsx)
+                            from multiple Return Excel files; includes
                             'totals')
-    2. Master to Returns    (how to populate a blank Return Excel sheet based on the data a project provided in the
-                            previous Quarter, which is in a Master spreadsheet).
-    3. Master to GMPP       (how to populate a blank GMPP Return Excel sheet based on data from a Master spreadsheet)
+    2. Master to Returns    (how to populate a blank Return Excel sheet based
+                            on the data a project provided in the previous
+                            Quarter, which is in a Master spreadsheet).
+    3. Master to GMPP       (how to populate a blank GMPP Return Excel sheet
+                            based on data from a Master spreadsheet)
 
     """
 
@@ -63,8 +71,8 @@ class Datamap(object):
         self._clean()
 
     def _clean(self):
-        """First thing that happens on initialisation is that the datamap gets a clean. This means
-        that missing trailing commas as included."""
+        """First thing that happens on initialisation is that the datamap gets
+        a clean. This means that missing trailing commas as included."""
         try:
             with open(self.source_file, 'r', encoding='utf-8') as sf:
                 for line in sf.readlines():
@@ -73,15 +81,19 @@ class Datamap(object):
                         newline = newline[:-1]
                     else:
                         logger.debug(
-                            'No COMMA at end of line starting "{}..." ending ->"{}"'.format(newline[:15], newline[-7:]))
+                            'No COMMA at end of line starting "{}..." ',
+                            'ending ->"{}"'.format(newline[:15], newline[-7:]))
                     dml_data = newline.split(',')
 
-                    # we're expecting three values for non-dropdown cells, four otherwise
-                    # if we get less than that, we have dead data
+                    # we're expecting three values for non-dropdown cells,
+                    # four otherwise if we get less than that, we have dead
+                    # data
                     if len(dml_data) == 4:
                         # we've got a verified/dropdown cell
-                        logger.debug('Line starting "{}" has verification text: "{}"'.format(
-                            dml_data[0], dml_data[-1]))
+                        logger.debug(
+                            'Line starting "{}" has verification ',
+                            'text: "{}"'.format(
+                                dml_data[0], dml_data[-1]))
                         dml = DatamapLine()
                         dml.cellname = dml_data[0]
                         dml.sheet = dml_data[1]
@@ -91,8 +103,8 @@ class Datamap(object):
                         self.data.append(dml)
 
                     if len(dml_data) == 3:
-                        # MOST LIKELY we've got a normal cell reference - but we
-                        # test for a regex at end
+                        # MOST LIKELY we've got a normal cell reference -
+                        # but we test for a regex at end
                         logger.debug(
                             'Line starting "{}" ends in cellref: {}'.format(
                                 dml_data[0],
@@ -110,7 +122,8 @@ class Datamap(object):
                         dml.cellname = dml_data[0]
                         dml.sheet = dml_data[1]
                         logger.debug(
-                            "Datamap line: {} -- only TWO items. It will not migrate.".format(dml_data[0]))
+                            "Datamap line: {} -- only TWO items.",
+                            "It will not migrate.".format(dml_data[0]))
                         self._dml_cname_sheet.append(dml)
                         self.data.append(dml)
 
@@ -119,18 +132,21 @@ class Datamap(object):
                         dml = DatamapLine()
                         dml.cellname = dml_data[0]
                         logger.debug(
-                            "Datamap line: {} -- only ONE item. It will not migrate.".format(dml_data[0]))
+                            "Datamap line: {} -- only ONE item.",
+                            "It will not migrate.".format(dml_data[0]))
                         self._dml_cname.append(dml)
                         self.data.append(dml)
                 self.is_cleaned = True
         except FileNotFoundError:
             print(
-                "There is no applicable datemap file - in this case {}".format(self.source_file))
+                "There is no applicable datemap file ",
+                "in this case {}".format(self.source_file))
 
     @property
     def count_dml_with_dropdown_text(self):
         """
-        Count of the number of datamap count_dml_with_dropdown_text in the datamap. Four items.
+        Count of the number of datamap count_dml_with_dropdown_text in",
+        "the datamap. Four items.
         :return:
         """
         return len(self._dml_cname_sheet_cref_ddown)
@@ -138,7 +154,8 @@ class Datamap(object):
     @property
     def count_dml_with_cell_reference_no_dropdown(self):
         """
-        Count of the number of datamap non-count_dml_with_dropdown_text in the datamap. Three items.
+        Count of the number of datamap non-count_dml_with_dropdown_text",
+        "in the datamap. Three items.
         :return:
         """
         return len(self._dml_cname_sheet_cref)
@@ -146,7 +163,8 @@ class Datamap(object):
     @property
     def count_dml_sheet_no_cellref(self):
         """
-        Count of the number of datamap non-transferring lines in the datamap. Two items.
+        Count of the number of datamap non-transferring lines in",
+        "the datamap. Two items.
         :return:
         """
         return len(self._dml_cname_sheet)
@@ -154,7 +172,8 @@ class Datamap(object):
     @property
     def count_dml_cellname_only(self):
         """
-        Count of the number of datamap non-transferring lines in the datamap. One item.
+        Count of the number of datamap non-transferring lines in",
+        "the datamap. One item.
         :return:
         """
         return len(self._dml_cname)
@@ -170,8 +189,10 @@ class DatamapGMPP(Datamap):
         Datamap.__init__(self, type, source_file)
 
     def _clean(self):
-        """The implementation here is based on testing the datamap as a CSV file, therefore the treatment of commas
-        is different. The CSV file from a spreadsheet program does not include a trailing comma, so we have to use a
+        """The implementation here is based on testing the datamap as a
+        "CSV file, therefore the treatment of commas
+        is different. The CSV file from a spreadsheet program does not
+        "include a trailing comma, so we have to use a
         DictReader."""
         with open(self.source_file, 'r', encoding='utf-8') as sf:
             sd_data_reader = csv.reader(sf)

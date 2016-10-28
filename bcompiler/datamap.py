@@ -5,6 +5,7 @@ import logging
 Filename = str
 logger = logging.getLogger('bcompiler.datamap')
 
+
 class DatamapLine(object):
     """
     The object containing the data with the Datamap.
@@ -22,16 +23,16 @@ class DatamapLine(object):
         self.cellref = None
         self.dropdown_txt = None
 
-    def pretty_print(self) -> str:
+    def pretty_print(self):
         """
         :return str: a nicely formated but barely useful string of the components of the object
         """
-        return ("Name: {} | Sheet: {} | Cellref: {} | Dropdown: {}".format(self.cellname, self.sheet, self.cellref,
-                                                                           self.dropdown_txt))
+        return ("Name: {} | Sheet: {} | Cellref: {} | Dropdown: {}".format(
+            self.cellname, self.sheet, self.cellref, self.dropdown_txt))
 
     def __repr__(self):
-        return "DatamapLine(cellname={}, sheet={}, cellref={}, dropdowntext={})".format(self.cellname, self.sheet,
-                                                                                        self.cellref, self.dropdown_txt)
+        return "DatamapLine(cellname={}, sheet={}, cellref={}, dropdowntext={})".format(
+            self.cellname, self.sheet, self.cellref, self.dropdown_txt)
 
 
 class Datamap(object):
@@ -49,7 +50,7 @@ class Datamap(object):
 
     """
 
-    def __init__(self, type: str = None, source_file: Filename = None) -> None:
+    def __init__(self, type, source_file):
         # TODO 'type' param is redundant at the moment
         self.type = type
         self.source_file = source_file
@@ -61,7 +62,7 @@ class Datamap(object):
         self.data = []
         self._clean()
 
-    def _clean(self) -> None:
+    def _clean(self):
         """First thing that happens on initialisation is that the datamap gets a clean. This means
         that missing trailing commas as included."""
         try:
@@ -71,14 +72,16 @@ class Datamap(object):
                     if ',' in newline[-1]:
                         newline = newline[:-1]
                     else:
-                        logger.debug('No COMMA at end of line starting "{}..." ending ->"{}"'.format(newline[:15], newline[-7:]))
+                        logger.debug(
+                            'No COMMA at end of line starting "{}..." ending ->"{}"'.format(newline[:15], newline[-7:]))
                     dml_data = newline.split(',')
 
                     # we're expecting three values for non-dropdown cells, four otherwise
                     # if we get less than that, we have dead data
                     if len(dml_data) == 4:
                         # we've got a verified/dropdown cell
-                        logger.debug('Line starting "{}" has verification text: "{}"'.format(dml_data[0], dml_data[-1]))
+                        logger.debug('Line starting "{}" has verification text: "{}"'.format(
+                            dml_data[0], dml_data[-1]))
                         dml = DatamapLine()
                         dml.cellname = dml_data[0]
                         dml.sheet = dml_data[1]
@@ -88,8 +91,12 @@ class Datamap(object):
                         self.data.append(dml)
 
                     if len(dml_data) == 3:
-                        # MOST LIKELY we've got a normal cell reference - but we test for a regex at end
-                        logger.debug('Line starting "{}" ends in cellref: {}'.format(dml_data[0], dml_data[-1]))
+                        # MOST LIKELY we've got a normal cell reference - but we
+                        # test for a regex at end
+                        logger.debug(
+                            'Line starting "{}" ends in cellref: {}'.format(
+                                dml_data[0],
+                                dml_data[-1]))
                         dml = DatamapLine()
                         dml.cellname = dml_data[0]
                         dml.sheet = dml_data[1]
@@ -102,7 +109,8 @@ class Datamap(object):
                         dml = DatamapLine()
                         dml.cellname = dml_data[0]
                         dml.sheet = dml_data[1]
-                        logger.debug("Datamap line: {} -- only TWO items. It will not migrate.".format(dml_data[0]))
+                        logger.debug(
+                            "Datamap line: {} -- only TWO items. It will not migrate.".format(dml_data[0]))
                         self._dml_cname_sheet.append(dml)
                         self.data.append(dml)
 
@@ -110,15 +118,17 @@ class Datamap(object):
                         # only one item in the line
                         dml = DatamapLine()
                         dml.cellname = dml_data[0]
-                        logger.debug("Datamap line: {} -- only ONE item. It will not migrate.".format(dml_data[0]))
+                        logger.debug(
+                            "Datamap line: {} -- only ONE item. It will not migrate.".format(dml_data[0]))
                         self._dml_cname.append(dml)
                         self.data.append(dml)
                 self.is_cleaned = True
         except FileNotFoundError:
-            print("There is no applicable datemap file - in this case {}".format(self.source_file))
+            print(
+                "There is no applicable datemap file - in this case {}".format(self.source_file))
 
     @property
-    def count_dml_with_dropdown_text(self) -> int:
+    def count_dml_with_dropdown_text(self):
         """
         Count of the number of datamap count_dml_with_dropdown_text in the datamap. Four items.
         :return:
@@ -150,10 +160,12 @@ class Datamap(object):
         return len(self._dml_cname)
 
     def __repr__(self):
-        return "Datamap(type={}, source_file={}".format(self.type, self.source_file)
+        return "Datamap(type={}, source_file={}".format(
+            self.type, self.source_file)
 
 
 class DatamapGMPP(Datamap):
+
     def __init__(self, type='master-to-gmpp', source_file=None):
         Datamap.__init__(self, type, source_file)
 
@@ -175,4 +187,5 @@ class DatamapGMPP(Datamap):
                     print("You can only have three cells in the GMPP datamap")
 
     def __repr__(self):
-        return "DatamapGMPP(type={}, source_file={}".format(self.type, self.source_file)
+        return "DatamapGMPP(type={}, source_file={}".format(
+            self.type, self.source_file)

@@ -15,13 +15,14 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 import argparse
+import colorlog
 import csv
 import logging
-import colorlog
 import os
 import re
 import shutil
 import sys
+
 from collections import namedtuple
 
 import bcompiler.compile as compile_returns

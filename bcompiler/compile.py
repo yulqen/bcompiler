@@ -47,12 +47,21 @@ def parse_source_cells(source_file, datamap_source_file):
             if item.cellref is not None:
                 try:
                     v = ws[item.cellref].value
+                    if v is None:
+                        logger.debug(
+                            "{} in {} is empty.".format(
+                                item.cellref,
+                                item.sheet))
+                    else:
+                        logger.debug(
+                            "{} in {} is {}".format(
+                                item.cellref,
+                                item.sheet,
+                                v))
                 except IndexError:
                     logger.error(
-                        "Datamap wants sheet: {};",
-                        "cellref: {} but this",
-                        "is out of range.",
-                        "\n\tFile: {}".format(
+                        "Datamap wants sheet: {}; cellref: {} but this is out"
+                        "of range.\n\tFile: {}".format(
                             item.sheet,
                             item.cellref,
                             source_file))

@@ -81,8 +81,8 @@ class Datamap(object):
                         newline = newline[:-1]
                     else:
                         logger.debug(
-                            'No COMMA at end of line starting "{}..." ',
-                            'ending ->"{}"'.format(
+                            'No COMMA at end of line starting'
+                            '"{}..." ending ->"{}"'.format(
                                 newline[:15],
                                 newline[-7:]))
                     dml_data = newline.split(',')
@@ -93,7 +93,7 @@ class Datamap(object):
                     if len(dml_data) == 4:
                         # we've got a verified/dropdown cell
                         logger.debug(
-                            'Line starting "{}" has verification ',
+                            'Line starting "{}" has verification '
                             'text: "{}"'.format(
                                 dml_data[0], dml_data[-1]))
                         dml = DatamapLine()
@@ -124,7 +124,7 @@ class Datamap(object):
                         dml.cellname = dml_data[0]
                         dml.sheet = dml_data[1]
                         logger.debug(
-                            "Datamap line: {} -- only TWO items.",
+                            "Datamap line: {} -- only TWO items. "
                             "It will not migrate.".format(dml_data[0]))
                         self._dml_cname_sheet.append(dml)
                         self.data.append(dml)
@@ -134,15 +134,15 @@ class Datamap(object):
                         dml = DatamapLine()
                         dml.cellname = dml_data[0]
                         logger.debug(
-                            "Datamap line: {} -- only ONE item.",
+                            "Datamap line: {} -- only ONE item. "
                             "It will not migrate.".format(dml_data[0]))
                         self._dml_cname.append(dml)
                         self.data.append(dml)
                 self.is_cleaned = True
         except FileNotFoundError:
             print(
-                "There is no applicable datemap file ",
-                "in this case {}".format(self.source_file))
+                "There is no applicable datemap file in "
+                "this case {}".format(self.source_file))
 
     @property
     def count_dml_with_dropdown_text(self):

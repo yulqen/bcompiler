@@ -5,7 +5,6 @@ Docstring here
 import csv
 import logging
 
-Filename = str
 logger = logging.getLogger('bcompiler.datamap')
 
 
@@ -55,6 +54,22 @@ class Datamap(object):
                             Quarter, which is in a Master spreadsheet).
     3. Master to GMPP       (how to populate a blank GMPP Return Excel sheet
                             based on data from a Master spreadsheet)
+
+    Try a doctest:
+
+    >>> dm = Datamap(
+    ...     'returns-to-master',
+    ...     '/home/lemon/Documents/bcompiler/source/datamap-returns-to-master')
+    >>> dm.data[0] # doctest: +ELLIPSIS
+    DatamapLine(...)
+
+    dm.data is just a list:
+    >>> type(dm.data)
+    <class 'list'>
+
+    check the source file:
+    >>> dm.source_file
+    '/home/lemon/Documents/bcompiler/source/datamap-returns-to-master'
 
     """
 

@@ -11,7 +11,6 @@ from bcompiler.datamap import Datamap, DatamapLine, DatamapGMPP
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER
 
 
-# @unittest.skip("only running GMPP tests for now")
 class TestMasterFunctions(unittest.TestCase):
     def setUp(self):
         self.docs = os.path.join(
@@ -42,7 +41,8 @@ class TestMasterFunctions(unittest.TestCase):
         self.assertTrue(os.path.exists(self.transposed_master))
 
     def test_for_individual_project_data_lines(self):
-        test_st = "Project/Programme Name,Classification,SRO Sign-Off,FD Sign-Off,"
+        test_st = ("Project/Programme Name,Classification,SRO Sign-Off,"
+                   "FD Sign-Off,")
         len_test_st = len(test_st)
         with open(self.transposed_master, 'r') as f:
             f_line = f.readline(len_test_st)
@@ -175,8 +175,9 @@ class TestDatamapFunctionality(unittest.TestCase):
         dml.sheet = 'Summary'
         dml.cellref = 'C12'
         dml.dropdown_txt = 'Finance Figures'
-        self.assertEqual(dml.pretty_print(),
-                         "Name: Test cellname | Sheet: Summary | Cellref: C12 | Dropdown: Finance Figures")
+        self.assertEqual(
+            dml.pretty_print(), ("Name: Test cellname | Sheet: Summary | "
+                                 "Cellref: C12 | Dropdown: Finance Figures"))
 
 
 class TestGMPPExport(unittest.TestCase):

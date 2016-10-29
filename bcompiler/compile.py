@@ -5,6 +5,7 @@ import fnmatch
 import logging
 import os
 import re
+import time
 from datetime import date
 
 from bcompiler.datamap import Datamap
@@ -46,7 +47,11 @@ def parse_source_cells(source_file, datamap_source_file):
             ws = wb[item.sheet]
             if item.cellref is not None:
                 try:
+                    t0 = time.clock()
                     v = ws[item.cellref].value
+                    logger.debug(
+                        "Took {}s".format(
+                            time.clock() - t0))
                     if v is None:
                         logger.debug(
                             "{} in {} is empty.".format(

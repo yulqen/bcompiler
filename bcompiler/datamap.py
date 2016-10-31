@@ -202,8 +202,8 @@ class Datamap(object):
 
 class DatamapGMPP(Datamap):
 
-    def __init__(self, datamap_type='master-to-gmpp', source_file=None):
-        Datamap.__init__(self, datamap_type, source_file)
+    def __init__(self, source_file):
+        Datamap.__init__(self, 'master-to-gmpp', source_file)
 
     def _clean(self):
         """The implementation here is based on testing the datamap as a
@@ -212,18 +212,24 @@ class DatamapGMPP(Datamap):
         "include a trailing comma, so we have to use a
         DictReader."""
         with open(self.source_file, 'r', encoding='utf-8') as sf:
-            sd_data_reader = csv.reader(sf)
+            sd_data_reader = csv.DictReader(sf, restkey='extra_data')
             for row in sd_data_reader:
                 if len(row) == 3:
                     dml = DatamapLine()
-                    dml.cellname = row[0]
-                    dml.sheet = row[1]
-                    dml.cellref = row[2]
+                    dml.cellname = row['master_cellname']
+                    dml.sheet = row['gmpp_template_sheet_reference']
+                    dml.cellref = row['gmpp_template_cell_reference']
                     self.data.append(dml)
                     self._dml_cname_sheet_cref.append(dml)
-                else:
-                    print("You can only have three cells in the GMPP datamap")
+                elif len(row) > 3:
+                    dml = DatamapLine()
+                    dml.cellname = row['master_cellname']
+                    dml.sheet = row['gmpp_template_sheet_reference']
+                    dml.cellref = row['gmpp_template_cell_reference']
+                    self.data.append(dml)
+                    self._dml_cname_sheet_cref.append(dml)
+                    extra_st = ' '.join(row['extra_data'])
+                    logger.info("Will throw away extra data {}".format(extra_st))
 
     def __repr__(self):
-        return "DatamapGMPP(datamap_type={}, source_file={}".format(
-            self.datamap_type, self.source_file)
+        return "DatamapGMPP(source_file={}".format(self.source_file)

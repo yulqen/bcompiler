@@ -229,7 +229,8 @@ class DatamapGMPP(Datamap):
                     self.data.append(dml)
                     self._dml_cname_sheet_cref.append(dml)
                     extra_st = ' '.join(row['extra_data'])
-                    logger.info("Will throw away extra data {}".format(extra_st))
+                    logger.info(
+                        "Will throw away extra data {}".format(extra_st))
 
     def __repr__(self):
         return "DatamapGMPP(source_file={}".format(self.source_file)

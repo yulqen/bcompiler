@@ -203,7 +203,16 @@ class Datamap(object):
 class DatamapGMPP(Datamap):
 
     def __init__(self, source_file):
+        self._dml_no_cellref = []
+        self._dict_reader_lines = []
         Datamap.__init__(self, 'master-to-gmpp', source_file)
+
+    @property
+    def no_cellrefs(self):
+        return len(self._dml_no_cellref)
+
+    def print_no_cellref_lines(self):
+        return [line for line in self._dml_no_cellref]
 
     def _clean(self):
         """The implementation here is based on testing the datamap as a
@@ -213,6 +222,7 @@ class DatamapGMPP(Datamap):
         DictReader."""
         with open(self.source_file, 'r', encoding='utf-8') as sf:
             sd_data_reader = csv.DictReader(sf, restkey='extra_data')
+            self._dict_reader_lines = sd_data_reader
             for row in sd_data_reader:
                 if 'extra_data' in row.keys():
                     extra_st = ' '.join(row['extra_data'])
@@ -233,6 +243,8 @@ class DatamapGMPP(Datamap):
                         dml.sheet = row['gmpp_template_sheet_reference']
                     if row['gmpp_template_cell_reference'] == '':
                         dml.cellref = None
+                        self._dml_no_cellref.append(
+                            row['gmpp_template_cell_reference'])
                     else:
                         dml.cellref = row['gmpp_template_cell_reference']
                     self.data.append(dml)

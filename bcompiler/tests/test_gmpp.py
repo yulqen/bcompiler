@@ -22,11 +22,22 @@ def test_that_empty_cell_ref_returns_none():
     assert dm.data[3].cellref is None
 
 
-def test_no_single_item_datamap_lines_thanks():
-    assert dm.data[2].cellname != 'JUNK'
+def test_report_lines_no_cellref():
+    """
+    Hard-coded test: FRAGILE!
+    """
+    assert dm.no_cellrefs == 282
+
+
+def test_print_lines_no_cellref():
+    no_cellref_lines = dm.print_no_cellref_lines()
+    assert "FD Sign Off" in no_cellref_lines
 
 
 def test_create_gmpp_datamap_object():
+    """
+    WEAK testing. Need to replace with proper fixtures.
+    """
     assert dm.data[0].cellname, 'Project/Programme Name'
     assert dm.data[0].sheet, 'GMPP Return'
     assert dm.data[0].cellref, 'C25'

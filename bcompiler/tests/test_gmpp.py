@@ -4,28 +4,25 @@ import os
 
 from bcompiler.datamap import DatamapGMPP
 
+dm = DatamapGMPP(
+    '/home/lemon/Documents/bcompiler/source/datamap-master-to-gmpp')
+dm_file = '/home/lemon/Documents/bcompiler/source/datamap-master-to-gmpp'
+
 
 def test_there_is_the_correct_datamap_source_file():
-    dm = '/home/lemon/Documents/bcompiler/source/datamap-master-to-gmpp'
-    assert os.path.exists(dm)
+    assert os.path.exists(dm_file)
 
 
 def test_clean_creation_of_dm_object():
-    dm = DatamapGMPP(
-        '/home/lemon/Documents/bcompiler/source/datamap-master-to-gmpp')
     assert dm.data[0].cellname == 'Project/Programme Name'
     assert dm.data[1].cellref == 'C5'
 
 
 def test_no_single_item_datamap_lines_thanks():
-    dm = DatamapGMPP(
-        '/home/lemon/Documents/bcompiler/source/datamap-master-to-gmpp')
     assert dm.data[2].cellname != 'JUNK'
 
 
 def test_create_gmpp_datamap_object():
-    dm = DatamapGMPP(
-        '/home/lemon/Documents/bcompiler/source/datamap-master-to-gmpp')
     assert dm.data[0].cellname, 'Project/Programme Name'
     assert dm.data[0].sheet, 'GMPP Return'
     assert dm.data[0].cellref, 'C25'
@@ -35,8 +32,6 @@ def test_create_gmpp_datamap_object():
 
 
 def test_object_attrs():
-    dm = DatamapGMPP(
-        '/home/lemon/Documents/bcompiler/source/datamap-master-to-gmpp')
     # there shouldn't be any single item lines in the DatamapGMPP
     assert dm._dml_cname == []
     # there shouldn't be any 2 item lines either

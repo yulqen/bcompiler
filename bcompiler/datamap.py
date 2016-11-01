@@ -212,7 +212,8 @@ class DatamapGMPP(Datamap):
         return len(self._dml_no_cellref)
 
     def print_no_cellref_lines(self):
-        return [line for line in self._dml_no_cellref]
+        return [line for line in self._dict_reader_lines
+                if None in line['gmpp_template_cell_reference']
 
     def _clean(self):
         """The implementation here is based on testing the datamap as a

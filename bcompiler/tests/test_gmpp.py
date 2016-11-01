@@ -18,6 +18,10 @@ def test_clean_creation_of_dm_object():
     assert dm.data[1].cellref == 'C5'
 
 
+def test_that_empty_cell_ref_returns_none():
+    assert dm.data[3].cellref is None
+
+
 def test_no_single_item_datamap_lines_thanks():
     assert dm.data[2].cellname != 'JUNK'
 

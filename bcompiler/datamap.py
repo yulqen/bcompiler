@@ -216,24 +216,27 @@ class DatamapGMPP(Datamap):
             for row in sd_data_reader:
                 if 'extra_data' in row.keys():
                     extra_st = ' '.join(row['extra_data'])
-                    print(extra_st)
-                    # I KNOW WHAT IS NEEDED HERE:
-                    # YOU MIGHT HAVE AN EXTRA JUNK CELL, BUT YOU STILL WANT
-                    # THE THREE preceding cells to migrate, so you don't
-                    # need this logic to test a fourth cell. Just migrate
-                    # the data and get on with it
-                    # of you could include a helpful info log to tell the user
-                    # that the extra fields from the csv are going to be
-                    # chucked
-                    dml = DatamapLine()
-                    dml.cellname = row['master_cellname']
-                    dml.sheet = row['gmpp_template_sheet_reference']
-                    dml.cellref = row['gmpp_template_cell_reference']
-                    self.data.append(dml)
-                    self._dml_cname_sheet_cref.append(dml)
                     logger.info(
                         "Only three fields will migrate. {}"
                         "rejected".format(extra_st))
+                if (row['gmpp_template_sheet_reference'] is ''
+                        or row['gmpp_template_cell_reference']) is '':
+                    logger.info("Not enough items in your datamap line.")
+                    dml = DatamapLine()
+                    if row['master_cellname'] == '':
+                        dml.cellname = None
+                    else:
+                        dml.cellname = row['master_cellname']
+                    if row['gmpp_template_sheet_reference'] == '':
+                        dml.sheet = None
+                    else:
+                        dml.sheet = row['gmpp_template_sheet_reference']
+                    if row['gmpp_template_cell_reference'] == '':
+                        dml.cellref = None
+                    else:
+                        dml.cellref = row['gmpp_template_cell_reference']
+                    self.data.append(dml)
+                    self._dml_cname_sheet_cref.append(dml)
                 else:
                     dml = DatamapLine()
                     dml.cellname = row['master_cellname']
@@ -241,9 +244,6 @@ class DatamapGMPP(Datamap):
                     dml.cellref = row['gmpp_template_cell_reference']
                     self.data.append(dml)
                     self._dml_cname_sheet_cref.append(dml)
-                if (row['gmpp_template_sheet_reference'] is None
-                        or row['gmpp_template_cell_reference']) is None:
-                    logger.info("Not enough items in your datamap line")
 
     def __repr__(self):
         return "DatamapGMPP(source_file={}".format(self.source_file)

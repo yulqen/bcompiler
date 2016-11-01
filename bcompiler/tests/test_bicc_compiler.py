@@ -180,48 +180,5 @@ class TestDatamapFunctionality(unittest.TestCase):
                                  "Cellref: C12 | Dropdown: Finance Figures"))
 
 
-class TestGMPPExport(unittest.TestCase):
-    """
-    DOCSTRING
-    """
-    def setUp(self):
-        self.cell_regex = re.compile('[A-Z]+[0-9]+')
-        self.dropdown_regex = re.compile('^\D*$')
-        self.docs = os.path.join(os.path.expanduser('~'), 'Documents')
-        bcomp_working_d = 'bcompiler'
-        self.path = os.path.join(self.docs, bcomp_working_d)
-        self.source_path = os.path.join(self.path, 'source')
-        self.output_path = os.path.join(self.path, 'output')
-        self.datamap_master_to_gmpp = os.path.join(
-            self.source_path, 'datamap-master-to-gmpp')
-        self.master = os.path.join(self.source_path, 'master.csv')
-        self.transposed_master = os.path.join(
-            self.source_path, 'master_transposed.csv')
-        self.dm = DatamapGMPP(
-            datamap_type='master-to-gmpp',
-            source_file=self.datamap_master_to_gmpp)
-
-    def test_there_is_the_correct_datamap_source_file(self):
-        self.assertTrue(os.path.exists(self.datamap_master_to_gmpp))
-
-    def test_create_gmpp_datamap_object(self):
-        self.assertEqual(self.dm.data[0].cellname, 'Project/Programme Name')
-        self.assertEqual(self.dm.data[0].sheet, 'GMPP Return')
-        self.assertEqual(self.dm.data[0].cellref, 'C25')
-        self.assertEqual(self.dm.data[0].dropdown_txt, None)
-        self.assertEqual(self.dm.data[1].cellname, 'SRO Sign-Off')
-        self.assertEqual(self.dm.data[1].sheet, 'GMPP Return')
-        self.assertEqual(self.dm.data[1].cellref, 'C5')
-        self.assertEqual(self.dm.data[1].dropdown_txt, None)
-
-    def test_object_attrs(self):
-        # there shouldn't be any single item lines in the DatamapGMPP
-        self.assertEqual(self.dm._dml_cname, [])
-        # there shouldn't be any 2 item lines either
-        self.assertEqual(self.dm._dml_cname_sheet, [])
-        # there should be lots of 3 item lines though!
-        self.assertGreater(len(self.dm._dml_cname_sheet_cref), 0)
-
-
 if __name__ == "__main__":
     unittest.main()

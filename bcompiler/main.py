@@ -36,6 +36,7 @@ from bcompiler.utils import VALIDATION_REFERENCES
 from bcompiler.utils import SOURCE_DIR, OUTPUT_DIR, DATAMAP_MASTER_TO_RETURN
 from bcompiler.utils import CLEANED_DATAMAP
 from bcompiler.utils import working_directory, DATAMAP_RETURN_TO_MASTER
+from bcompiler.utils import project_data_line
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
@@ -63,7 +64,7 @@ def get_parser():
         nargs=1,
         help='parse master.csv and flip to correct orientation')
     parser.add_argument(
-        '-b', '--populate-blank',
+        '-b', '--populate-bicc-form',
         dest='populate',
         metavar='project integer',
         help='populate blank bicc forms from master for project N')
@@ -162,6 +163,7 @@ def parse_csv_to_file(source_file):
         for i in lis:
             # we need to do this to remove trailing "\n" from the end of
             # each original master.csv line
+            logger.debug("Stripping \\n from {}".format(i))
             i[-1] = i[-1].rstrip()
 
     for x in zip(*lis):
@@ -222,18 +224,6 @@ def get_datamap():
                     "Something wrong with the datamap indexing", m_map.items())
             output_excel_map_list.append(m_map)
     return output_excel_map_list
-
-
-def project_data_line():
-    p_dict = {}
-    with open(SOURCE_DIR + 'master_transposed.csv', 'r') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            key = row.pop('Project/Programme Name')
-            if key in p_dict:
-                pass
-            p_dict[key] = row
-    return p_dict
 
 
 def populate_blank_bicc_form(source_master_file, proj_num):

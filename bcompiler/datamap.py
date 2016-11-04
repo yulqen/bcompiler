@@ -211,9 +211,11 @@ class DatamapGMPP(Datamap):
     def no_cellrefs(self):
         return len(self._dml_no_cellref)
 
-    def print_no_cellref_lines(self):
-        return [line for line in self._dict_reader_lines
-                if None in line['gmpp_template_cell_reference']
+#    def print_no_cellref_lines(self):
+#        # TODO we can't do this on a close csv file
+#        # remove for now
+#        return [line for line in self._dict_reader_lines
+#                if None in line['gmpp_template_cell_reference']]
 
     def _clean(self):
         """The implementation here is based on testing the datamap as a

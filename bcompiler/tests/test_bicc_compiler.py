@@ -5,10 +5,12 @@ import unittest
 import re
 from bcompiler.main import create_master_dict_transposed, clean_datamap
 from bcompiler.main import create_datamap_n_tuples
-from bcompiler.utils import VALIDATION_REFERENCES, SHEETS
+
 from bcompiler.compile import parse_source_cells, get_current_quarter
-from bcompiler.datamap import Datamap, DatamapLine, DatamapGMPP
+from bcompiler.datamap import Datamap, DatamapLine
+
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER
+from bcompiler.utils import VALIDATION_REFERENCES, SHEETS
 
 
 class TestMasterFunctions(unittest.TestCase):
@@ -41,7 +43,7 @@ class TestMasterFunctions(unittest.TestCase):
         self.assertTrue(os.path.exists(self.transposed_master))
 
     def test_for_individual_project_data_lines(self):
-        test_st = ("Project/Programme Name,Classification,SRO Sign-Off,"
+        test_st = ("Project/Programme Name,SRO Sign-Off,"
                    "FD Sign-Off,")
         len_test_st = len(test_st)
         with open(self.transposed_master, 'r') as f:

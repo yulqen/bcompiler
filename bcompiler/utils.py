@@ -1,7 +1,64 @@
 """
 Docstring here
 """
+import csv
+import logging
 import os
+
+from bcompiler.datamap import DatamapGMPP
+
+from openpyxl import load_workbook
+
+logger = logging.getLogger('bcompiler.utils')
+
+
+def populate_blank_gmpp_form(openpyxl_template, project):
+    blank = openpyxl_template
+    dm = DatamapGMPP(
+        '/home/lemon/Documents/bcompiler/source/datamap-master-to-gmpp')
+    target_ws = blank.get_sheet_by_name('GMPP Return')
+    project_data = project_data_line()
+    for line in dm.data:
+        if 'Project/Programme Name' in line.cellname:
+            pass
+        elif line.cellref is not None:
+            target_ws[line.cellref].value = project_data[project][line.cellname]
+    blank.save(OUTPUT_DIR + project + ' Q2_GMPP.xlsx')
+
+
+def project_data_line():
+    p_dict = {}
+    with open(SOURCE_DIR + 'master_transposed.csv', 'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            key = row.pop('Project/Programme Name')
+            if key in p_dict:
+                pass
+            p_dict[key] = row
+    return p_dict
+
+
+def gmpp_project_data():
+    data = project_data_line()
+    gmpp_project_data_list = []
+    for project in data:
+        if data[project]['GMPP'] == 'Yes':
+            gmpp_project_data_list.append(data[project])
+    return gmpp_project_data_list
+
+
+def gmpp_project_names():
+    data = project_data_line()
+    return [project for project in data if data[project]['GMPP'] == 'Yes']
+
+
+def open_openpyxl_template(template_file):
+    """
+    Opens an xlsx file (the template) and returns the openpyxl object.
+    """
+    wb = load_workbook(template_file)
+    logger.debug("Opening {} as an openpyxl object".format(template_file))
+    return wb
 
 
 def working_directory(dir_type=None):
@@ -34,7 +91,8 @@ DATAMAP_MASTER_TO_RETURN = SOURCE_DIR + 'datamap-master-to-returns'
 DATAMAP_MASTER_TO_GMPP = SOURCE_DIR + 'datamap-master-to-gmpp'
 CLEANED_DATAMAP = SOURCE_DIR + 'cleaned_datamap'
 MASTER = SOURCE_DIR + 'master.csv'
-TEMPLATE = SOURCE_DIR + 'bicc_template.csv'
+TEMPLATE = SOURCE_DIR + 'bicc_template.xlsx'
+GMPP_TEMPLATE = SOURCE_DIR + 'gmpp_template.xlsx'
 
 
 VALIDATION_REFERENCES = {

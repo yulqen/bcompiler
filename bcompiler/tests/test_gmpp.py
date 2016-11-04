@@ -102,4 +102,4 @@ def test_get_list_of_gmpp_project_names():
 def test_populate_single_gmpp_form():
     template_opyxl = open_openpyxl_template(GMPP_TEMPLATE)
     populate_blank_gmpp_form(template_opyxl, project_to_test)
-    assert os.path.exists(OUTPUT_DIR + project_to_test + 'Q2_GMPP.xlsx')
+    assert os.path.exists(OUTPUT_DIR + project_to_test + ' Q2_GMPP.xlsx')

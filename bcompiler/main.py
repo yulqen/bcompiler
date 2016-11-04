@@ -34,9 +34,10 @@ import bcompiler.compile as compile_returns
 from bcompiler import __version__
 from bcompiler.utils import VALIDATION_REFERENCES
 from bcompiler.utils import SOURCE_DIR, OUTPUT_DIR, DATAMAP_MASTER_TO_RETURN
-from bcompiler.utils import CLEANED_DATAMAP
+from bcompiler.utils import CLEANED_DATAMAP, GMPP_TEMPLATE
 from bcompiler.utils import working_directory, DATAMAP_RETURN_TO_MASTER
-from bcompiler.utils import project_data_line
+from bcompiler.utils import project_data_line, populate_blank_gmpp_form
+from bcompiler.utils import open_openpyxl_template
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
@@ -68,6 +69,11 @@ def get_parser():
         dest='populate',
         metavar='project integer',
         help='populate blank bicc forms from master for project N')
+    parser.add_argument(
+        '-g', '--populate-gmpp-form',
+        dest='populate-gmpp',
+        metavar='project title',
+        help='populate blank gmpp forms from master for project N')
     parser.add_argument(
         '-a', '--all',
         action="store_true")
@@ -458,6 +464,10 @@ def main():
         clean_datamap(DATAMAP_MASTER_TO_RETURN)
         parse_csv_to_file(master)
         populate_blank_bicc_form(master, args['populate'])
+        return
+    if args['populate-gmpp']:
+        template_opyxl = open_openpyxl_template(GMPP_TEMPLATE)
+        populate_blank_gmpp_form(template_opyxl, args['populate-gmpp'])
         return
     if args['all']:
         pop_all()

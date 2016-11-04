@@ -16,14 +16,22 @@ def populate_blank_gmpp_form(openpyxl_template, project):
     blank = openpyxl_template
     dm = DatamapGMPP(
         '/home/lemon/Documents/bcompiler/source/datamap-master-to-gmpp')
+    logger.info("Grabbing GMPP datamap {}".format(dm.source_file))
     target_ws = blank.get_sheet_by_name('GMPP Return')
     project_data = project_data_line()
+    logger.info("Grabbing project_data from master")
     for line in dm.data:
         if 'Project/Programme Name' in line.cellname:
             pass
         elif line.cellref is not None:
-            target_ws[line.cellref].value = project_data[project][line.cellname]
-    blank.save(OUTPUT_DIR + project + ' Q2_GMPP.xlsx')
+            d_to_migrate = project_data[project][line.cellname]
+            target_ws[line.cellref].value = d_to_migrate
+            logger.debug(
+                "Migrating {} from {} to blank template".format(
+                    d_to_migrate, line.cellref))
+    fn = OUTPUT_DIR + project + ' Q2_GMPP.xlsx'
+    logger.info("Writing {}".format(fn))
+    blank.save(fn)
 
 
 def project_data_line():
@@ -35,6 +43,8 @@ def project_data_line():
             if key in p_dict:
                 pass
             p_dict[key] = row
+            logger.debug(
+                "Adding {} to project_data_line dictionary".format(key))
     return p_dict
 
 
@@ -57,7 +67,7 @@ def open_openpyxl_template(template_file):
     Opens an xlsx file (the template) and returns the openpyxl object.
     """
     wb = load_workbook(template_file)
-    logger.debug("Opening {} as an openpyxl object".format(template_file))
+    logger.info("Opening {} as an openpyxl object".format(template_file))
     return wb
 
 

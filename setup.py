@@ -4,6 +4,7 @@ from setuptools import setup, find_packages
 import bcompiler
 import os
 
+
 def read(*names):
     values = dict()
     extensions = ['.txt', '.rst']
@@ -60,5 +61,6 @@ setup(
     },
     install_requires=[
                          'openpyxl',
-                     ]
+                     ],
+    test_suite='bcompiler.tests'
 )

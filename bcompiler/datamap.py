@@ -34,8 +34,8 @@ class DatamapLine(object):
             self.cellname, self.sheet, self.cellref, self.dropdown_txt))
 
     def __repr__(self):
-        return "DatamapLine(cellname={}, sheet={}, cellref={},\
-            dropdowntext={})".format(
+        return ("DatamapLine(cellname={}, sheet={}, cellref={},"
+                "dropdowntext={})").format(
                 self.cellname, self.sheet, self.cellref, self.dropdown_txt)
 
 
@@ -206,6 +206,24 @@ class DatamapGMPP(Datamap):
         self._dml_no_cellref = []
         self._dict_reader_lines = []
         Datamap.__init__(self, 'master-to-gmpp', source_file)
+
+    def add_additional_data(self):
+        additional_data = []  # a listof DatamapLine objects
+        add_data = [
+            ("Classification", "C3", "OFFICIAL SENSITIVE"),
+            ("Person completing this return", "C9", "Michelle Jennings"),
+            ("Email Address", "G9", "michelle.jennings@dft.gsi.gov.uk"),
+            ("Dept Single Point of Contact (SPOCA)", "C11", "Michelle Jennings"),
+            ("Email Address", "G11", "michelle.jennings@dft.gsi.gov.uk")
+        ]
+        # add the additional data to self...
+        for item in add_data:
+            dml = DatamapLine()
+            dml.cellname = item[0]
+            dml.cellref = item[1]
+            dml.added_data_field = item[2]
+            additional_data.append(dml)
+        return additional_data
 
     @property
     def no_cellrefs(self):

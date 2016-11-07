@@ -12,6 +12,10 @@ from openpyxl import load_workbook
 logger = logging.getLogger('bcompiler.utils')
 
 
+def additional_gmpp_data():
+    pass
+
+
 def populate_blank_gmpp_form(openpyxl_template, project):
     blank = openpyxl_template
     dm = DatamapGMPP(
@@ -29,6 +33,10 @@ def populate_blank_gmpp_form(openpyxl_template, project):
             logger.debug(
                 "Migrating {} from {} to blank template".format(
                     d_to_migrate, line.cellref))
+    # inject additonal data
+    additional_data = dm.add_additional_data()
+    for line in additional_data:
+        target_ws[line.cellref].value = line.added_data_field
     fn = OUTPUT_DIR + project + ' Q2_GMPP.xlsx'
     logger.info("Writing {}".format(fn))
     blank.save(fn)
@@ -141,6 +149,9 @@ VALIDATION_REFERENCES = {
     'Programme': '"=\'Dropdown List\'!$AI7:$AI$2"',
     'Other': '"=\'Dropdown List\'!$AJ19:$AJ$2"'
 }
+
 SHEETS = ['Summary', 'Finance & Benefits', 'Resources',
           'Approval & Project milestones',
           'Assurance planning']
+
+

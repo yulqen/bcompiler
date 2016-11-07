@@ -12,6 +12,7 @@ from bcompiler.utils import project_data_line
 from bcompiler.utils import gmpp_project_data
 from bcompiler.utils import gmpp_project_names
 from bcompiler.utils import populate_blank_gmpp_form
+from bcompiler.utils import additional_gmpp_data
 
 
 class TestGMPPDatamap(TestCase):
@@ -92,3 +93,14 @@ class TestGMPPDatamap(TestCase):
         populate_blank_gmpp_form(template_opyxl, self.project_to_test)
         self.assertTrue(os.path.exists(
             OUTPUT_DIR + self.project_to_test + ' Q2_GMPP.xlsx'))
+
+    def test_additional_datalines(self):
+        """We need to include some data in the outputted template
+        that are not included in the datamap because we don't collect them
+        in the BICC return."""
+        dm_a = self.dm.add_additional_data()
+        self.assertEqual("OFFICIAL SENSITIVE", dm_a[0].added_data_field)
+        self.assertEqual("Michelle Jennings", dm_a[1].added_data_field)
+        self.assertEqual("michelle.jennings@dft.gsi.gov.uk", dm_a[2].added_data_field)
+        self.assertEqual("Michelle Jennings", dm_a[3].added_data_field)
+        self.assertEqual("michelle.jennings@dft.gsi.gov.uk", dm_a[4].added_data_field)

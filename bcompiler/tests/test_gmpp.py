@@ -18,7 +18,8 @@ class TestGMPPDatamap(TestCase):
     def setUp(self):
         self.dm = DatamapGMPP(
             '/home/lemon/Documents/bcompiler/source/datamap-master-to-gmpp')
-        self.dm_file = '/home/lemon/Documents/bcompiler/source/datamap-master-to-gmpp'
+        self.dm_file = ('/home/lemon/Documents/bcompiler/source/'
+                        'datamap-master-to-gmpp')
         self.project_to_test = 'Rail Franchising Programme'
         self.transposed_master = SOURCE_DIR + "master_transposed.csv"
         self.dm_file = DATAMAP_MASTER_TO_GMPP
@@ -29,7 +30,7 @@ class TestGMPPDatamap(TestCase):
 
     def test_clean_creation_of_dm_object(self):
         self.assertEqual(self.dm.data[0].cellname, 'Project/Programme Name')
-        self.assertEqual(self.dm.data[1].cellref, 'C5')
+        self.assertEqual(self.dm.data[0].cellref, 'C23')
 
     def test_that_empty_cell_ref_returns_none(self):
         self.assertIsNone(self.dm.data[3].cellref)

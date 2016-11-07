@@ -76,7 +76,7 @@ def get_parser():
         metavar='project title',
         help='populate blank gmpp forms from master for project N')
     parser.add_argument(
-        '--populate-all-gmpp',
+        '-j', '--populate-all-gmpp',
         action="store_true",
         dest='populate-all-gmpp',
         help='populate blank gmpp forms from master for all projects')

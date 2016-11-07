@@ -73,7 +73,7 @@ def open_openpyxl_template(template_file):
     """
     Opens an xlsx file (the template) and returns the openpyxl object.
     """
-    wb = load_workbook(template_file)
+    wb = load_workbook(template_file, keep_vba=True)
     logger.info("Opening {} as an openpyxl object".format(template_file))
     return wb
 

@@ -38,6 +38,7 @@ from bcompiler.utils import CLEANED_DATAMAP, GMPP_TEMPLATE
 from bcompiler.utils import working_directory, DATAMAP_RETURN_TO_MASTER
 from bcompiler.utils import project_data_line, populate_blank_gmpp_form
 from bcompiler.utils import open_openpyxl_template
+from bcompiler.utils import gmpp_project_names
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
@@ -74,6 +75,11 @@ def get_parser():
         dest='populate-gmpp',
         metavar='project title',
         help='populate blank gmpp forms from master for project N')
+    parser.add_argument(
+        '--populate-all-gmpp',
+        action="store_true",
+        dest='populate-all-gmpp',
+        help='populate blank gmpp forms from master for all projects')
     parser.add_argument(
         '-a', '--all',
         action="store_true")
@@ -469,6 +475,12 @@ def main():
     if args['populate-gmpp']:
         template_opyxl = open_openpyxl_template(GMPP_TEMPLATE)
         populate_blank_gmpp_form(template_opyxl, args['populate-gmpp'])
+        return
+    if args['populate-all-gmpp']:
+        template_opyxl = open_openpyxl_template(GMPP_TEMPLATE)
+        gmpp_projects = gmpp_project_names()
+        for project in gmpp_projects:
+            populate_blank_gmpp_form(template_opyxl, project)
         return
     if args['all']:
         pop_all()

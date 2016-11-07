@@ -12,10 +12,6 @@ from openpyxl import load_workbook
 logger = logging.getLogger('bcompiler.utils')
 
 
-def additional_gmpp_data():
-    pass
-
-
 def populate_blank_gmpp_form(openpyxl_template, project):
     blank = openpyxl_template
     dm = DatamapGMPP(

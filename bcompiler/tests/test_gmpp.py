@@ -108,3 +108,5 @@ class TestGMPPDatamap(TestCase):
             "Michelle Jennings", dm_a[3].added_data_field)
         self.assertEqual(
             "michelle.jennings@dft.gsi.gov.uk", dm_a[4].added_data_field)
+        self.assertEqual(
+            "DfT", dm_a[5].added_data_field)

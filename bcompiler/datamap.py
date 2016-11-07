@@ -214,7 +214,8 @@ class DatamapGMPP(Datamap):
             ("Person completing this return", "C9", "Michelle Jennings"),
             ("Email Address", "G9", "michelle.jennings@dft.gsi.gov.uk"),
             ("Dept Single Point of Contact (SPOCA)", "C11", "Michelle Jennings"),
-            ("Email Address", "G11", "michelle.jennings@dft.gsi.gov.uk")
+            ("Email Address", "G11", "michelle.jennings@dft.gsi.gov.uk"),
+            ("Reporting Department", "D25", "DfT")
         ]
         # add the additional data to self...
         for item in add_data:

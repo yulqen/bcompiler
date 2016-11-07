@@ -39,7 +39,7 @@ class TestGMPPDatamap(TestCase):
         """
         Hard-coded test: FRAGILE!
         """
-        self.assertEqual(self.dm.no_cellrefs, 188)
+        self.assertEqual(self.dm.no_cellrefs, 189)
 
     def test_create_gmpp_datamap_object(self):
         """
@@ -110,3 +110,9 @@ class TestGMPPDatamap(TestCase):
             "michelle.jennings@dft.gsi.gov.uk", dm_a[4].added_data_field)
         self.assertEqual(
             "DfT", dm_a[5].added_data_field)
+
+    def test_merge_cdel_rdel(self):
+        """
+        How about we merge any cells that have duplicate cellrefs by default?
+        """
+        pass

@@ -11,6 +11,8 @@ from openpyxl import load_workbook
 
 logger = logging.getLogger('bcompiler.utils')
 
+rdel_cdel_merge = ''
+
 
 def populate_blank_gmpp_form(openpyxl_template, project):
     blank = openpyxl_template
@@ -22,7 +24,8 @@ def populate_blank_gmpp_form(openpyxl_template, project):
     logger.info("Grabbing project_data from master")
     for line in dm.data:
         if 'Project/Programme Name' in line.cellname:
-            pass
+            d_to_migrate = project
+            target_ws[line.cellref].value = d_to_migrate
         elif line.cellref is not None:
             d_to_migrate = project_data[project][line.cellname]
             target_ws[line.cellref].value = d_to_migrate

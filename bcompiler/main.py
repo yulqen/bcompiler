@@ -473,10 +473,14 @@ def main():
         populate_blank_bicc_form(master, args['populate'])
         return
     if args['populate-gmpp']:
+        master = '{}master.csv'.format(working_directory('source'))
+        parse_csv_to_file(master)
         template_opyxl = open_openpyxl_template(GMPP_TEMPLATE)
         populate_blank_gmpp_form(template_opyxl, args['populate-gmpp'])
         return
     if args['populate-all-gmpp']:
+        master = '{}master.csv'.format(working_directory('source'))
+        parse_csv_to_file(master)
         template_opyxl = open_openpyxl_template(GMPP_TEMPLATE)
         gmpp_projects = gmpp_project_names()
         for project in gmpp_projects:

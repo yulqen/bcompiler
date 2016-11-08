@@ -82,7 +82,7 @@ class TestGMPPDatamap(TestCase):
 
     def test_get_list_of_gmpp_project_data(self):
         gmpp_list = gmpp_project_data()
-        self.assertEqual(len(gmpp_list), 15)
+        self.assertEqual(len(gmpp_list), 16)
 
     def test_get_list_of_gmpp_project_names(self):
         self.assertIn(self.project_to_test, gmpp_project_names())

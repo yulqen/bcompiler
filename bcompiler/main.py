@@ -1,73 +1,119 @@
 """
 Copyright (c) 2016 Matthew Lemon
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
- modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy,  modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the  Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
- Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE. """
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
 import argparse
+import colorlog
 import csv
 import logging
 import os
 import re
 import shutil
 import sys
+
 from collections import namedtuple
 
 import bcompiler.compile as compile_returns
+
 from bcompiler import __version__
-from bcompiler.workingdir import SOURCE_DIR, OUTPUT_DIR, DATAMAP_MASTER_TO_RETURN, CLEANED_DATAMAP, working_directory, \
-    DATAMAP_RETURN_TO_MASTER
+from bcompiler.utils import VALIDATION_REFERENCES
+from bcompiler.utils import SOURCE_DIR, OUTPUT_DIR, DATAMAP_MASTER_TO_RETURN
+from bcompiler.utils import CLEANED_DATAMAP, GMPP_TEMPLATE
+from bcompiler.utils import working_directory, DATAMAP_RETURN_TO_MASTER
+from bcompiler.utils import project_data_line, populate_blank_gmpp_form
+from bcompiler.utils import open_openpyxl_template
+from bcompiler.utils import gmpp_project_names
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
-logger = logging.getLogger('bcompiler')
+
+logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler('/home/lemon/Desktop/bcompiler.log')
-fh.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
-fh.setFormatter(formatter)
-ch.setFormatter(formatter)
-logger.addHandler(fh)
-logger.addHandler(ch)
+
 
 def get_parser():
-    parser = argparse.ArgumentParser(description='Compile BICC data or prepare Excel BICC return forms.')
-    parser.add_argument('-c', '--clean-datamap', dest="clean-datamap", action="store_true",
-                        help='clean datamap file whose path is given as string')
-    parser.add_argument('-v', '--version', help='displays the current version of bcompiler', action="store_true")
-    parser.add_argument('-p', '--parse', dest='parse', metavar='source file', nargs=1, help='parse master.csv and flip'
-                                                                                            ' to correct orientation')
-    parser.add_argument('-b', '--populate-blank', dest='populate', metavar='project integer',
-                        help='populate blank bicc forms from master for project N')
-    parser.add_argument('-a', '--all', action="store_true")
-    parser.add_argument('-d', '--create-wd', dest='create-wd', action="store_true",
-                        help='create working directory at $HOME/Documents/bcompiler')
-    parser.add_argument('-f', '--force-create-wd', dest='f-create-wd', action="store_true", help='remove existing '
-                                                                                                 'working directory and'
-                                                                                                 'create a new one')
-    parser.add_argument('--compile', action="store_true", dest='compile', help='compile returns to master')
+    parser = argparse.ArgumentParser(
+        description='Compile BICC data or prepare Excel BICC return forms.')
+    parser.add_argument(
+        '-c', '--clean-datamap',
+        action="store_true",
+        dest="clean-datamap",
+        help='clean datamap file whose path is given as string')
+    parser.add_argument(
+        '-v', '--version',
+        action="store_true",
+        help='displays the current version of bcompiler')
+    parser.add_argument(
+        '-p', '--parse',
+        dest='parse',
+        metavar='source file',
+        nargs=1,
+        help='parse master.csv and flip to correct orientation')
+    parser.add_argument(
+        '-b', '--populate-bicc-form',
+        dest='populate',
+        metavar='project integer',
+        help='populate blank bicc forms from master for project N')
+    parser.add_argument(
+        '-g', '--populate-gmpp-form',
+        dest='populate-gmpp',
+        metavar='project title',
+        help='populate blank gmpp forms from master for project N')
+    parser.add_argument(
+        '-j', '--populate-all-gmpp',
+        action="store_true",
+        dest='populate-all-gmpp',
+        help='populate blank gmpp forms from master for all projects')
+    parser.add_argument(
+        '-a', '--all',
+        action="store_true")
+    parser.add_argument(
+        '-d', '--create-wd',
+        action="store_true",
+        dest='create-wd',
+        help='create working directory at $HOME/Documents/bcompiler')
+    parser.add_argument(
+        '-f', '--force-create-wd',
+        action="store_true",
+        dest='f-create-wd',
+        help='remove existing working directory and create a new one')
+    parser.add_argument(
+        '--compile',
+        action="store_true",
+        dest='compile',
+        help='compile returns to master')
+    parser.add_argument(
+        '-ll', '--loglevel',
+        type=str,
+        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+        help=(
+            'Set the logging level for the console.'
+            'The log file is set to DEBUG.'))
     return parser
 
 
 def clean_datamap(dm_file):
-    logger.info('setting clean datamap')
+    logger.info("Cleaning {}.".format(dm_file))
     cleaned_datamap_file = CLEANED_DATAMAP
     try:
         os.remove(cleaned_datamap_file)
     except FileNotFoundError:
-        logger.info('existing clean_datamap file not there')
         pass
     cleaned_datamap = open(cleaned_datamap_file, 'a+')
     with open(dm_file, 'r', encoding='UTF-8') as f:
@@ -78,15 +124,13 @@ def clean_datamap(dm_file):
                 newline += '\n'
                 cleaned_datamap.write(newline)
             else:
-                logger.info('no comma in datamap line {}'.format(newline))
                 newline = newline + ',' + '\n'
                 cleaned_datamap.write(newline)
-        logger.info('created cleaned_datamap at {}'.format(CLEANED_DATAMAP))
         return cleaned_datamap
 
 
 def create_datamap_n_tuples():
-    cell_regex = re.compile('[A-Z]+[0-9]+')
+    CELL_REGEX = re.compile('[A-Z]+[0-9]+')
     datalines = []
     DataMapLine = namedtuple('DataMapLine', 'key value cellref dropdown')
     try:
@@ -100,18 +144,22 @@ def create_datamap_n_tuples():
         data = [line[:-1] for line in data]
         data = [line.split(',') for line in data]
         for line in data:
-            if cell_regex.search(line[-1]):
+            if CELL_REGEX.search(line[-1]):
                 try:
-                    datalines.append(DataMapLine(key=line[0], value=line[1], cellref=line[2], dropdown=None))
+                    datalines.append(
+                        DataMapLine(
+                            key=line[0],
+                            value=line[1],
+                            cellref=line[2],
+                            dropdown=None))
                 except IndexError as e:
-                    print("Getting {} for {}".format(e, line))
-
+                    # print("Getting {} for {}".format(e, line))
                     pass
             else:
                 try:
                     datalines.append(DataMapLine._make(line))
                 except TypeError as e:
-                    print("Getting this error {} - dm: {}".format(e, line))
+                    # print("Getting this error {} - dm: {}".format(e, line))
                     pass
     return datalines
 
@@ -126,7 +174,9 @@ def parse_csv_to_file(source_file):
     with open(source_file, 'r') as source_f:
         lis = [x.split(',') for x in source_f]
         for i in lis:
-            # we need to do this to remove trailing "\n" from the end of each original master.csv line
+            # we need to do this to remove trailing "\n" from the end of
+            # each original master.csv line
+            logger.debug("Stripping \\n from {}".format(i))
             i[-1] = i[-1].rstrip()
 
     for x in zip(*lis):
@@ -158,45 +208,35 @@ def get_datamap():
     for line in data:
         # split on , allowing us to access useful data from data map file
         data_map_line = line.split(',')
-        if data_map_line[1] in ['Summary', 'Finance & Benefits', 'Resources', 'Approval & Project milestones',
+        if data_map_line[1] in ['Summary', 'Finance & Benefits',
+                                'Resources', 'Approval & Project milestones',
                                 'Assurance planning']:
             # the end item in the list is a newline - get rid of that
             del data_map_line[-1]
         if cell_regex.search(data_map_line[-1]):
             try:
-                m_map = dict(cell_description=data_map_line[0],
-                             sheet=data_map_line[1],
-                             cell_coordinates=data_map_line[2],
-                             validation_header='')
+                m_map = dict(
+                    cell_description=data_map_line[0],
+                    sheet=data_map_line[1],
+                    cell_coordinates=data_map_line[2],
+                    validation_header='')
             except IndexError:
-                m_map = dict(cell_description=data_map_line[0],
-                             sheet="CAN'T FIND SHEET")
+                m_map = dict(
+                    cell_description=data_map_line[0],
+                    sheet="CAN'T FIND SHEET")
             output_excel_map_list.append(m_map)
         elif data_map_line[-1] in dropdown_headers:
             try:
-                m_map = dict(cell_description=data_map_line[0],
-                             sheet=data_map_line[1],
-                             cell_coordinates=data_map_line[2],
-                             validation_header=data_map_line[3]
-                             )
+                m_map = dict(
+                    cell_description=data_map_line[0],
+                    sheet=data_map_line[1],
+                    cell_coordinates=data_map_line[2],
+                    validation_header=data_map_line[3])
             except IndexError:
-                print("Something wrong with the datamap indexing", m_map.items())
-
+                logger.error(
+                    "Something wrong with the datamap indexing", m_map.items())
             output_excel_map_list.append(m_map)
-
     return output_excel_map_list
-
-
-def project_data_line():
-    p_dict = {}
-    with open(SOURCE_DIR + 'master_transposed.csv', 'r') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            key = row.pop('Project/Programme Name')
-            if key in p_dict:
-                pass
-            p_dict[key] = row
-    return p_dict
 
 
 def populate_blank_bicc_form(source_master_file, proj_num):
@@ -214,11 +254,15 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     for item in datamap:
         if item['sheet'] == 'Summary':
             if 'Project/Programme Name' in item['cell_description']:
-                ws_summary[item['cell_coordinates']].value = test_proj
+                ws_summary[
+                    item['cell_coordinates']].value = test_proj
             try:
-                ws_summary[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
+                ws_summary[
+                    item['cell_coordinates']].value = test_proj_data[
+                        item['cell_description']]
             except KeyError:
-                print("Cannot find {} in master.csv".format(item['cell_description']))
+                print("Cannot find {} in master.csv".format(
+                    item['cell_description']))
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
@@ -226,9 +270,12 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv.add(ws_summary[item['cell_coordinates']])
         elif item['sheet'] == 'Finance & Benefits':
             try:
-                ws_fb[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
+                ws_fb[
+                    item['cell_coordinates']].value = test_proj_data[
+                        item['cell_description']]
             except KeyError:
-                print("Cannot find {} in master.csv".format(item['cell_description']))
+                print("Cannot find {} in master.csv".format(
+                    item['cell_description']))
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
@@ -236,9 +283,12 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv.add(ws_apm[item['cell_coordinates']])
         elif item['sheet'] == 'Resources':
             try:
-                ws_res[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
+                ws_res[
+                    item['cell_coordinates']].value = test_proj_data[
+                        item['cell_description']]
             except KeyError:
-                print("Cannot find {} in master.csv".format(item['cell_description']))
+                print("Cannot find {} in master.csv".format(
+                    item['cell_description']))
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
@@ -246,9 +296,12 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv.add(ws_apm[item['cell_coordinates']])
         elif item['sheet'] == 'Approval & Project milestones':
             try:
-                ws_apm[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
+                ws_apm[
+                    item['cell_coordinates']].value = test_proj_data[
+                        item['cell_description']]
             except KeyError:
-                print("Cannot find {} in master.csv".format(item['cell_description']))
+                print("Cannot find {} in master.csv".format(
+                    item['cell_description']))
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
@@ -256,9 +309,12 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv.add(ws_apm[item['cell_coordinates']])
         elif item['sheet'] == 'Assurance planning':
             try:
-                ws_ap[item['cell_coordinates']].value = test_proj_data[item['cell_description']]
+                ws_ap[
+                    item['cell_coordinates']].value = test_proj_data[
+                        item['cell_description']]
             except KeyError:
-                print("Cannot find {} in master.csv".format(item['cell_description']))
+                print("Cannot find {} in master.csv".format(
+                    item['cell_description']))
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
@@ -304,10 +360,11 @@ def create_working_directory():
             os.mkdir(os.path.join(root_path, folder))
         print("Clean working directory created at {}".format(root_path))
     else:
-        print("Working directory exists. You can either run the program like this and files"
-              "will be overwritten, or you should do --force-create-wd to remove the working"
-              "directory and create a new one.\n\nWARNING: this will remove any datamap and master.csv"
-              "files persent.")
+        print("Working directory exists. You can either run the program"
+              "like this and files will be overwritten, or you should do"
+              "--force-create-wd to remove the working directory and create "
+              "a new one.\n\nWARNING: this will remove any datamap and "
+              "master.csv files persent.")
 
 
 def delete_working_directory():
@@ -323,8 +380,9 @@ def delete_working_directory():
 
 def get_dropdown_data(header=None):
     """
-    Pull the dropdown data from the Dropdown List sheet in bicc_template.xlsx. Location
-    of this template file might need to be dynamic.
+    Pull the dropdown data from the Dropdown List sheet in
+    bicc_template.xlsx. Location of this template file might need
+    to be dynamic.
     :return tuple of column values from sheet, with header value at list[0]:
     """
     wb = load_workbook(SOURCE_DIR + 'bicc_template.xlsx', data_only=True)
@@ -335,7 +393,7 @@ def get_dropdown_data(header=None):
     if header:
         h = [h for h in dropdown_data if header in h[0]]
         h = tuple(h[0])
-        print("Getting {}".format(h))
+        # print("Getting {}".format(h))
         return h
     else:
         return dropdown_data
@@ -350,49 +408,13 @@ def get_dropdown_headers():
 
 
 def create_validation(header):
-    val_references = {
-        'Quarter': '"=\'Dropdown List\'!$A$9:$A$2"',
-        'Joining Qtr': "=\'Dropdown List\'!$B$25:$B$2",
-        'Classification': '"=\'Dropdown List\'!$C$4:$C$2"',
-        'Agencies': '"=\'Dropdown List\'!$D$7:$D$2"',
-        'Group': '"=\'Dropdown List\'!$E$7:$E$2"',
-        'DfT Division': '"=\'Dropdown List\'!$F$13:$F$2"',
-        'Entity': '"=\'Dropdown List\'!$G$4:$G$2"',
-        'Methodology': '"=\'Dropdown List\'!$H$10:$H$2"',
-        'Category': '"=\'Dropdown List\'!$I$7:$I$2"',
-        'Scope Changed': '"=\'Dropdown List\'!$J$4:$J$2"',
-        'Monetised / Non Monetised Benefits': '"=\'Dropdown List\'!$K$4:$K$2"',
-        'SDP': '"=\'Dropdown List\'!$L$5:$L$2"',
-        'RAG': '"=\'Dropdown List\'!$M$7:$M$2"',
-        'RAG_Short': '"=\'Dropdown List\'!$N$4:$N$2"',
-        'RPA': '"=\'Dropdown List\'!$O$4:$O$2"',
-        'MPLA / PLP': '"=\'Dropdown List\'!$P$29:$P$2"',
-        'Yes/No': '"=\'Dropdown List\'!$Q$3:$Q$2"',
-        'PL Changes': '"=\'Dropdown List\'!$R$31:$R$2"',
-        'Capability RAG': '"=\'Dropdown List\'!$S$5:$S$2"',
-        'Stage': '"=\'Dropdown List\'!$T$10:$T$2"',
-        'Business Cases': '"=\'Dropdown List\'!$U$10:$U$2"',
-        'Milestone Types': '"=\'Dropdown List\'!$V$4:$V$2"',
-        'Finance figures format': '"=\'Dropdown List\'!$W3:$W$2"',
-        'Index Years': '"=\'Dropdown List\'!$X27:$X$2"',
-        'Discount Rate': '"=\'Dropdown List\'!$Y32:$Y$2"',
-        'Finance type': '"=\'Dropdown List\'!$Z6:$Z$2"',
-        'Years (Spend)': '"=\'Dropdown List\'!$AC89:$AC$2"',
-        'Years (Benefits)': '"=\'Dropdown List\'!$AD91:$AD$2"',
-        'Snapshot Dates': '"=\'Dropdown List\'!$AE5:$AE$2"',
-        'Percentage of time spent on SRO role': '"=\'Dropdown List\'!$AF21:$AF$2"',
-        'AR Category': '"=\'Dropdown List\'!$AG5:$AG$2"',
-        'Project': '"=\'Dropdown List\'!$AH10:$AH$2"',
-        'Programme': '"=\'Dropdown List\'!$AI7:$AI$2"',
-        'Other': '"=\'Dropdown List\'!$AJ19:$AJ$2"'
-    }
-
     # if we need the regex to match the dropdown string - from pythex.org
-    # dropdown_regex = re.compile('"=\\'Dropdown List\\'!\$([A-Z]+)\$(\d+):\$([A-Z]+)\$(\d+)"')
+    # dropdown_regex =
+    # re.compile('"=\\'Dropdown List\\'!\$([A-Z]+)\$(\d+):\$([A-Z]+)\$(\d+)"')
     #
 
     try:
-        f_str = val_references[header]
+        f_str = VALIDATION_REFERENCES[header]
         dv = DataValidation(type='list', formula1=f_str, allow_blank=True)
         dv.prompt = "Please select from the list"
         dv.promptTitle = 'List Selection'
@@ -406,11 +428,36 @@ def main():
     parser = get_parser()
     args = vars(parser.parse_args())
     check_for_correct_source_files()
+    if args['loglevel']:
+        log_lev = args['loglevel']
+        logger.setLevel(logging.DEBUG)
+        fh = logging.FileHandler(OUTPUT_DIR + 'bcompiler.log', mode='w')
+        fh.setLevel(logging.DEBUG)
+        console = logging.StreamHandler()
+        console.setLevel(log_lev)
+        formatter = logging.Formatter('%(levelname)s - %(name)s - %(message)s')
+        fh.setFormatter(formatter)
+        console.setFormatter(colorlog.colorlog.ColoredFormatter())
+        logger.addHandler(fh)
+        logger.addHandler(console)
+    else:
+        logger.setLevel(logging.DEBUG)
+        fh = logging.FileHandler(OUTPUT_DIR + 'bcompiler.log', mode='w')
+        fh.setLevel(logging.DEBUG)
+        console = logging.StreamHandler()
+        console.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(levelname)s - %(name)s - %(message)s')
+        fh.setFormatter(formatter)
+        console.setFormatter(colorlog.colorlog.ColoredFormatter())
+        logger.addHandler(fh)
+        logger.addHandler(console)
+
     if args['version']:
         print("{}".format(__version__))
         return
     if args['clean-datamap']:
-        # THIS NEEDS TO BE SORTED OUT. We need to be able to clean based on the task (RETURN -> MASTER; MASTER -> RETURN)
+        # THIS NEEDS TO BE SORTED OUT. We need to be able to clean based
+        # on the task (RETURN -> MASTER; MASTER -> RETURN)
         # DO WE NEED THIS FUNCTION AT ALL?
         clean_datamap(DATAMAP_RETURN_TO_MASTER)
         # clean_datamap(DATAMAP_MASTER_TO_RETURN)
@@ -425,6 +472,20 @@ def main():
         parse_csv_to_file(master)
         populate_blank_bicc_form(master, args['populate'])
         return
+    if args['populate-gmpp']:
+        master = '{}master.csv'.format(working_directory('source'))
+        parse_csv_to_file(master)
+        template_opyxl = open_openpyxl_template(GMPP_TEMPLATE)
+        populate_blank_gmpp_form(template_opyxl, args['populate-gmpp'])
+        return
+    if args['populate-all-gmpp']:
+        master = '{}master.csv'.format(working_directory('source'))
+        parse_csv_to_file(master)
+        template_opyxl = open_openpyxl_template(GMPP_TEMPLATE)
+        gmpp_projects = gmpp_project_names()
+        for project in gmpp_projects:
+            populate_blank_gmpp_form(template_opyxl, project)
+        return
     if args['all']:
         pop_all()
         return
@@ -432,7 +493,8 @@ def main():
         create_working_directory()
         return
     if args['f-create-wd']:
-        print("This will destroy your existing working directory prior to creating a new one.\n\nAre you sure?")
+        print("This will destroy your existing working directory prior to"
+              "creating a new one.\n\nAre you sure?")
         response = input('(y/n) --> ')
         if response in ('y', 'ye', 'yes', 'Y', 'YES'):
             delete_working_directory()
@@ -443,7 +505,6 @@ def main():
     if args['compile']:
         clean_datamap(DATAMAP_RETURN_TO_MASTER)
         compile_returns.run()
-        return
 
 
 if __name__ == '__main__':

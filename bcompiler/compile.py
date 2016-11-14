@@ -1,137 +1,97 @@
+"""
+Initial Docstring.
+"""
 import fnmatch
 import logging
 import os
 import re
+import time
 from datetime import date
 
-from bcompiler.workingdir import DATAMAP_RETURN_TO_MASTER
+from bcompiler.datamap import Datamap
+from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
 from openpyxl import load_workbook, Workbook
 
-cell_regex = re.compile('[A-Z]+[0-9]+')
-dropdown_regex = re.compile('^\D*$')
-today = date.today().isoformat()
 
-logger = logging.getLogger('bcompiler')
+CELL_REGEX = re.compile('[A-Z]+[0-9]+')
+DROPDOWN_REGEX = re.compile('^\D*$')
+TODAY = date.today().isoformat()
+
+logger = logging.getLogger('bcompiler.compiler')
 
 DATA_MAP_FILE = DATAMAP_RETURN_TO_MASTER
 
 
-def get_sheet_names(source_file):
-    wb = load_workbook(source_file, read_only=True)
-    return wb.get_sheet_names()
-
-
-def get_sheet_data(source_file):
-    wb = load_workbook(source_file, read_only=True)
-    ws = wb['Finance & Benefits']
-
-    for row in ws.rows:
-        for cell in row:
-            if cell.value is not None:
-                print(cell.value)
-
-
-def get_current_quarter(source_file, path):
-    wb = load_workbook(path + "/source/returns/" + source_file, read_only=True)
+def get_current_quarter(source_file):
+    """
+    DOCSTRING HERE
+    """
+    wb = load_workbook(RETURNS_DIR + source_file, read_only=True)
     ws = wb['Summary']
     q = ws['G3'].value
+    logger.info('Getting current Quarter as {}'.format(q))
     return q
 
 
-def get_project_name(source_file):
-    wb = load_workbook(source_file, read_only=True)
-    ws = wb['Summary']
-    cn = ws['C10'].value
-    print(cn)
-
-
-def parse_data_file():
-    with open(DATA_MAP_FILE, 'r') as f:
-        data = f.readlines()
-
-        for line in data:
-            words = line.split(',')
-            print(words)
-
-
-def parse_source_cells(source_file):
+def parse_source_cells(source_file, datamap_source_file):
     """
-    :param source_file: an Excel file containing project return data
-    :return: a list of dict items mapping each key:value pair for the output column in GMPP's template
+    Doc string in here.
     """
-
-    # first, we load the source file
-    global ws
+    ls_of_dataline_dicts = []
     wb = load_workbook(source_file, read_only=True, data_only=True)
-
-    # we're going to output data from this function as a list of dict items
-    output_excel_map_list = []
-
-    # load the DATA_MAP_FILE, containing mappings to cells in the form based on key values
-    # from GMPP's master template
-    with open(DATA_MAP_FILE, 'r', encoding='UTF-8') as f:
-        data = f.readlines()
-
-        for line in data:
-            # split on , allowing us to access useful data from data map file
-            data_map_line = line.split(',')
-            # if the second word in each MAP line is a named sheet from the template file, we're interested
-            if data_map_line[1] in ['Summary', 'Finance & Benefits', 'Resources', 'Approval & Project milestones',
-                                    'Assurance planning']:
-                # the end item in the list is a newline - get rid of that
-                del data_map_line[-1]
-                # the worksheet in the source Excel file needs to be accessible
+    datamap_obj = Datamap(
+        datamap_type='returns-to-master',
+        source_file=datamap_source_file)
+    for item in datamap_obj.data:
+        if item.sheet is not None:
+            ws = wb[item.sheet]
+            if item.cellref is not None:
                 try:
-                    ws = wb[data_map_line[1]]
-                except KeyError as e:
-                    print("{} has no {} sheet! - {}".format(source_file, data_map_line[1], e))
-                # we only want to act query the source Excel file if there is a valid cell reference there
-                # so we use a regex to do that
-
-                # if the last entry is a cell reference
-                if cell_regex.search(data_map_line[-1]):
-                    try:
-                        destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value=ws[data_map_line[-1]].value)
-                    except IndexError:
-                        destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value="OUT OF BOUNDS!")
-                    output_excel_map_list.append(destination_kv)
-
-                # or if the last entry is likely dropdown text and the preceeding text is a cell reference...
-                elif cell_regex.search(data_map_line[-2]) and dropdown_regex.search(data_map_line[-1]):
-                    try:
-                        destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value=ws[data_map_line[-2]].value)
-                    except IndexError:
-                        destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value="OUT OF BOUNDS!")
-                    output_excel_map_list.append(destination_kv)
-
-            # if the DATA_MAP doesn't suggest the data is sourced in the template Excel, we just want to
-            # take the default data we have entered there (e.g. 'michelle dawson' as default)
-            # OR we return an empty string if there is no data
-            else:
-                # the end item in the list is a newline - get rid of that
-                del data_map_line[-1]
-                if len(data_map_line) > 1:
-                    destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value=data_map_line[-1])
-                # if the list has only one item, that means there is no data entered, so we want the value to
-                # be an empty string for now
-                else:
-                    destination_kv = dict(gmpp_key=data_map_line[0], gmpp_key_value="")
-                output_excel_map_list.append(destination_kv)
-
-    return output_excel_map_list
+                    t0 = time.clock()
+                    v = ws[item.cellref].value
+                    logger.debug(
+                        "Took {}s".format(
+                            time.clock() - t0))
+                    if v is None:
+                        logger.debug(
+                            "{} in {} is empty.".format(
+                                item.cellref,
+                                item.sheet))
+                    else:
+                        logger.debug(
+                            "{} in {} is {}".format(
+                                item.cellref,
+                                item.sheet,
+                                v))
+                except IndexError:
+                    logger.error(
+                        "Datamap wants sheet: {}; cellref: {} but this is out"
+                        "of range.\n\tFile: {}".format(
+                            item.sheet,
+                            item.cellref,
+                            source_file))
+                    v = ""
+                if type(v) == str:
+                    v = v.rstrip()
+                destination_kv = dict(gmpp_key=item.cellname, gmpp_key_value=v)
+                ls_of_dataline_dicts.append(destination_kv)
+    return ls_of_dataline_dicts
 
 
 # noinspection PyTypeChecker,PyTypeChecker,PyTypeChecker
 def write_excel(source_file, count, workbook):
-    # count is used to count number of times function is run so that multiple returns can be added
-    # and not overwrite the GMPP key column
-    # let's create an Excel file in memory
-    # it will have one worksheet - let's get it
+    """
+    count is used to count number of times function is run so that multiple
+    returns can be added
+    and not overwrite the GMPP key column
+    let's create an Excel file in memory
+    it will have one worksheet - let's get it
+    """
     ws = workbook.active
     # give it a title
     ws.title = "Constructed BICC Data Master"
 
-    out_map = parse_source_cells(source_file)
+    out_map = parse_source_cells(source_file, DATAMAP_RETURN_TO_MASTER)
     if count == 1:
         i = 1
         for d in out_map:
@@ -152,23 +112,19 @@ def write_excel(source_file, count, workbook):
 
 
 def run():
+    """
+    Doc string here.
+    """
     workbook = Workbook()
-
-    docs = os.path.join(os.path.expanduser('~'), 'Documents')
-    try:
-        bcomp_working_d = 'bcompiler'
-    except FileNotFoundError:
-        print("You need to run with --create-wd to create the working directory")
-    root_path = os.path.join(docs, bcomp_working_d)
     count = 1
-    for file in os.listdir(os.path.join(root_path, 'source/returns')):
+    for file in os.listdir(RETURNS_DIR):
         if fnmatch.fnmatch(file, '*.xlsx'):
-            print("Processing {}".format(file))
-            write_excel((root_path + '/source/returns/' + file), count=count, workbook=workbook)
+            logger.info("Processing {}".format(file))
+            write_excel((RETURNS_DIR + file), count=count, workbook=workbook)
             count += 1
-    for file in os.listdir(os.path.join(root_path, 'source/returns')):
-        cq = get_current_quarter(file, root_path)
+    for file in os.listdir(RETURNS_DIR):
+        cq = get_current_quarter(file)
         if cq is not None:
             break
-    OUTPUT_FILE = '{}/output/compiled_master_{}_{}.xlsx'.format(root_path, today, cq)
+    OUTPUT_FILE = '{}compiled_master_{}_{}.xlsx'.format(OUTPUT_DIR, TODAY, cq)
     workbook.save(OUTPUT_FILE)

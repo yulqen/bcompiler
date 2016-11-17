@@ -109,6 +109,10 @@ def get_parser():
 
 
 def clean_datamap(dm_file):
+    """
+    Used for its side-effects only which isn't ideal, but this isn't
+    Haskell, so why not?
+    """
     logger.info("Cleaning {}.".format(dm_file))
     cleaned_datamap_file = CLEANED_DATAMAP
     try:
@@ -126,7 +130,7 @@ def clean_datamap(dm_file):
             else:
                 newline = newline + ',' + '\n'
                 cleaned_datamap.write(newline)
-        return cleaned_datamap
+    cleaned_datamap.close()
 
 
 def create_datamap_n_tuples():
@@ -183,6 +187,7 @@ def parse_csv_to_file(source_file):
         for y in x:
             output.write(y + ',')
         output.write('\n')
+    output.close()
 
 
 def create_master_dict_transposed(source_master_csv):

@@ -19,7 +19,7 @@ def populate_blank_gmpp_form(openpyxl_template, project):
     dm = DatamapGMPP(
         '/home/lemon/Documents/bcompiler/source/datamap-master-to-gmpp')
     logger.info("Grabbing GMPP datamap {}".format(dm.source_file))
-    target_ws = blank.get_sheet_by_name('GMPP Return')
+    target_ws = blank['GMPP Return']
     project_data = project_data_line()
     logger.info("Grabbing project_data from master")
     for line in dm.data:

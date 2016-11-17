@@ -246,11 +246,11 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     test_proj = ls[int(proj_num)]
     test_proj_data = proj_data[test_proj]
     blank = load_workbook(SOURCE_DIR + 'bicc_template.xlsx')
-    ws_summary = blank.get_sheet_by_name('Summary')
-    ws_fb = blank.get_sheet_by_name('Finance & Benefits')
-    ws_res = blank.get_sheet_by_name('Resources')
-    ws_apm = blank.get_sheet_by_name('Approval & Project milestones')
-    ws_ap = blank.get_sheet_by_name('Assurance planning')
+    ws_summary = blank['Summary']
+    ws_fb = blank['Finance & Benefits']
+    ws_res = blank['Resources']
+    ws_apm = blank['Approval & Project milestones']
+    ws_ap = blank['Assurance planning']
     for item in datamap:
         if item['sheet'] == 'Summary':
             if 'Project/Programme Name' in item['cell_description']:
@@ -386,7 +386,7 @@ def get_dropdown_data(header=None):
     :return tuple of column values from sheet, with header value at list[0]:
     """
     wb = load_workbook(SOURCE_DIR + 'bicc_template.xlsx', data_only=True)
-    ws = wb.get_sheet_by_name('Dropdown List')
+    ws = wb['Dropdown List']
     columns = ws.columns
     col_lis = [col for col in columns]
     dropdown_data = [[c.value for c in t if c.value] for t in col_lis]
@@ -401,7 +401,7 @@ def get_dropdown_data(header=None):
 
 def get_dropdown_headers():
     wb = load_workbook(SOURCE_DIR + 'bicc_template.xlsx', data_only=True)
-    ws = wb.get_sheet_by_name('Dropdown List')
+    ws = wb['Dropdown List']
     rows = ws.rows
     a_row = next(rows)
     return [h.value for h in a_row]

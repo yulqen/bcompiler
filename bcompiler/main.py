@@ -20,14 +20,11 @@ IN THE SOFTWARE. """
 
 import argparse
 import colorlog
-import csv
 import logging
 import os
 import re
 import shutil
 import sys
-
-from collections import namedtuple
 
 import bcompiler.compile as compile_returns
 
@@ -39,6 +36,8 @@ from bcompiler.utils import working_directory, DATAMAP_RETURN_TO_MASTER
 from bcompiler.utils import project_data_line, populate_blank_gmpp_form
 from bcompiler.utils import open_openpyxl_template
 from bcompiler.utils import gmpp_project_names
+from bcompiler.pipelines.master_returns import parse_csv_to_file
+from bcompiler.pipelines.master_returns import create_master_dict_transposed
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
@@ -132,75 +131,6 @@ def clean_datamap(dm_file):
                 cleaned_datamap.write(newline)
     cleaned_datamap.close()
 
-
-def create_datamap_n_tuples():
-    CELL_REGEX = re.compile('[A-Z]+[0-9]+')
-    datalines = []
-    DataMapLine = namedtuple('DataMapLine', 'key value cellref dropdown')
-    try:
-        os.path.exists(CLEANED_DATAMAP)
-    except FileNotFoundError:
-        print("No cleaned_datamap")
-        return
-    with open(CLEANED_DATAMAP, 'r') as f:
-        data = [line for line in f.readlines()]
-        data = [line.rstrip() for line in data]
-        data = [line[:-1] for line in data]
-        data = [line.split(',') for line in data]
-        for line in data:
-            if CELL_REGEX.search(line[-1]):
-                try:
-                    datalines.append(
-                        DataMapLine(
-                            key=line[0],
-                            value=line[1],
-                            cellref=line[2],
-                            dropdown=None))
-                except IndexError as e:
-                    # print("Getting {} for {}".format(e, line))
-                    pass
-            else:
-                try:
-                    datalines.append(DataMapLine._make(line))
-                except TypeError as e:
-                    # print("Getting this error {} - dm: {}".format(e, line))
-                    pass
-    return datalines
-
-
-def parse_csv_to_file(source_file):
-    """
-    Transposes the master to a new master_transposed.csv file.
-    :param source_file:
-    :return:
-    """
-    output = open(SOURCE_DIR + 'master_transposed.csv', 'w+')
-    with open(source_file, 'r') as source_f:
-        lis = [x.split(',') for x in source_f]
-        for i in lis:
-            # we need to do this to remove trailing "\n" from the end of
-            # each original master.csv line
-            logger.debug("Stripping \\n from {}".format(i))
-            i[-1] = i[-1].rstrip()
-
-    for x in zip(*lis):
-        for y in x:
-            output.write(y + ',')
-        output.write('\n')
-    output.close()
-
-
-def create_master_dict_transposed(source_master_csv):
-    """
-    The side-effect of the following function is to ensure there is a
-    'master_transposed.csv' file present in SOURCE_DIR
-    returns a list of dicts, which makes up all the data from the master
-    """
-    parse_csv_to_file(source_master_csv)
-    with open(SOURCE_DIR + 'master_transposed.csv', 'r') as f:
-        r = csv.DictReader(f)
-        ls = [row for row in r]
-    return ls
 
 
 def get_list_projects(source_master_file):

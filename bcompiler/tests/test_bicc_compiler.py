@@ -1,80 +1,12 @@
-import csv
 import os
 import unittest
 
 import re
-from bcompiler.main import clean_datamap
-from bcompiler.main import create_datamap_n_tuples
 
 from bcompiler.compile import parse_source_cells, get_current_quarter
 from bcompiler.datamap import Datamap, DatamapLine
 
-from bcompiler.utils import DATAMAP_RETURN_TO_MASTER
 from bcompiler.utils import VALIDATION_REFERENCES, SHEETS
-
-
-class TestMasterFunctions(unittest.TestCase):
-    def setUp(self):
-        self.docs = os.path.join(
-            os.path.expanduser('~'), 'Documents')
-        bcomp_working_d = 'bcompiler'
-        self.path = os.path.join(
-            self.docs, bcomp_working_d)
-        self.source_path = os.path.join(
-            self.path, 'source')
-        self.output_path = os.path.join(
-            self.path, 'output')
-        self.datamap_master_to_returns = os.path.join(
-            self.source_path, 'datamap-master-to-returns')
-        self.datamap_returns_to_master = os.path.join(
-            self.source_path, 'datamap-returns-to-master')
-        self.master = os.path.join(
-            self.source_path, 'master.csv')
-        self.transposed_master = os.path.join(
-            self.source_path, 'master_transposed.csv')
-        self.example_return = os.path.join(
-            self.source_path, 'returns/SARH_Q2_Return_Final.xlsx')
-
-    def test_parse_returned_form(self):
-        return_f = self.example_return
-        data = parse_source_cells(return_f, self.datamap_master_to_returns)
-        self.assertEqual(data[0]['gmpp_key'], 'Project/Programme Name')
-
-    def test_for_individual_project_data_lines(self):
-        test_st = ("Project/Programme Name,SRO Sign-Off,"
-                   "FD Sign-Off,")
-        len_test_st = len(test_st)
-        with open(self.transposed_master, 'r') as f:
-            f_line = f.readline(len_test_st)
-            self.assertEqual(f_line, test_st)
-
-    def test_for_data_migrated_to_blank_form(self):
-        selected_data = {}
-        with open(self.transposed_master, 'r') as f:
-            projects = list([row for row in csv.DictReader(f)])
-            project = projects[0]
-            selected_data['Project/Programme Name'] = project[
-                'Project/Programme Name']
-            selected_data['SRO Sign-Off'] = project['SRO Sign-Off']
-            selected_data['Change Delivery Methodology'] = project[
-                'Change Delivery Methodology']
-        # pass for now because this should be done with a fixture
-        # TODO - make this happen
-        pass
-
-    def test_dropdown_not_passing_to_master_bug(self):
-        return_f = self.example_return
-        data = parse_source_cells(return_f, self.datamap_master_to_returns)
-        example_validated_cell = "IO1 - Monetised?"
-        matches = [x for x in data if x['gmpp_key'] == example_validated_cell]
-        self.assertEqual(matches[0]['gmpp_key'], example_validated_cell)
-
-    # trial of creating list of named tuples from the datamap - not sure
-    # why yet
-    def test_list_of_named_tuples_from_datamap(self):
-        clean_datamap(DATAMAP_RETURN_TO_MASTER)
-        datamap_data = create_datamap_n_tuples()
-        self.assertEqual(datamap_data[0][0], 'Project/Programme Name')
 
 
 class TestCompilationFromReturns(unittest.TestCase):
@@ -92,9 +24,13 @@ class TestCompilationFromReturns(unittest.TestCase):
             self.returns_path, self.source_file_name)
         self.datamap_returns_to_master = os.path.join(
             self.source_path, 'datamap-returns-to-master')
+        self.datamap_master_to_returns = os.path.join(
+            self.source_path, 'datamap-master-to-returns')
         self.dm = Datamap(
             datamap_type='returns-to-master',
             source_file=self.datamap_returns_to_master)
+        self.example_return = os.path.join(
+            self.source_path, 'returns/SARH_Q2_Return_Final.xlsx')
 
     def test_parse_source_excel_file(self):
         parsed_data = parse_source_cells(
@@ -103,12 +39,21 @@ class TestCompilationFromReturns(unittest.TestCase):
         self.assertEqual('Project/Programme Name', parsed_data[0]['gmpp_key'])
         self.assertEqual('DVSA IT Sourcing', parsed_data[0]['gmpp_key_value'])
 
-    def test_run_compilation_run(self):
-        pass
-
     def test_get_quarter(self):
         self.assertEqual(get_current_quarter(
             self.source_file_name), 'Q1 Apr - Jun')
+
+    def test_dropdown_not_passing_to_master_bug(self):
+        return_f = self.example_return
+        data = parse_source_cells(return_f, self.datamap_master_to_returns)
+        example_validated_cell = "IO1 - Monetised?"
+        matches = [x for x in data if x['gmpp_key'] == example_validated_cell]
+        self.assertEqual(matches[0]['gmpp_key'], example_validated_cell)
+
+    def test_parse_returned_form(self):
+        return_f = self.example_return
+        data = parse_source_cells(return_f, self.datamap_master_to_returns)
+        self.assertEqual(data[0]['gmpp_key'], 'Project/Programme Name')
 
 
 class TestDatamapFunctionality(unittest.TestCase):

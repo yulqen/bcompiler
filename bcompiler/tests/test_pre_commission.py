@@ -1,4 +1,3 @@
-import csv
 import os
 import unittest
 
@@ -6,7 +5,7 @@ from shutil import copyfile
 
 from bcompiler.templates import CommissioningTemplate
 from bcompiler.main import populate_blank_bicc_form, clean_datamap
-from bcompiler.main import parse_csv_to_file
+from bcompiler.pipelines.master_returns import parse_csv_to_file
 from bcompiler.utils import DATAMAP_MASTER_TO_RETURN
 from bcompiler.pipelines.master_returns import create_master_dict_transposed
 
@@ -58,7 +57,7 @@ class TestForColourFormatting(unittest.TestCase):
         pass
 
 
-class TestCommissioningTemplate(unittest.TestCase):
+class TestBICCCommission(unittest.TestCase):
     def setUp(self):
         self.docs = os.path.join(
             os.path.expanduser('~'), 'Documents')
@@ -77,10 +76,10 @@ class TestCommissioningTemplate(unittest.TestCase):
             self.source_path, 'master.csv')
         self.transposed_master = os.path.join(
             self.source_path, 'master_transposed.csv')
-        self.example_return = os.path.join(
-            self.source_path, 'returns/SARH_Q2_Return_Final.xlsx')
         self.bicc_template = os.path.join(
             self.source_path, 'bicc_template.xlsx')
+        self.example_return = os.path.join(
+            self.source_path, 'returns/SARH_Q2_Return_Final.xlsx')
         # test for this, but we want this for multiple tests
         self.ct = CommissioningTemplate()
 
@@ -136,19 +135,6 @@ class TestCommissioningTemplate(unittest.TestCase):
             f_line = f.readline(len_test_st)
             self.assertEqual(f_line, test_st)
 
-    def test_for_data_migrated_to_blank_form(self):
-        selected_data = {}
-        with open(self.transposed_master, 'r') as f:
-            projects = list([row for row in csv.DictReader(f)])
-            project = projects[0]
-            selected_data['Project/Programme Name'] = project[
-                'Project/Programme Name']
-            selected_data['SRO Sign-Off'] = project['SRO Sign-Off']
-            selected_data['Change Delivery Methodology'] = project[
-                'Change Delivery Methodology']
-        # pass for now because this should be done with a fixture
-        # TODO - make this happen
-        pass
 
 if __name__ == "__main__":
     unittest.main()

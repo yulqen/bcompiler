@@ -61,7 +61,7 @@ def test_presence_of_garbage(dirty_master):
     assert 'with\n' in ws['A4'].value
 
 
-def test_clean_commas(dirty_master):
+def test_clean_master(dirty_master):
     # we get this from the fixture: the auto-gen workbook
     dirty_ws = dirty_master.active
     # we need to pass the path of the workbook to kill_commas()
@@ -79,3 +79,5 @@ def test_clean_commas(dirty_master):
     cleaned_ws = cleaned_wb.active
     assert ',' not in cleaned_ws['C3'].value
     assert cleaned_ws['C3'].value == 'Garbage data with commas!'
+    assert '\n' not in cleaned_ws['A4'].value
+    assert cleaned_ws['A4'].value == "Garbage data with | newlines!"

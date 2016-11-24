@@ -10,4 +10,6 @@ def clean_master(workbook, sheet, path):
         for c in r:
             if ',' in c.value:
                 c.value = c.value.replace(',', '')
+            if '\n' in c.value:
+                c.value = c.value.replace('\n', ' | ')
     workbook.save(path)

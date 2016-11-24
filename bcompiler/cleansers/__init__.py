@@ -1,1 +1,1 @@
-from .cleansers import kill_commas
+from .cleansers import clean_master

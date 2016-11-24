@@ -10,7 +10,7 @@ absolve us from all hassle.
 import pytest
 
 from openpyxl import Workbook, load_workbook
-from bcompiler.cleansers import kill_commas
+from bcompiler.cleansers import clean_master
 
 
 @pytest.fixture
@@ -68,13 +68,13 @@ def test_clean_commas(dirty_master):
     # this is simulated, because it doesn't have a path as it was
     # generated in the fixture
     path = '/tmp/dirty_master.xlsx'
-    # when kill_commas() runs, it outputs the workbook it is given
+    # when clean_master() runs, it outputs the workbook it is given
     # with '_cleaned' appended
     c_path = '/tmp/dirty_master_cleaned.xlsx'
     # give it the openpyxl wb object and give it the sheet and the path
     # of the openpyxl object
-    kill_commas(dirty_master, dirty_ws.title, path)
-    # now kill_commas() is done, we expect to find a cleaned xlsx file
+    clean_master(dirty_master, dirty_ws.title, path)
+    # now clean_master() is done, we expect to find a cleaned xlsx file
     cleaned_wb = load_workbook(c_path)
     cleaned_ws = cleaned_wb.active
     assert ',' not in cleaned_ws['C3'].value

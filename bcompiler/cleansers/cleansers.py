@@ -1,4 +1,4 @@
-def kill_commas(workbook, sheet, path):
+def clean_master(workbook, sheet, path):
     """
     Pass it an openpyxl workbook, a sheet name, look for commas in each cell,
     replace them with spaces, then return the workbook.

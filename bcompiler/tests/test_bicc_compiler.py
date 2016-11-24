@@ -3,7 +3,7 @@ import os
 import unittest
 
 import re
-from bcompiler.main import create_master_dict_transposed, clean_datamap
+from bcompiler.main import clean_datamap
 from bcompiler.main import create_datamap_n_tuples
 
 from bcompiler.compile import parse_source_cells, get_current_quarter
@@ -35,12 +35,10 @@ class TestMasterFunctions(unittest.TestCase):
         self.example_return = os.path.join(
             self.source_path, 'returns/SARH_Q2_Return_Final.xlsx')
 
-    def test_presence_base_master_csv(self):
-        self.assertTrue(os.path.exists(self.master))
-
-    def test_presence_transposed_csv(self):
-        create_master_dict_transposed(self.master)
-        self.assertTrue(os.path.exists(self.transposed_master))
+    def test_parse_returned_form(self):
+        return_f = self.example_return
+        data = parse_source_cells(return_f, self.datamap_master_to_returns)
+        self.assertEqual(data[0]['gmpp_key'], 'Project/Programme Name')
 
     def test_for_individual_project_data_lines(self):
         test_st = ("Project/Programme Name,SRO Sign-Off,"
@@ -60,13 +58,9 @@ class TestMasterFunctions(unittest.TestCase):
             selected_data['SRO Sign-Off'] = project['SRO Sign-Off']
             selected_data['Change Delivery Methodology'] = project[
                 'Change Delivery Methodology']
-        # pass for now
+        # pass for now because this should be done with a fixture
+        # TODO - make this happen
         pass
-
-    def test_parse_returned_form(self):
-        return_f = self.example_return
-        data = parse_source_cells(return_f, self.datamap_master_to_returns)
-        self.assertEqual(data[0]['gmpp_key'], 'Project/Programme Name')
 
     def test_dropdown_not_passing_to_master_bug(self):
         return_f = self.example_return

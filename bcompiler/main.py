@@ -191,20 +191,32 @@ def parse_csv_to_file(source_file):
 
 
 def create_master_dict_transposed(source_master_csv):
+    """
+    The side-effect of the following function is to ensure there is a
+    'master_transposed.csv' file present in SOURCE_DIR
+    returns a list of dicts, which makes up all the data from the master
+    """
     parse_csv_to_file(source_master_csv)
     with open(SOURCE_DIR + 'master_transposed.csv', 'r') as f:
         r = csv.DictReader(f)
-        l = [row for row in r]
-    return l
+        ls = [row for row in r]
+    return ls
 
 
 def get_list_projects(source_master_file):
+    """
+    Returns a list of Project/Programme Names.
+    """
     reader = create_master_dict_transposed(source_master_file)
     pl = [row['Project/Programme Name'] for row in reader]
     return pl
 
 
 def get_datamap():
+    """
+    The old-style datamap design, using parsing rather than creating a Datamap
+    class.
+    """
     cell_regex = re.compile('[A-Z]+[0-9]+')
     dropdown_headers = get_dropdown_headers()
     output_excel_map_list = []
@@ -330,7 +342,13 @@ def populate_blank_bicc_form(source_master_file, proj_num):
 
 
 def pop_all():
+    """
+    Populates the blank bicc_template file with data from the master, one
+    form for each project dataset.
+    """
     number_of_projects = len(get_list_projects(SOURCE_DIR + 'master.csv'))
+    # we need to iterate through the master based on indexes so we use a range
+    # based on the number of projects
     for p in range(number_of_projects):
         populate_blank_bicc_form(SOURCE_DIR + 'master.csv', p)
 

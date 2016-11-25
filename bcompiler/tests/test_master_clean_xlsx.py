@@ -7,11 +7,13 @@ here is performing clean-up functions on the resulting compiled_master.xlsx
 file that is created straight after the BICC forms compilation. That will then
 absolve us from all hassle.
 """
+from datetime import date
 import pytest
 import re
 
 from openpyxl import Workbook, load_workbook
 from bcompiler.cleansers import clean_master
+
 
 
 @pytest.fixture
@@ -86,19 +88,10 @@ def test_clean_master(dirty_master):
     # now clean_master() is done, we expect to find a cleaned xlsx file
     cleaned_wb = load_workbook(c_path)
     cleaned_ws = cleaned_wb.active
+    sample_date = date(2012, 12, 21)
     assert ',' not in cleaned_ws['C3'].value
     assert cleaned_ws['C3'].value == 'Garbage data with commas!'
     assert '\n' not in cleaned_ws['A4'].value
     assert cleaned_ws['A4'].value == "Garbage data with | newlines!"
     assert cleaned_ws['A5'].value == "Apostrophe! The pernicious apostrophe."
-
-
-def test_for_dates(dirty_master):
-    date_regex = re.compile("^\d{1,2}(/|-)(\d{1,2})(/|-)\d{2,4}")
-    dirty_ws = dirty_master.active
-    path = '/tmp/dirty_master.xlsx'
-    c_path = '/tmp/dirty_master_cleaned.xlsx'
-    clean_master(dirty_master, dirty_ws.title, path)
-    cleaned_wb = load_workbook(c_path)
-    cleaned_ws = cleaned_wb.active
-    assert re.match(date_regex, cleaned_ws['A6'].value)
+    assert isinstance(cleaned_ws['A6'].value, type(sample_date))

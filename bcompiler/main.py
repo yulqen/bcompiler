@@ -132,7 +132,6 @@ def clean_datamap(dm_file):
     cleaned_datamap.close()
 
 
-
 def get_list_projects(source_master_file):
     """
     Returns a list of Project/Programme Names.
@@ -208,7 +207,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     item['cell_coordinates']].value = test_proj_data[
                         item['cell_description']]
             except KeyError:
-                print("Cannot find {} in master.csv".format(
+                logger.error("Cannot find {} in master.csv".format(
                     item['cell_description']))
                 pass
             if item['validation_header']:
@@ -221,7 +220,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     item['cell_coordinates']].value = test_proj_data[
                         item['cell_description']]
             except KeyError:
-                print("Cannot find {} in master.csv".format(
+                logger.error("Cannot find {} in master.csv".format(
                     item['cell_description']))
                 pass
             if item['validation_header']:
@@ -234,7 +233,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     item['cell_coordinates']].value = test_proj_data[
                         item['cell_description']]
             except KeyError:
-                print("Cannot find {} in master.csv".format(
+                logger.error("Cannot find {} in master.csv".format(
                     item['cell_description']))
                 pass
             if item['validation_header']:
@@ -247,7 +246,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     item['cell_coordinates']].value = test_proj_data[
                         item['cell_description']]
             except KeyError:
-                print("Cannot find {} in master.csv".format(
+                logger.error("Cannot find {} in master.csv".format(
                     item['cell_description']))
                 pass
             if item['validation_header']:
@@ -260,7 +259,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     item['cell_coordinates']].value = test_proj_data[
                         item['cell_description']]
             except KeyError:
-                print("Cannot find {} in master.csv".format(
+                logger.error("Cannot find {} in master.csv".format(
                     item['cell_description']))
                 pass
             if item['validation_header']:
@@ -268,6 +267,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 ws_ap.add_data_validation(dv)
                 dv.add(ws_ap[item['cell_coordinates']])
 
+    logger.info("Writing {}".format(test_proj))
     blank.save(OUTPUT_DIR + '{}_Q2_Return.xlsx'.format(test_proj))
 
 

@@ -18,7 +18,6 @@ def parse_csv_to_file(source_file):
         for i in lis:
             # we need to do this to remove trailing "\n" from the end of
             # each original master.csv line
-            logger.debug("Stripping \\n from {}".format(i))
             i[-1] = i[-1].rstrip()
 
     for x in zip(*lis):

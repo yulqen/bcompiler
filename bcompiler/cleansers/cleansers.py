@@ -1,5 +1,9 @@
-from dateutil.parser import parse
+import colorlog
 import re
+
+from dateutil.parser import parse
+
+logger = colorlog.getLogger('bcompiler.cleanser')
 
 DATE_REGEX = "^\d{1,2}(/|-)(\d{1,2})(/|-)\d{2,4}"
 
@@ -34,7 +38,13 @@ def clean_master(workbook, sheet, path):
             try:
                 if re.match(DATE_REGEX, c.value):
                     m = re.match(DATE_REGEX, c.value)
-                    c.value = parse(m.string)
+                    try:
+                        c.value = parse(m.string)
+                    except ValueError as e:
+                        logger.error(("This date is causing problems: {} at "
+                                      "file:{} sheet:{} cell:{}").format(
+                            m.string, path, ws, c))
+                        pass
             except TypeError:
                 pass
     workbook.save(path)

@@ -8,6 +8,7 @@ file that is created straight after the BICC forms compilation. That will then
 absolve us from all hassle.
 """
 import pytest
+import re
 
 from openpyxl import Workbook, load_workbook
 from bcompiler.cleansers import clean_master
@@ -22,6 +23,7 @@ def dirty_master():
     second_row = ws['A2':'E2']
     third_row = ws['A3':'E3']
     fourth_row = ws['A4':'E4']
+    fifth_row = ws['A5':'E5']
     for cell in top_row[0]:
         cell.value = "Header {}".format(inc)
         inc += 1
@@ -34,6 +36,13 @@ def dirty_master():
         cell.value = "Garbage data, with commas!"
     for cell in fourth_row[0]:
         cell.value = "Garbage data with\nnewlines!"
+    for cell in fifth_row[0]:
+        cell.value = "'Apostrophe! The pernicious apostrophe."
+    ws['A6'].value = '20/1/75'
+    ws['B6'].value = '21/10/16'
+    ws['C6'].value = '2/1/2016'
+    ws['D6'].value = '8/7/2220'
+    ws['E6'].value = '18/7/20'
     return wb
 
 
@@ -81,3 +90,15 @@ def test_clean_master(dirty_master):
     assert cleaned_ws['C3'].value == 'Garbage data with commas!'
     assert '\n' not in cleaned_ws['A4'].value
     assert cleaned_ws['A4'].value == "Garbage data with | newlines!"
+    assert cleaned_ws['A5'].value == "Apostrophe! The pernicious apostrophe."
+
+
+def test_for_dates(dirty_master):
+    date_regex = re.compile("^\d{1,2}(/|-)(\d{1,2})(/|-)\d{2,4}")
+    dirty_ws = dirty_master.active
+    path = '/tmp/dirty_master.xlsx'
+    c_path = '/tmp/dirty_master_cleaned.xlsx'
+    clean_master(dirty_master, dirty_ws.title, path)
+    cleaned_wb = load_workbook(c_path)
+    cleaned_ws = cleaned_wb.active
+    assert re.match(date_regex, cleaned_ws['A6'].value)

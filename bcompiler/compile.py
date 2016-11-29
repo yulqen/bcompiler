@@ -5,10 +5,10 @@ import fnmatch
 import logging
 import os
 import re
-import time
 from datetime import date
 
 from bcompiler.datamap import Datamap
+from bcompiler.cleansers import clean as clean_filter
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
 from openpyxl import load_workbook, Workbook
 
@@ -43,38 +43,41 @@ def parse_source_cells(source_file, datamap_source_file):
         datamap_type='returns-to-master',
         source_file=datamap_source_file)
     for item in datamap_obj.data:
-        if item.sheet is not None:
+        if item.sheet is not None and item.cellref is not None:
             ws = wb[item.sheet]
-            if item.cellref is not None:
-                try:
-                    t0 = time.clock()
-                    v = ws[item.cellref].value
+            try:
+                v = ws[item.cellref].value
+            except IndexError:
+                logger.error(
+                    "Datamap wants sheet: {}; cellref: {} but this is out"
+                    "of range.\n\tFile: {}".format(
+                        item.sheet,
+                        item.cellref,
+                        source_file))
+                v = ""
+            else:
+                if v is None:
                     logger.debug(
-                        "Took {}s".format(
-                            time.clock() - t0))
-                    if v is None:
-                        logger.debug(
-                            "{} in {} is empty.".format(
-                                item.cellref,
-                                item.sheet))
-                    else:
-                        logger.debug(
-                            "{} in {} is {}".format(
-                                item.cellref,
-                                item.sheet,
-                                v))
+                        "{} in {} is empty.".format(
+                            item.cellref,
+                            item.sheet))
+                elif type(v) == str:
+                    v = v.rstrip()
+                else:
+                    logger.debug(
+                        "{} in {} is {}".format(
+                            item.cellref,
+                            item.sheet,
+                            v))
+                try:
+                    v = clean_filter(v)
                 except IndexError:
                     logger.error(
-                        "Datamap wants sheet: {}; cellref: {} but this is out"
-                        "of range.\n\tFile: {}".format(
-                            item.sheet,
-                            item.cellref,
-                            source_file))
-                    v = ""
-                if type(v) == str:
-                    v = v.rstrip()
-                destination_kv = dict(gmpp_key=item.cellname, gmpp_key_value=v)
-                ls_of_dataline_dicts.append(destination_kv)
+                        ("Trying to clean an empty cell {} at sheet {} in {}. "
+                         "Ignoring.").format(
+                            item.cellref, item.sheet, source_file))
+            destination_kv = dict(gmpp_key=item.cellname, gmpp_key_value=v)
+            ls_of_dataline_dicts.append(destination_kv)
     return ls_of_dataline_dicts
 
 

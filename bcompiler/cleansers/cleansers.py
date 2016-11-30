@@ -25,22 +25,25 @@ def clean(string):
         - convert \n\n to |
         - convert \n•
     """
-    # bulls
+    # newlines
     try:
-        if '\n•' in string:
-            return string.replace('\n•', ' | ')
+        if '\n' in string:
+            # do these first (order is important)
+            # bulls
+            if '\n•' in string:
+                string = string.replace('\n•', ' | ')
+            # doubles
+            elif '\n\n' in string:
+                string = string.replace('\n\n', ' | ')
+            else:
+                string = string.replace('\n', ' | ')
+            return string.replace('\n', ' | ')
     except TypeError:
         pass
     # commas
     try:
         if ',' in string:
             return string.replace(',', '')
-    except TypeError:
-        pass
-    # newlines
-    try:
-        if '\n' in string:
-            return string.replace('\n', ' | ')
     except TypeError:
         pass
     # apostrophes

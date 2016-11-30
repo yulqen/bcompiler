@@ -21,7 +21,16 @@ def clean(string):
         - turn date text to date objects
         - convert integer-like string to integer
         - convert float-like string to float
+    # TODO
+        - convert \n\n to |
+        - convert \n•
     """
+    # bulls
+    try:
+        if '\n•' in string:
+            return string.replace('\n•', ' | ')
+    except TypeError:
+        pass
     # commas
     try:
         if ',' in string:

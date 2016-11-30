@@ -127,6 +127,8 @@ def test_clean_string():
     assert clean(fl_str) == 12.23
     neg_fl_str = "-12.23"
     assert clean(neg_fl_str) == -12.23
+    removed_bull_dirt = "Chunky\n•Ballcocks"
+    assert clean(removed_bull_dirt) == "Chunky | Ballcocks"
 
 
 @pytest.mark.skip(reason='''For some reason we can't handle ValueError''')

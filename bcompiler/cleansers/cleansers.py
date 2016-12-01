@@ -1,14 +1,101 @@
 import colorlog
+from operator import itemgetter
 import re
 
 from dateutil.parser import parse
 
 logger = colorlog.getLogger('bcompiler.cleanser')
 
-DATE_REGEX = "^(\d{1,2})(/|-)(\d{1,2})(/|-)(\d{2,4})"
-INTEGER_REGEX = "^[-+]?\d+$"
-FLOAT_REGEX = "^[-+]?([0-9]*)\.[0-9]+$"
+COMMA_REGEX = r",\s?"
+COMMA_FIX = r" "
+APOS_REGEX = r"^'"
+APOS_FIX = r""
+DATE_REGEX = r"^(\d{1,2})(/|-)(\d{1,2})(/|-)(\d{2,4})"
+INT_REGEX = r"^[-+]?\d+$"
+FLOAT_REGEX = r"^[-+]?([0-9]*)\.[0-9]+$"
 # FLOAT_REGEX = "[-+]?([0-9]*)[.]?[0-9]+" ## allows 223 23 233 23
+
+
+class Cleanser:
+
+    def __init__(self, string):
+        self.string = string
+
+        # a list of dicts that describe everything needed to fix errors in
+        # string passed to class constructor. Method self.clean() runs through
+        # them,  fixing each in turn.
+        self._checks = [
+            dict(
+                c_type='commas',
+                rule=COMMA_REGEX,
+                fix=COMMA_FIX,
+                func=self._commas,
+                count=0),
+            dict(
+                c_type='leading_apostrophe',
+                rule=APOS_REGEX,
+                fix=APOS_FIX,
+                func=self._apostrophe,
+                count=0),
+        ]
+        self.checks_l = len(self._checks)
+        self._analyse()
+
+    def _sort_checks(self):
+        """
+        Sorts the list of dicts in self._checks by their count, highest
+        first, so that when the fix methods run down them, they always have
+        a count with a value higher than 0 to run with, otherwise later
+        fixes might not get hit.
+        """
+        self._checks = sorted(
+            self._checks, key=itemgetter('count'), reverse=True)
+
+    def _commas(self, regex, fix):
+        """
+        Handles commas in self.string according to rule in self._checks
+        """
+        self._sort_checks()
+        # we want to sort the list first so self._checks has any item
+        # with a count > 0 up front, otherwise if a count of 0 appears
+        # before it in the list, the > 0 count never gets fixed
+        return re.sub(regex, fix, self.string)
+
+    def _apostrophe(self, regex, fix):
+        """Handles apostrophes as first char of the string."""
+        self._sort_checks()
+        return self.string.lstrip('\'')
+
+    def _access_checks(self, c_type):
+        """Helper method returns the index of rule in self._checks
+        when given a c_type"""
+        return self._checks.index(next(
+            item for item in self._checks if item['c_type'] == c_type))
+
+    def _analyse(self):
+        """
+        Uses the self._checks table as a basis for counting the number of
+        each cleaning target required, and calling the appropriate method
+        to clean.
+        """
+        i = 0
+        while i < self.checks_l:
+            matches = re.finditer(self._checks[i]['rule'], self.string)
+            if matches:
+                self._checks[i]['count'] += len(list(matches))
+            i += 1
+
+    def clean(self):
+        """Runs each applicable cleaning action and returns the cleaned
+        string."""
+        for check in self._checks:
+            if check['count'] > 0:
+                self.string = check['func'](
+                    check['rule'], check['fix'])
+            else:
+                # shouldn't ever get here but hey...
+                return self.string
+        return self.string
 
 
 def clean(string):
@@ -21,7 +108,6 @@ def clean(string):
         - turn date text to date objects
         - convert integer-like string to integer
         - convert float-like string to float
-    # TODO
         - convert \n\n to |
         - convert \n•
     """
@@ -72,8 +158,8 @@ def clean(string):
         pass
     # integers
     try:
-        if re.match(INTEGER_REGEX, string):
-            m = re.match(INTEGER_REGEX, string)
+        if re.match(INT_REGEX, string):
+            m = re.match(INT_REGEX, string)
             return int(string)
         if re.match(FLOAT_REGEX, string):
             m = re.match(FLOAT_REGEX, string)
@@ -128,8 +214,8 @@ def clean_master(workbook, sheet, path):
                 pass
             try:
                 # integers
-                if re.match(INTEGER_REGEX, c.value):
-                    m = re.match(INTEGER_REGEX, c.value)
+                if re.match(INT_REGEX, c.value):
+                    m = re.match(INT_REGEX, c.value)
                     c.value = int(c.value)
             except TypeError:
                 pass

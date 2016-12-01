@@ -22,14 +22,16 @@ class Cleanser:
                 c_type='leading_apostrophe', rule=[
                     r"^'", self._apostrophe, 0]),
         ]
+        self.checks_l = len(self._checks)
         self._analyse()
 
-    def _commas(self):
-        check_map = self._checks[0]
-        pass
+    def _commas(self, regex):
+        """
+        Handles commas in self.string according to rule in self._checks
+        """
+        return re.sub(regex, ' ', self.string)
 
     def _apostrophe(self):
-        check_map = self._checks[1]
         pass
 
     def _access_checks(self, c_type):
@@ -44,16 +46,17 @@ class Cleanser:
         each cleaning target required, and calling the appropriate method
         to clean.
         """
-        checks_l = len(self._checks)
         i = 0
-        while i < checks_l:
+        while i < self.checks_l:
             matches = re.finditer(self._checks[i]['rule'][0], self.string)
             if matches:
                 self._checks[i]['rule'][-1] += len(list(matches))
             i += 1
 
     def clean(self):
-        return self.string
+        for check in self._checks:
+            if check['rule'][-1] > 0:
+                return check['rule'][-2](check['rule'][0])
 
 
 def clean(string):

@@ -16,8 +16,11 @@ class Cleanser:
     def __init__(self, string):
         self.string = string
         self._checks = [
-            [r",\s?", self._commas, 0],  # commas
-            [r"^'", self._apostrophe, 0],  # leading apostrophe
+            dict(
+                c_type='commas', rule=[r",\s?", self._commas, 0]),
+            dict(
+                c_type='leading_apostrophe', rule=[
+                    r"^'", self._apostrophe, 0]),
         ]
         self._analyse()
 
@@ -29,6 +32,12 @@ class Cleanser:
         check_map = self._checks[1]
         pass
 
+    def _access_checks(self, c_type):
+        """Helper method returns the index of rule in self._checks
+        when given a c_type"""
+        return self._checks.index(next(
+            item for item in self._checks if item['c_type'] == c_type))
+
     def _analyse(self):
         """
         Uses the self._checks table as a basis for counting the number of
@@ -38,9 +47,9 @@ class Cleanser:
         checks_l = len(self._checks)
         i = 0
         while i < checks_l:
-            matches = re.finditer(self._checks[i][0], self.string)
+            matches = re.finditer(self._checks[i]['rule'][0], self.string)
             if matches:
-                self._checks[i][-1] += len(list(matches))
+                self._checks[i]['rule'][-1] += len(list(matches))
             i += 1
 
     def clean(self):

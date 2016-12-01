@@ -177,12 +177,16 @@ def test_cleanser_class():
                    " even,  if they are malplaced, okay?? , ")
     apos_str = "'Bobbins ' ' ' ''"
     apos_str2 = "Bobbins ' ' ' ''"
+    mix_apos_commas = "'There are mixes, here! Aren't there, yes!"
     c = Cleanser(commas_str)
     c2 = Cleanser(commas_str2)
     a = Cleanser(apos_str)
     a2 = Cleanser(apos_str2)
+    mix = Cleanser(mix_apos_commas)
     # testing private interface to ensure counting of targets is done
-    assert c._checks[0][-1] == 3
-    assert c2._checks[0][-1] == 7
-    assert a._checks[1][-1] == 1
-    assert a2._checks[1][-1] == 0
+    assert c._checks[c._access_checks('commas')]['rule'][-1] == 3
+    assert c2._checks[c._access_checks('commas')]['rule'][-1] == 7
+    assert a._checks[c._access_checks('leading_apostrophe')]['rule'][-1] == 1
+    assert a2._checks[c._access_checks('leading_apostrophe')]['rule'][-1] == 0
+    assert mix._checks[c._access_checks('commas')]['rule'][-1] == 2
+    assert mix._checks[c._access_checks('leading_apostrophe')]['rule'][-1] == 1

@@ -7,7 +7,9 @@ from dateutil.parser import parse
 logger = colorlog.getLogger('bcompiler.cleanser')
 
 COMMA_REGEX = r",\s?"
+COMMA_FIX = r" "
 APOS_REGEX = r"^'"
+APOS_FIX = r""
 DATE_REGEX = r"^(\d{1,2})(/|-)(\d{1,2})(/|-)(\d{2,4})"
 INT_REGEX = r"^[-+]?\d+$"
 FLOAT_REGEX = r"^[-+]?([0-9]*)\.[0-9]+$"
@@ -18,32 +20,50 @@ class Cleanser:
 
     def __init__(self, string):
         self.string = string
+
+        # a list of dicts that describe everything needed to fix errors in
+        # string passed to class constructor. Method self.clean() runs through
+        # them,  fixing each in turn.
         self._checks = [
-            # rules = [SEARCH, FIX, FIX_METHOD, COUNT]
             dict(
                 c_type='commas',
                 rule=COMMA_REGEX,
-                fix=r" ",
+                fix=COMMA_FIX,
                 func=self._commas,
                 count=0),
             dict(
                 c_type='leading_apostrophe',
                 rule=APOS_REGEX,
-                fix=r"",
+                fix=APOS_FIX,
                 func=self._apostrophe,
                 count=0),
         ]
         self.checks_l = len(self._checks)
         self._analyse()
 
+    def _sort_checks(self):
+        """
+        Sorts the list of dicts in self._checks by their count, highest
+        first, so that when the fix methods run down them, they always have
+        a count with a value higher than 0 to run with, otherwise later
+        fixes might not get hit.
+        """
+        self._checks = sorted(
+            self._checks, key=itemgetter('count'), reverse=True)
+
     def _commas(self, regex, fix):
         """
         Handles commas in self.string according to rule in self._checks
         """
+        self._sort_checks()
+        # we want to sort the list first so self._checks has any item
+        # with a count > 0 up front, otherwise if a count of 0 appears
+        # before it in the list, the > 0 count never gets fixed
         return re.sub(regex, fix, self.string)
 
     def _apostrophe(self, regex, fix):
         """Handles apostrophes as first char of the string."""
+        self._sort_checks()
         return self.string.lstrip('\'')
 
     def _access_checks(self, c_type):
@@ -73,6 +93,7 @@ class Cleanser:
                 self.string = check['func'](
                     check['rule'], check['fix'])
             else:
+                # shouldn't ever get here but hey...
                 return self.string
         return self.string
 

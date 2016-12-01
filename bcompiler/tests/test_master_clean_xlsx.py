@@ -12,6 +12,7 @@ import pytest
 
 from openpyxl import Workbook, load_workbook
 from bcompiler.cleansers import clean_master, clean
+from bcompiler.cleansers import Cleanser
 
 
 @pytest.fixture
@@ -166,3 +167,22 @@ def test_clean_master(dirty_master):
     assert cleaned_ws['D8'].value == -87
     assert cleaned_ws['A9'].value == 2.115
     assert cleaned_ws['A10'].value == -2.115
+
+
+def test_cleanser_class():
+    """Trying to make class of cleansers."""
+    commas_str = ("There is tonnes of stuff to think about, we need to clean."
+                  "There are multiple commas in here, see? Big commas, big!")
+    commas_str2 = ("Millions, upon, millions, of commas! We love ,commas"
+                   " even,  if they are malplaced, okay?? , ")
+    apos_str = "'Bobbins ' ' ' ''"
+    apos_str2 = "Bobbins ' ' ' ''"
+    c = Cleanser(commas_str)
+    c2 = Cleanser(commas_str2)
+    a = Cleanser(apos_str)
+    a2 = Cleanser(apos_str2)
+    # testing private interface to ensure counting of targets is done
+    assert c._checks[0][-1] == 3
+    assert c2._checks[0][-1] == 7
+    assert a._checks[1][-1] == 1
+    assert a2._checks[1][-1] == 0

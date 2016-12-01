@@ -11,6 +11,42 @@ FLOAT_REGEX = "^[-+]?([0-9]*)\.[0-9]+$"
 # FLOAT_REGEX = "[-+]?([0-9]*)[.]?[0-9]+" ## allows 223 23 233 23
 
 
+class Cleanser:
+
+    def __init__(self, string):
+        self.string = string
+        self._checks = [
+            [r",\s?", self._commas, 0],  # commas
+            [r"^'", self._apostrophe, 0],  # leading apostrophe
+        ]
+        self._analyse()
+
+    def _commas(self):
+        check_map = self._checks[0]
+        pass
+
+    def _apostrophe(self):
+        check_map = self._checks[1]
+        pass
+
+    def _analyse(self):
+        """
+        Uses the self._checks table as a basis for counting the number of
+        each cleaning target required, and calling the appropriate method
+        to clean.
+        """
+        checks_l = len(self._checks)
+        i = 0
+        while i < checks_l:
+            matches = re.finditer(self._checks[i][0], self.string)
+            if matches:
+                self._checks[i][-1] += len(list(matches))
+            i += 1
+
+    def clean(self):
+        return self.string
+
+
 def clean(string):
     """
     Takes a string, and cleans it.
@@ -21,7 +57,6 @@ def clean(string):
         - turn date text to date objects
         - convert integer-like string to integer
         - convert float-like string to float
-    # TODO
         - convert \n\n to |
         - convert \n•
     """

@@ -1,4 +1,5 @@
 import colorlog
+from operator import itemgetter
 import re
 
 from dateutil.parser import parse
@@ -8,7 +9,7 @@ logger = colorlog.getLogger('bcompiler.cleanser')
 COMMA_REGEX = r",\s?"
 APOS_REGEX = r"^'"
 DATE_REGEX = r"^(\d{1,2})(/|-)(\d{1,2})(/|-)(\d{2,4})"
-INTEGER_REGEX = r"^[-+]?\d+$"
+INT_REGEX = r"^[-+]?\d+$"
 FLOAT_REGEX = r"^[-+]?([0-9]*)\.[0-9]+$"
 # FLOAT_REGEX = "[-+]?([0-9]*)[.]?[0-9]+" ## allows 223 23 233 23
 
@@ -20,10 +21,17 @@ class Cleanser:
         self._checks = [
             # rules = [SEARCH, FIX, FIX_METHOD, COUNT]
             dict(
-                c_type='commas', rule=[COMMA_REGEX, r" ", self._commas, 0]),
+                c_type='commas',
+                rule=COMMA_REGEX,
+                fix=r" ",
+                func=self._commas,
+                count=0),
             dict(
-                c_type='leading_apostrophe', rule=[
-                    APOS_REGEX, self._apostrophe, 0]),
+                c_type='leading_apostrophe',
+                rule=APOS_REGEX,
+                fix=r"",
+                func=self._apostrophe,
+                count=0),
         ]
         self.checks_l = len(self._checks)
         self._analyse()
@@ -34,8 +42,9 @@ class Cleanser:
         """
         return re.sub(regex, fix, self.string)
 
-    def _apostrophe(self):
-        pass
+    def _apostrophe(self, regex, fix):
+        """Handles apostrophes as first char of the string."""
+        return self.string.lstrip('\'')
 
     def _access_checks(self, c_type):
         """Helper method returns the index of rule in self._checks
@@ -51,19 +60,21 @@ class Cleanser:
         """
         i = 0
         while i < self.checks_l:
-            matches = re.finditer(self._checks[i]['rule'][0], self.string)
+            matches = re.finditer(self._checks[i]['rule'], self.string)
             if matches:
-                self._checks[i]['rule'][-1] += len(list(matches))
+                self._checks[i]['count'] += len(list(matches))
             i += 1
 
     def clean(self):
         """Runs each applicable cleaning action and returns the cleaned
         string."""
         for check in self._checks:
-            if check['rule'][-1] > 0:
-                return check['rule'][-2](check['rule'][0], check['rule'][1])
+            if check['count'] > 0:
+                self.string = check['func'](
+                    check['rule'], check['fix'])
             else:
                 return self.string
+        return self.string
 
 
 def clean(string):
@@ -126,8 +137,8 @@ def clean(string):
         pass
     # integers
     try:
-        if re.match(INTEGER_REGEX, string):
-            m = re.match(INTEGER_REGEX, string)
+        if re.match(INT_REGEX, string):
+            m = re.match(INT_REGEX, string)
             return int(string)
         if re.match(FLOAT_REGEX, string):
             m = re.match(FLOAT_REGEX, string)
@@ -182,8 +193,8 @@ def clean_master(workbook, sheet, path):
                 pass
             try:
                 # integers
-                if re.match(INTEGER_REGEX, c.value):
-                    m = re.match(INTEGER_REGEX, c.value)
+                if re.match(INT_REGEX, c.value):
+                    m = re.match(INT_REGEX, c.value)
                     c.value = int(c.value)
             except TypeError:
                 pass

@@ -5,9 +5,9 @@ from dateutil.parser import parse
 
 logger = colorlog.getLogger('bcompiler.cleanser')
 
-DATE_REGEX = "^(\d{1,2})(/|-)(\d{1,2})(/|-)(\d{2,4})"
-INTEGER_REGEX = "^[-+]?\d+$"
-FLOAT_REGEX = "^[-+]?([0-9]*)\.[0-9]+$"
+DATE_REGEX = r"^(\d{1,2})(/|-)(\d{1,2})(/|-)(\d{2,4})"
+INTEGER_REGEX = r"^[-+]?\d+$"
+FLOAT_REGEX = r"^[-+]?([0-9]*)\.[0-9]+$"
 # FLOAT_REGEX = "[-+]?([0-9]*)[.]?[0-9]+" ## allows 223 23 233 23
 
 
@@ -54,9 +54,13 @@ class Cleanser:
             i += 1
 
     def clean(self):
+        """Runs each applicable cleaning action and returns the cleaned
+        string."""
         for check in self._checks:
             if check['rule'][-1] > 0:
                 return check['rule'][-2](check['rule'][0])
+            else:
+                return self.string
 
 
 def clean(string):

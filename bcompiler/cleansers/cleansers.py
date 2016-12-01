@@ -5,6 +5,8 @@ from dateutil.parser import parse
 
 logger = colorlog.getLogger('bcompiler.cleanser')
 
+COMMA_REGEX = r",\s?"
+APOS_REGEX = r"^'"
 DATE_REGEX = r"^(\d{1,2})(/|-)(\d{1,2})(/|-)(\d{2,4})"
 INTEGER_REGEX = r"^[-+]?\d+$"
 FLOAT_REGEX = r"^[-+]?([0-9]*)\.[0-9]+$"
@@ -16,20 +18,21 @@ class Cleanser:
     def __init__(self, string):
         self.string = string
         self._checks = [
+            # rules = [SEARCH, FIX, FIX_METHOD, COUNT]
             dict(
-                c_type='commas', rule=[r",\s?", self._commas, 0]),
+                c_type='commas', rule=[COMMA_REGEX, r" ", self._commas, 0]),
             dict(
                 c_type='leading_apostrophe', rule=[
-                    r"^'", self._apostrophe, 0]),
+                    APOS_REGEX, self._apostrophe, 0]),
         ]
         self.checks_l = len(self._checks)
         self._analyse()
 
-    def _commas(self, regex):
+    def _commas(self, regex, fix):
         """
         Handles commas in self.string according to rule in self._checks
         """
-        return re.sub(regex, ' ', self.string)
+        return re.sub(regex, fix, self.string)
 
     def _apostrophe(self):
         pass
@@ -58,7 +61,7 @@ class Cleanser:
         string."""
         for check in self._checks:
             if check['rule'][-1] > 0:
-                return check['rule'][-2](check['rule'][0])
+                return check['rule'][-2](check['rule'][0], check['rule'][1])
             else:
                 return self.string
 

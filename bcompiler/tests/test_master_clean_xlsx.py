@@ -11,8 +11,8 @@ from datetime import date
 import pytest
 
 from openpyxl import Workbook, load_workbook
-from bcompiler.cleansers import clean_master, clean
-from bcompiler.cleansers import Cleanser
+from bcompiler.process import clean_master, clean
+from bcompiler.process import Cleanser
 
 
 @pytest.fixture
@@ -177,7 +177,8 @@ def test_cleanser_class():
     apos_str = "'Bobbins ' ' ' ''"
     apos_str2 = "Bobbins ' ' ' ''"
     mix_apos_commas = "'There are mixes, here! Aren't there, yes!"
-    newline_str1 = "There are many ways to write newlines\n and this is one."
+    newline_str1 = "There are many ways to write newlines\nand this is one."
+    newline_str2 = "Bobbins\nbobbins\nbobbins\nbobbins\nbobbins"
 
     c = Cleanser(commas_str)
     c2 = Cleanser(commas_str2)
@@ -185,9 +186,11 @@ def test_cleanser_class():
     a2 = Cleanser(apos_str2)
     mix = Cleanser(mix_apos_commas)
     nl = Cleanser(newline_str1)
+    nl2 = Cleanser(newline_str2)
 
     assert nl.clean() == ("There are many ways to write newlines | and this "
                           "is one.")
+    assert nl2.clean() == "Bobbins | bobbins | bobbins | bobbins | bobbins"
     assert mix.clean() == "There are mixes here! Aren't there yes!"
     assert c.clean() == ("There is tonnes of stuff to think about we need "
                          "to clean. There are multiple commas in here see? "

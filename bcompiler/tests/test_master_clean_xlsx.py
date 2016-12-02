@@ -170,7 +170,6 @@ def test_clean_master(dirty_master):
 
 
 def test_cleanser_class():
-    """Trying to make class of cleansers."""
     commas_str = ("There is tonnes of stuff to think about, we need to clean."
                   " There are multiple commas in here, see? Big commas, big!")
     commas_str2 = ("Millions, upon, millions, of commas! We love ,commas"
@@ -178,17 +177,24 @@ def test_cleanser_class():
     apos_str = "'Bobbins ' ' ' ''"
     apos_str2 = "Bobbins ' ' ' ''"
     mix_apos_commas = "'There are mixes, here! Aren't there, yes!"
+    newline_str1 = "There are many ways to write newlines\n and this is one."
+
     c = Cleanser(commas_str)
     c2 = Cleanser(commas_str2)
     a = Cleanser(apos_str)
     a2 = Cleanser(apos_str2)
     mix = Cleanser(mix_apos_commas)
+    nl = Cleanser(newline_str1)
+
+    assert nl.clean() == ("There are many ways to write newlines | and this "
+                          "is one.")
     assert mix.clean() == "There are mixes here! Aren't there yes!"
     assert c.clean() == ("There is tonnes of stuff to think about we need "
                          "to clean. There are multiple commas in here see? "
                          "Big commas big!")
-    assert c2.clean() == ("Millions upon millions of commas! We love  "
-                          "commas even  if they are malplaced okay??  ")
+    assert c2.clean() == ("Millions upon millions of commas! We love "
+                          "commas even if they are malplaced okay?? ")
+
     # testing private interface to ensure counting of targets is done
     assert c._checks[c._access_checks('commas')]['count'] == 3
     assert c2._checks[c._access_checks('commas')]['count'] == 7

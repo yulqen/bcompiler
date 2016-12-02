@@ -13,10 +13,23 @@ APOS_FIX = r""
 DATE_REGEX = r"^(\d{1,2})(/|-)(\d{1,2})(/|-)(\d{2,4})"
 INT_REGEX = r"^[-+]?\d+$"
 FLOAT_REGEX = r"^[-+]?([0-9]*)\.[0-9]+$"
-# FLOAT_REGEX = "[-+]?([0-9]*)[.]?[0-9]+" ## allows 223 23 233 23
+NL_REGEX = r"\n"
+NL_FIX = r" |"
 
 
 class Cleanser:
+    """
+    Takes a string, and cleans it.
+    Clean action so far are:
+        - remove commas
+        - remove newlines
+        - remove apostrophes
+        - turn date text to date objects
+        - convert integer-like string to integer
+        - convert float-like string to float
+        - convert \n\n to |
+        - convert \n•
+    """
 
     def __init__(self, string):
         self.string = string
@@ -37,6 +50,18 @@ class Cleanser:
                 fix=APOS_FIX,
                 func=self._apostrophe,
                 count=0),
+            dict(
+                c_type='newline',
+                rule=NL_REGEX,
+                fix=NL_FIX,
+                func=self._newline,
+                count=0),
+            dict(
+                c_type='double_space',
+                rule="  ",
+                fix=" ",
+                func=self._doublespace,
+                count=0),
         ]
         self.checks_l = len(self._checks)
         self._analyse()
@@ -55,7 +80,6 @@ class Cleanser:
         """
         Handles commas in self.string according to rule in self._checks
         """
-        self._sort_checks()
         # we want to sort the list first so self._checks has any item
         # with a count > 0 up front, otherwise if a count of 0 appears
         # before it in the list, the > 0 count never gets fixed
@@ -63,8 +87,15 @@ class Cleanser:
 
     def _apostrophe(self, regex, fix):
         """Handles apostrophes as first char of the string."""
-        self._sort_checks()
         return self.string.lstrip('\'')
+
+    def _newline(self, regex, fix):
+        """Handles newlines anywhere in string."""
+        return re.sub(regex, fix, self.string)
+
+    def _doublespace(self, regex, fix):
+        """Handles double-spaces anywhere in string."""
+        return re.sub(regex, fix, self.string)
 
     def _access_checks(self, c_type):
         """Helper method returns the index of rule in self._checks
@@ -88,6 +119,7 @@ class Cleanser:
     def clean(self):
         """Runs each applicable cleaning action and returns the cleaned
         string."""
+        self._sort_checks()
         for check in self._checks:
             if check['count'] > 0:
                 self.string = check['func'](

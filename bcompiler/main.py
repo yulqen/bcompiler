@@ -38,6 +38,7 @@ from bcompiler.utils import open_openpyxl_template
 from bcompiler.utils import gmpp_project_names
 from bcompiler.pipelines.master_returns import parse_csv_to_file
 from bcompiler.pipelines.master_returns import create_master_dict_transposed
+from bcompiler.process import Cleanser
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
@@ -203,9 +204,10 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 ws_summary[
                     item['cell_coordinates']].value = test_proj
             try:
+                c = Cleanser(test_proj_data[item['cell_description']])
+                cleaned = c.clean()
                 ws_summary[
-                    item['cell_coordinates']].value = test_proj_data[
-                        item['cell_description']]
+                    item['cell_coordinates']].value = cleaned
             except KeyError:
                 logger.error("Cannot find {} in master.csv".format(
                     item['cell_description']))
@@ -216,9 +218,10 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv.add(ws_summary[item['cell_coordinates']])
         elif item['sheet'] == 'Finance & Benefits':
             try:
+                c = Cleanser(test_proj_data[item['cell_description']])
+                cleaned = c.clean()
                 ws_fb[
-                    item['cell_coordinates']].value = test_proj_data[
-                        item['cell_description']]
+                    item['cell_coordinates']].value = cleaned
             except KeyError:
                 logger.error("Cannot find {} in master.csv".format(
                     item['cell_description']))
@@ -229,9 +232,10 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv.add(ws_apm[item['cell_coordinates']])
         elif item['sheet'] == 'Resources':
             try:
+                c = Cleanser(test_proj_data[item['cell_description']])
+                cleaned = c.clean()
                 ws_res[
-                    item['cell_coordinates']].value = test_proj_data[
-                        item['cell_description']]
+                    item['cell_coordinates']].value = cleaned
             except KeyError:
                 logger.error("Cannot find {} in master.csv".format(
                     item['cell_description']))
@@ -242,9 +246,10 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv.add(ws_apm[item['cell_coordinates']])
         elif item['sheet'] == 'Approval & Project milestones':
             try:
+                c = Cleanser(test_proj_data[item['cell_description']])
+                cleaned = c.clean()
                 ws_apm[
-                    item['cell_coordinates']].value = test_proj_data[
-                        item['cell_description']]
+                    item['cell_coordinates']].value = cleaned
             except KeyError:
                 logger.error("Cannot find {} in master.csv".format(
                     item['cell_description']))
@@ -255,9 +260,10 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv.add(ws_apm[item['cell_coordinates']])
         elif item['sheet'] == 'Assurance planning':
             try:
+                c = Cleanser(test_proj_data[item['cell_description']])
+                cleaned = c.clean()
                 ws_ap[
-                    item['cell_coordinates']].value = test_proj_data[
-                        item['cell_description']]
+                    item['cell_coordinates']].value = cleaned
             except KeyError:
                 logger.error("Cannot find {} in master.csv".format(
                     item['cell_description']))

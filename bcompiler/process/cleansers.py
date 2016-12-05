@@ -19,7 +19,7 @@ NL_REGEX = r"\n"
 NL_FIX = r" | "
 SPACE_PIPE_CHAR_REGEX = r"\ \|\S"
 SPACE_PIPE_CHAR_FIX = r" | "
-PERCENT_REGEX = r"(\d{1,3})%"
+PERCENT_REGEX = r"^(\d{1,3})%$"
 
 
 class Cleanser:

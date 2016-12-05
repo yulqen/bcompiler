@@ -19,6 +19,7 @@ NL_REGEX = r"\n"
 NL_FIX = r" | "
 SPACE_PIPE_CHAR_REGEX = r"\ \|\S"
 SPACE_PIPE_CHAR_FIX = r" | "
+PERCENT_REGEX = r"(\d{1,3})%"
 
 
 class Cleanser:
@@ -98,6 +99,12 @@ class Cleanser:
                 fix=None,
                 func=self._float,
                 count=0),
+            dict(
+                c_type='percent',
+                rule=PERCENT_REGEX,
+                fix=None,
+                func=self._percent,
+                count=0),
         ]
         self.checks_l = len(self._checks)
         self._analyse()
@@ -111,6 +118,14 @@ class Cleanser:
         """
         self._checks = sorted(
             self._checks, key=itemgetter('count'), reverse=True)
+
+    def _percent(self, regex, fix):
+        """
+        Turns 100% into 1.0.
+        """
+        m = re.match(regex, self.string)
+        p = int(m.group(1))
+        return p / 100
 
     def _float(self, regex, fix):
         """

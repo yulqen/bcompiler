@@ -225,7 +225,6 @@ class Cleanser:
                     check['rule'], check['fix'])
                 check['count'] = 0
             else:
-                # shouldn't ever get here but hey...
                 return self.string
         return self.string
 

@@ -19,7 +19,7 @@ class TestCompilationFromReturns(unittest.TestCase):
         self.source_path = os.path.join(self.path, 'source')
         self.output_path = os.path.join(self.path, 'output')
         self.returns_path = os.path.join(self.source_path, 'returns')
-        self.source_file_name = 'DVSA IT Sourcing _Q2_Return Final.xlsx'
+        self.source_file_name = 'Q2_DVSAITSourcing _PO_ALT_for_Q3_Upload.xlsx'
         self.source_excel = os.path.join(
             self.returns_path, self.source_file_name)
         self.datamap_returns_to_master = os.path.join(
@@ -30,7 +30,8 @@ class TestCompilationFromReturns(unittest.TestCase):
             datamap_type='returns-to-master',
             source_file=self.datamap_returns_to_master)
         self.example_return = os.path.join(
-            self.source_path, 'returns/SARH_Q2_Return_Final.xlsx')
+            self.source_path, ("returns/Q2_Search&RescueHelicopters_PO_ALT"
+                               "_for_Q3_Upload.xlsx"))
 
     def test_parse_source_excel_file(self):
         parsed_data = parse_source_cells(

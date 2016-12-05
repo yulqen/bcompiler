@@ -170,20 +170,39 @@ def test_clean_master(dirty_master):
 
 
 def test_cleanser_class():
+    # comma strings
     commas_str = ("There is tonnes of stuff to think about, we need to clean."
                   " There are multiple commas in here, see? Big commas, big!")
     commas_str2 = ("Millions, upon, millions, of commas! We love ,commas"
                    " even,  if they are malplaced, okay?? , ")
+
+    # apostrophe strings
     apos_str = "'Bobbins ' ' ' ''"
     apos_str2 = "Bobbins ' ' ' ''"
+
+    # mix apos and comma strings
     mix_apos_commas = "'There are mixes, here! Aren't there, yes!"
+
+    # newline strings
     newline_str1 = "There are many ways to write newlines\nand this is one."
     newline_str2 = "Bobbins\nbobbins\nbobbins\nbobbins\nbobbins"
+
+    # date strings
+    # dd/mm/yyyy format
     d_d_str = "03/06/2017"
-#   d2_d_str = "2017-06-03" # it doesn't pick up this format
+
+    # with 0:00:00 time format
+    d_time_str = "2015-04-01 0:00:00"
+    d_time_str2 = "2015-12-31 0:00:00"
+    d_time_bad_date = "2015-12-32 0:00:00"
+
+    # integer strings
     i_str = "1234"
+
+    # float strings
     f_str = "12.34"
 
+    # create Cleanser objects for them all
     c = Cleanser(commas_str)
     c2 = Cleanser(commas_str2)
     a = Cleanser(apos_str)
@@ -192,7 +211,9 @@ def test_cleanser_class():
     nl = Cleanser(newline_str1)
     nl2 = Cleanser(newline_str2)
     d = Cleanser(d_d_str)
-#   d2 = Cleanser(d2_d_str)
+    dt = Cleanser(d_time_str)
+    dt2 = Cleanser(d_time_str2)
+    d_bad_date = Cleanser(d_time_bad_date)
     i = Cleanser(i_str)
     f = Cleanser(f_str)
 
@@ -204,6 +225,7 @@ def test_cleanser_class():
     assert mix._checks[c._access_checks('commas')]['count'] == 2
     assert mix._checks[c._access_checks('leading_apostrophe')]['count'] == 1
 
+    # regex checks
     assert nl2.clean() == "Bobbins | bobbins | bobbins | bobbins | bobbins"
     assert nl.clean() == ("There are many ways to write newlines | and this "
                           "is one.")
@@ -213,6 +235,9 @@ def test_cleanser_class():
                          "Big commas big!")
     assert c2.clean() == ("Millions upon millions of commas! We love "
                           "commas even if they are malplaced okay?? ")
+    assert dt.clean() == date(2015, 4, 1)
+    assert dt2.clean() == date(2015, 12, 31)
+    assert d_bad_date.clean() == d_time_bad_date  # return it and log error
     assert d.clean().month == 6
     assert d.clean().year == 2017
     assert d.clean().day == 3

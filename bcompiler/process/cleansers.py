@@ -1,4 +1,5 @@
 import colorlog
+from datetime import date
 from operator import itemgetter
 import re
 
@@ -11,6 +12,7 @@ COMMA_FIX = r" "
 APOS_REGEX = r"^'"
 APOS_FIX = r""
 DATE_REGEX = r"^(\d{1,2})(/|-)(\d{1,2})(/|-)(\d{2,4})"
+DATE_REGEX_TIME = r"^(\d{2,4})(/|-)(\d{1,2})(/|-)(\d{1,2})\s(0:00:00)"
 INT_REGEX = r"^[-+]?\d+$"
 FLOAT_REGEX = r"^[-+]?([0-9]*)\.[0-9]+$"
 NL_REGEX = r"\n"
@@ -79,6 +81,12 @@ class Cleanser:
                 func=self._date,
                 count=0),
             dict(
+                c_type='date_time',
+                rule=DATE_REGEX_TIME,
+                fix=None,
+                func=self._date_time,
+                count=0),
+            dict(
                 c_type='int',
                 rule=INT_REGEX,
                 fix=None,
@@ -130,6 +138,22 @@ class Cleanser:
         except ValueError:
             logger.error(
                 "This date is causing problems: {}".format(self.string))
+            return self.string
+
+    def _date_time(self, regex, fix):
+        """
+        Handles dates in "2017-05-01 0:00:00" format. We get this from the
+        csv file when we send it back out to templates/forms. Returns a Python
+        date object.
+        """
+        m = re.match(regex, self.string)
+        year = int(m.group(1))
+        month = int(m.group(3))
+        day = int(m.group(5))
+        try:
+            return date(year, month, day)
+        except ValueError:
+            logger.error("Incorrect date format {}!".format(self.string))
             return self.string
 
     def _commas(self, regex, fix):

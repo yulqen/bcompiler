@@ -8,7 +8,7 @@ import re
 from datetime import date
 
 from bcompiler.datamap import Datamap
-from bcompiler.process import clean as clean_filter
+from bcompiler.process import Cleanser
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
 from openpyxl import load_workbook, Workbook
 
@@ -70,12 +70,16 @@ def parse_source_cells(source_file, datamap_source_file):
                             item.sheet,
                             v))
                 try:
-                    v = clean_filter(v)
+                    c = Cleanser(v)
                 except IndexError:
                     logger.error(
                         ("Trying to clean an empty cell {} at sheet {} in {}. "
                          "Ignoring.").format(
                             item.cellref, item.sheet, source_file))
+                except TypeError:
+                    pass
+                else:
+                    v = c.clean()
             destination_kv = dict(gmpp_key=item.cellname, gmpp_key_value=v)
             ls_of_dataline_dicts.append(destination_kv)
     return ls_of_dataline_dicts

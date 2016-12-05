@@ -13,10 +13,8 @@ APOS_FIX = r""
 DATE_REGEX = r"^(\d{1,2})(/|-)(\d{1,2})(/|-)(\d{2,4})"
 INT_REGEX = r"^[-+]?\d+$"
 FLOAT_REGEX = r"^[-+]?([0-9]*)\.[0-9]+$"
-NL_REGEX = r"\ \n"
-NL_FIX = r" |"
-CHAR_NL_CHAR_REGEX = r"\S\n\S"
-CHAR_NL_CHAR_FIX = r" | "
+NL_REGEX = r"\n"
+NL_FIX = r" | "
 SPACE_PIPE_CHAR_REGEX = r"\ \|\S"
 SPACE_PIPE_CHAR_FIX = r" | "
 
@@ -24,15 +22,17 @@ SPACE_PIPE_CHAR_FIX = r" | "
 class Cleanser:
     """
     Takes a string, and cleans it.
-    Clean action so far are:
-        - remove commas
-        - remove newlines
-        - remove apostrophes
-        - turn date text to date objects
-        - convert integer-like string to integer
-        - convert float-like string to float
-        - convert \n\n to |
-        - convert \n•
+
+    Doctests:
+    >>> t = "Text, with commas"
+    >>> c = Cleanser(t)
+    >>> c.clean()
+    'Text with commas'
+    >>> a = "\'Text with leading apos."
+    >>> c = Cleanser(a)
+    >>> c.clean()
+    'Text with leading apos.'
+
     """
 
     def __init__(self, string):
@@ -59,12 +59,6 @@ class Cleanser:
                 rule=NL_REGEX,
                 fix=NL_FIX,
                 func=self._newline,
-                count=0),
-            dict(
-                c_type='char_newline_char',
-                rule=CHAR_NL_CHAR_REGEX,
-                fix=CHAR_NL_CHAR_FIX,
-                func=self._char_newline_char,
                 count=0),
             dict(
                 c_type='double_space',
@@ -109,10 +103,6 @@ class Cleanser:
         """Handles newlines anywhere in string."""
         return re.sub(regex, fix, self.string)
 
-    def _char_newline_char(self, regex, fix):
-        """Handles newlines preceded and succeeded by chars."""
-        return re.sub(regex, fix, self.string)
-
     def _doublespace(self, regex, fix):
         """Handles double-spaces anywhere in string."""
         return re.sub(regex, fix, self.string)
@@ -152,7 +142,6 @@ class Cleanser:
             else:
                 # shouldn't ever get here but hey...
                 return self.string
-            self._sort_checks()
         return self.string
 
 

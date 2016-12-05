@@ -8,7 +8,7 @@ import re
 from datetime import date
 
 from bcompiler.datamap import Datamap
-from bcompiler.cleansers import clean as clean_filter
+from bcompiler.process import clean as clean_filter
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
 from openpyxl import load_workbook, Workbook
 

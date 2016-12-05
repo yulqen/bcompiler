@@ -188,16 +188,6 @@ def test_cleanser_class():
     nl = Cleanser(newline_str1)
     nl2 = Cleanser(newline_str2)
 
-    assert nl.clean() == ("There are many ways to write newlines | and this "
-                          "is one.")
-    assert nl2.clean() == "Bobbins | bobbins | bobbins | bobbins | bobbins"
-    assert mix.clean() == "There are mixes here! Aren't there yes!"
-    assert c.clean() == ("There is tonnes of stuff to think about we need "
-                         "to clean. There are multiple commas in here see? "
-                         "Big commas big!")
-    assert c2.clean() == ("Millions upon millions of commas! We love "
-                          "commas even if they are malplaced okay?? ")
-
     # testing private interface to ensure counting of targets is done
     assert c._checks[c._access_checks('commas')]['count'] == 3
     assert c2._checks[c._access_checks('commas')]['count'] == 7
@@ -205,3 +195,13 @@ def test_cleanser_class():
     assert a2._checks[c._access_checks('leading_apostrophe')]['count'] == 0
     assert mix._checks[c._access_checks('commas')]['count'] == 2
     assert mix._checks[c._access_checks('leading_apostrophe')]['count'] == 1
+
+    assert nl2.clean() == "Bobbins | bobbins | bobbins | bobbins | bobbins"
+    assert nl.clean() == ("There are many ways to write newlines | and this "
+                          "is one.")
+    assert mix.clean() == "There are mixes here! Aren't there yes!"
+    assert c.clean() == ("There is tonnes of stuff to think about we need "
+                         "to clean. There are multiple commas in here see? "
+                         "Big commas big!")
+    assert c2.clean() == ("Millions upon millions of commas! We love "
+                          "commas even if they are malplaced okay?? ")

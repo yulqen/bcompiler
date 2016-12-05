@@ -179,6 +179,10 @@ def test_cleanser_class():
     mix_apos_commas = "'There are mixes, here! Aren't there, yes!"
     newline_str1 = "There are many ways to write newlines\nand this is one."
     newline_str2 = "Bobbins\nbobbins\nbobbins\nbobbins\nbobbins"
+    d_d_str = "03/06/2017"
+#   d2_d_str = "2017-06-03" # it doesn't pick up this format
+    i_str = "1234"
+    f_str = "12.34"
 
     c = Cleanser(commas_str)
     c2 = Cleanser(commas_str2)
@@ -187,6 +191,10 @@ def test_cleanser_class():
     mix = Cleanser(mix_apos_commas)
     nl = Cleanser(newline_str1)
     nl2 = Cleanser(newline_str2)
+    d = Cleanser(d_d_str)
+#   d2 = Cleanser(d2_d_str)
+    i = Cleanser(i_str)
+    f = Cleanser(f_str)
 
     # testing private interface to ensure counting of targets is done
     assert c._checks[c._access_checks('commas')]['count'] == 3
@@ -205,3 +213,13 @@ def test_cleanser_class():
                          "Big commas big!")
     assert c2.clean() == ("Millions upon millions of commas! We love "
                           "commas even if they are malplaced okay?? ")
+    assert d.clean().month == 6
+    assert d.clean().year == 2017
+    assert d.clean().day == 3
+    assert i.clean() == 1234
+    assert f.clean() == 12.34
+
+    # TODO - unable to detect strings in "2015-02-23" format as yet
+#    assert d2.clean().month == 6
+#    assert d2.clean().year == 2017
+#    assert d2.clean().day == 3

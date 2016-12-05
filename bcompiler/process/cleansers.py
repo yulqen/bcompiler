@@ -72,6 +72,24 @@ class Cleanser:
                 fix=SPACE_PIPE_CHAR_FIX,
                 func=self._space_pipe_char,
                 count=0),
+            dict(
+                c_type='date',
+                rule=DATE_REGEX,
+                fix=None,
+                func=self._date,
+                count=0),
+            dict(
+                c_type='int',
+                rule=INT_REGEX,
+                fix=None,
+                func=self._int,
+                count=0),
+            dict(
+                c_type='float',
+                rule=FLOAT_REGEX,
+                fix=None,
+                func=self._float,
+                count=0),
         ]
         self.checks_l = len(self._checks)
         self._analyse()
@@ -85,6 +103,34 @@ class Cleanser:
         """
         self._checks = sorted(
             self._checks, key=itemgetter('count'), reverse=True)
+
+    def _float(self, regex, fix):
+        """
+        Turns numbers that look like floats into floats.
+        """
+        return float(self.string)
+
+    def _int(self, regex, fix):
+        """
+        Turns numbers that look like integers into integers.
+        """
+        return int(self.string)
+
+    def _date(self, regex, fix):
+        """
+        Handles dates in "03/05/2016" format.
+        """
+        m = re.match(regex, self.string)
+        if int(m.groups()[-1]) in range(1965, 1967):
+            logger.warning(
+                ("Dates inputted as dd/mm/65 will migrate as dd/mm/2065. "
+                    "Dates inputted as dd/mm/66 will migrate as dd/mm/1966."))
+        try:
+            return parse(m.string, dayfirst=True)
+        except ValueError:
+            logger.error(
+                "This date is causing problems: {}".format(self.string))
+            return self.string
 
     def _commas(self, regex, fix):
         """

@@ -187,17 +187,22 @@ def get_datamap():
 
 
 def populate_blank_bicc_form(source_master_file, proj_num):
+    logger.info("Reading datamap...")
     datamap = get_datamap()
     proj_data = project_data_line()
+    logger.info("Getting list of projects...")
     ls = get_list_projects(source_master_file)
     test_proj = ls[int(proj_num)]
+    logger.info("Processing project {}.".format(test_proj))
     test_proj_data = proj_data[test_proj]
+    logger.info("Getting template...")
     blank = load_workbook(SOURCE_DIR + 'bicc_template.xlsx')
     ws_summary = blank['Summary']
     ws_fb = blank['Finance & Benefits']
     ws_res = blank['Resources']
     ws_apm = blank['Approval & Project milestones']
     ws_ap = blank['Assurance planning']
+    logger.info("Getting data from master.csv...")
     for item in datamap:
         if item['sheet'] == 'Summary':
             if 'Project/Programme Name' in item['cell_description']:
@@ -206,6 +211,12 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
                 cleaned = c.clean()
+                logger.debug(
+                    "Changed {} to {} for cell_description: {}".format(
+                        test_proj_data[item['cell_description']],
+                        cleaned,
+                        item['cell_description'],
+                        ))
                 ws_summary[
                     item['cell_coordinates']].value = cleaned
             except KeyError:
@@ -220,6 +231,12 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
                 cleaned = c.clean()
+                logger.debug(
+                    "Changed {} to {} for cell_description: {}".format(
+                        test_proj_data[item['cell_description']],
+                        cleaned,
+                        item['cell_description'],
+                        ))
                 ws_fb[
                     item['cell_coordinates']].value = cleaned
             except KeyError:
@@ -234,6 +251,12 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
                 cleaned = c.clean()
+                logger.debug(
+                    "Changed {} to {} for cell_description: {}".format(
+                        test_proj_data[item['cell_description']],
+                        cleaned,
+                        item['cell_description'],
+                        ))
                 ws_res[
                     item['cell_coordinates']].value = cleaned
             except KeyError:
@@ -248,6 +271,12 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
                 cleaned = c.clean()
+                logger.debug(
+                    "Changed {} to {} for cell_description: {}".format(
+                        test_proj_data[item['cell_description']],
+                        cleaned,
+                        item['cell_description'],
+                        ))
                 ws_apm[
                     item['cell_coordinates']].value = cleaned
             except KeyError:
@@ -262,6 +291,12 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
                 cleaned = c.clean()
+                logger.debug(
+                    "Changed {} to {} for cell_description: {}".format(
+                        test_proj_data[item['cell_description']],
+                        cleaned,
+                        item['cell_description'],
+                        ))
                 ws_ap[
                     item['cell_coordinates']].value = cleaned
             except KeyError:

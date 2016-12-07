@@ -1,1 +1,1 @@
-from .cleansers import clean_master, clean, Cleanser
+from .cleansers import Cleanser

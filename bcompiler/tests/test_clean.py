@@ -49,6 +49,14 @@ def test_cleanser_class():
     percent_str = "100%"
     percent_str2 = "85%"
 
+    # pound sign
+    pound_str = "£12.24"
+    pound_str2 = "£12.2499"  # not having that
+    pound_str3 = "£20"  # we want to return this as a float too
+    pound_str_neg = "-£20"
+    pound_str_context = ("£200 - There is a load of test surrounding £20 "
+                         "which we do not wish to match!")
+
     # create Cleanser objects for them all
     c = Cleanser(commas_str)
     c2 = Cleanser(commas_str2)
@@ -65,6 +73,11 @@ def test_cleanser_class():
     f = Cleanser(f_str)
     p = Cleanser(percent_str)
     p2 = Cleanser(percent_str2)
+    pnd = Cleanser(pound_str)
+    pnd2 = Cleanser(pound_str2)
+    pnd3 = Cleanser(pound_str3)
+    pnd_neg = Cleanser(pound_str_neg)
+    pnd_context = Cleanser(pound_str_context)
 
     # testing private interface to ensure counting of targets is done
     assert c._checks[c._access_checks('commas')]['count'] == 3
@@ -94,6 +107,13 @@ def test_cleanser_class():
     assert f.clean() == 12.34
     assert p.clean() == 1.0
     assert p2.clean() == 0.85
+    assert pnd.clean() == 12.24
+    assert pnd2.clean() == 12.24
+    assert pnd3.clean() == 20.0
+    assert pnd_neg.clean() == -20.0
+    assert pnd_context.clean() == ("£200 - There is a load of test "
+                                   "surrounding £20 which we do not wish "
+                                   "to match!")
 
     # TODO - unable to detect strings in "2015-02-23" format as yet
 #    assert d2.clean().month == 6

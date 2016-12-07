@@ -20,6 +20,7 @@ NL_FIX = r" | "
 SPACE_PIPE_CHAR_REGEX = r"\ \|\S"
 SPACE_PIPE_CHAR_FIX = r" | "
 PERCENT_REGEX = r"^(\d{1,3})%$"
+POUND_REGEX = r"^(-)?£(\d+(\.\d{1,2})?)(\d+)?$"  # handles negative numbers
 
 
 class Cleanser:
@@ -105,6 +106,12 @@ class Cleanser:
                 fix=None,
                 func=self._percent,
                 count=0),
+            dict(
+                c_type='pound',
+                rule=POUND_REGEX,
+                fix=None,
+                func=self._pound,
+                count=0)
         ]
         self.checks_l = len(self._checks)
         self._analyse()
@@ -118,6 +125,17 @@ class Cleanser:
         """
         self._checks = sorted(
             self._checks, key=itemgetter('count'), reverse=True)
+
+    def _pound(self, regex, fix):
+        """
+        Turns £12.24 into 12.24 (a float).
+        """
+        m = re.match(regex, self.string)
+        sum_p = m.group(2)
+        if m.group(1) == "-":
+            return float(sum_p) * -1
+        else:
+            return float(sum_p)
 
     def _percent(self, regex, fix):
         """

@@ -36,7 +36,7 @@ def populate_blank_gmpp_form(openpyxl_template, project):
     additional_data = dm.add_additional_data()
     for line in additional_data:
         target_ws[line.cellref].value = line.added_data_field
-    fn = OUTPUT_DIR + project + ' Q2_GMPP.xlsx'
+    fn = OUTPUT_DIR + project + ' Q3_GMPP.xlsx'
     logger.info("Writing {}".format(fn))
     blank.save(fn)
 

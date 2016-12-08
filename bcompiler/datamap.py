@@ -112,10 +112,10 @@ class Datamap(object):
                             'text: "{}"'.format(
                                 dml_data[0], dml_data[-1]))
                         dml = DatamapLine()
-                        dml.cellname = dml_data[0]
-                        dml.sheet = dml_data[1]
-                        dml.cellref = dml_data[2]
-                        dml.dropdown_txt = dml_data[3]
+                        dml.cellname = dml_data[0].rstrip()
+                        dml.sheet = dml_data[1].rstrip()
+                        dml.cellref = dml_data[2].rstrip()
+                        dml.dropdown_txt = dml_data[3].rstrip()
                         self._dml_cname_sheet_cref_ddown.append(dml)
                         self.data.append(dml)
 

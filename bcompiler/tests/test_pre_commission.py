@@ -130,7 +130,7 @@ class TestBICCCommission(unittest.TestCase):
 
     def test_for_individual_project_data_lines(self):
         test_st = ("Project/Programme Name,SRO Sign-Off,"
-                   "FD Sign-Off,")
+                   "Reporting period (GMPP - Snapshot Date)")
         len_test_st = len(test_st)
         with open(self.transposed_master, 'r') as f:
             f_line = f.readline(len_test_st)

@@ -43,10 +43,11 @@ def parse_source_cells(source_file, datamap_source_file):
         datamap_type='returns-to-master',
         source_file=datamap_source_file)
     for item in datamap_obj.data:
+        # hack for importation (we have a new sheet!)
         if item.sheet is not None and item.cellref is not None:
-            ws = wb[item.sheet]
+            ws = wb[item.sheet.rstrip()]
             try:
-                v = ws[item.cellref].value
+                v = ws[item.cellref.rstrip()].value
             except IndexError:
                 logger.error(
                     "Datamap wants sheet: {}; cellref: {} but this is out"

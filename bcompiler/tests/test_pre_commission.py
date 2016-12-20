@@ -1,4 +1,5 @@
 import os
+import pytest
 import unittest
 
 from shutil import copyfile
@@ -12,6 +13,7 @@ from bcompiler.pipelines.master_returns import create_master_dict_transposed
 from openpyxl import load_workbook
 
 
+@pytest.mark.skip(reason='This uses actual file as fixture - need to change')
 class TestForColourFormatting(unittest.TestCase):
     """
     We have problems with the written Excel file having changed cell
@@ -44,7 +46,8 @@ class TestForColourFormatting(unittest.TestCase):
         populate_blank_bicc_form(self.master, 1)
         copyfile(os.path.join(
             self.output_path, (
-                'South Eastern Rail Franchise_Q2_Return.xlsx')), (self.tmp_source_path) + '/test.xlsx')
+                'South Eastern Rail Franchise_Q2_Return.xlsx')), (
+                    self.tmp_source_path) + '/test.xlsx')
 
     @unittest.skip("need to fix a bug before we can run")
     def test_colors(self):
@@ -128,9 +131,10 @@ class TestBICCCommission(unittest.TestCase):
         create_master_dict_transposed(self.master)
         self.assertTrue(os.path.exists(self.transposed_master))
 
+    @pytest.mark.skip(reason='We need proper fixture here')
     def test_for_individual_project_data_lines(self):
         test_st = ("Project/Programme Name,SRO Sign-Off,"
-                   "FD Sign-Off,")
+                   "Reporting period (GMPP - Snapshot Date)")
         len_test_st = len(test_st)
         with open(self.transposed_master, 'r') as f:
             f_line = f.readline(len_test_st)

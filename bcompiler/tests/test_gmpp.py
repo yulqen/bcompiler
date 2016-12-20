@@ -1,6 +1,7 @@
 # we want to test the GMPP datamap functionality
 
 import os
+import pytest
 
 from unittest import TestCase
 
@@ -87,6 +88,7 @@ class TestGMPPDatamap(TestCase):
     def test_get_list_of_gmpp_project_names(self):
         self.assertIn(self.project_to_test, gmpp_project_names())
 
+    @pytest.mark.skip(reason='Test uses actual fixture of a project form')
     def test_populate_single_gmpp_form(self):
         template_opyxl = open_openpyxl_template(GMPP_TEMPLATE)
         populate_blank_gmpp_form(template_opyxl, self.project_to_test)

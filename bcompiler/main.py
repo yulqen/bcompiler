@@ -157,7 +157,7 @@ def get_datamap():
         data_map_line = line.split(',')
         if data_map_line[1] in ['Summary', 'Finance & Benefits',
                                 'Resources', 'Approval & Project milestones',
-                                'Assurance planning']:
+                                'Assurance planning', 'GMPP info']:
             # the end item in the list is a newline - get rid of that
             del data_map_line[-1]
         if cell_regex.search(data_map_line[-1]):
@@ -202,6 +202,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     ws_res = blank['Resources']
     ws_apm = blank['Approval & Project milestones']
     ws_ap = blank['Assurance planning']
+    ws_gmpp = blank['GMPP info']
     logger.info("Getting data from master.csv...")
     for item in datamap:
         if item['sheet'] == 'Summary':
@@ -306,6 +307,26 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
                 ws_ap.add_data_validation(dv)
+                dv.add(ws_ap[item['cell_coordinates']])
+        elif item['sheet'] == 'GMPP info':
+            try:
+                c = Cleanser(test_proj_data[item['cell_description']])
+                cleaned = c.clean()
+                logger.debug(
+                    "Changed {} to {} for cell_description: {}".format(
+                        test_proj_data[item['cell_description']],
+                        cleaned,
+                        item['cell_description'],
+                        ))
+                ws_gmpp[
+                    item['cell_coordinates']].value = cleaned
+            except KeyError:
+                logger.error("Cannot find {} in master.csv".format(
+                    item['cell_description']))
+                pass
+            if item['validation_header']:
+                dv = create_validation(item['validation_header'])
+                ws_gmpp.add_data_validation(dv)
                 dv.add(ws_ap[item['cell_coordinates']])
 
     logger.info("Writing {}".format(test_proj))

@@ -41,3 +41,4 @@ def mock_bicc_form():
 def test_db_id(mock_datamap_object):
     doc = list(mock_datamap_object.find({"Map Type": {"$eq": "BICC"}}))
     assert doc[0]['Map Type'] == 'BICC'
+    assert doc[0]['First Name'] == 'B1'

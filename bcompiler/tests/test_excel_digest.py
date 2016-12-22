@@ -6,7 +6,28 @@ from datetime import date
 
 @pytest.fixture(scope="module")
 def mock_datamap_object():
-    """Mock a Datamap object to use for data retrieval, in MongoDB"""
+    """
+    Mock a Datamap object to use for data retrieval, in MongoDB.
+
+    Datamap object has the format:
+        type: <BICC/GMPP/Etc>
+        date: <date>
+        version: <version>
+        project_programme:
+            { cellref: <cellref>,
+              sheet: <sheetname>,
+              verification_list:
+                  { name: <list_name>,
+                    list_items: [<item 1>, <item 2>,...] }
+              conditional_formatting:
+                  { rule1: <rule>,
+                    rule2: <rule>,
+                    ... }
+              etc ...}
+
+    The structure above can be used to create a Cell object which is used when
+    populating the sheet.
+    """
     client = MongoClient()
     db = client.test_database
     collection = db.test_collection
@@ -18,7 +39,7 @@ def mock_datamap_object():
                  }
     collection.insert_one(test_data)
     yield collection
-    print("Teardown MongoDB")
+    print("Teardown MongoDB test_database")
     client.drop_database(db)
 
 
@@ -38,7 +59,21 @@ def mock_bicc_form():
     ws['B4'] = date(1975, 1, 24)
 
 
-def test_db_id(mock_datamap_object):
+def test_db(mock_datamap_object):
     doc = list(mock_datamap_object.find({"Map Type": {"$eq": "BICC"}}))
+    d = {}
+    assert type(doc[0]) == type(d)
     assert doc[0]['Map Type'] == 'BICC'
     assert doc[0]['First Name'] == 'B1'
+
+
+def test_populate_datamap_from_csv():
+    pass
+
+
+def test_populate_datamap_from_xlsx():
+    pass
+
+
+def test_for_existence_of_datamaps():
+    pass

@@ -61,12 +61,30 @@ project_b_data = [
 def populate_cells_fixture():
     wb = Workbook()
     ws = wb.active
+
+    # basic population
     populate_cells(
         ws, [BCCell("Fist", cellref="A1"), BCCell("Snker", cellref="B1")])
     populate_cells(
         ws, [BCCell("Fist", 2, 3), BCCell("Snker", 3, 3)])
+
     yield ws
 
 
 def test_wb_creation(populate_cells_fixture):
     assert populate_cells_fixture['A1'].value == 'Fist'
+
+
+@pytest.fixture
+def populate_test_data():
+    wb = Workbook()
+    ws = wb.active
+
+    for item in key_col_data:
+        c = BCCell(item, row_num=key_col_data.index(item) + 1, col_num=1)
+        ws.cell(value=c.value, row=c.row_num, column=c.col_num)
+    yield ws
+
+
+def test_populate_test_data(populate_test_data):
+    assert populate_test_data['A1'].value == 'Project/Programme Name'

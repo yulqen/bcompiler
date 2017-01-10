@@ -3,6 +3,8 @@ import pytest
 from bcompiler.process.simple_comparitor import BCCell
 from bcompiler.process.simple_comparitor import populate_cells
 
+from bcompiler.utils import cell_bg_colour
+
 from openpyxl import Workbook
 
 
@@ -65,6 +67,7 @@ def populate_test_data():
     for item in key_col_data:
         c = BCCell(item, row_num=key_col_data.index(item) + 1, col_num=1)
         ws.cell(value=c.value, row=c.row_num, column=c.col_num)
+    ws['C1'].fill = cell_bg_colour([255, 0, 0])
     yield ws
 
 
@@ -84,3 +87,7 @@ def test_populate_function():
     # populate by row, col
     populate_cells(ws, [BCCell("Fanciso Monk", 2, 1)])
     assert ws['A2'].value == "Fanciso Monk"
+
+
+def test_cell_colours(populate_test_data):
+    assert populate_test_data['C1'].fill.fgColor.rgb == '00FF0000'

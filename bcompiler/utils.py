@@ -8,10 +8,23 @@ import os
 from bcompiler.datamap import DatamapGMPP
 
 from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
 
 logger = logging.getLogger('bcompiler.utils')
 
 rdel_cdel_merge = ''
+
+
+def cell_bg_colour(rgb=[]):
+    """
+    Give it a list of integers between 0 and 255 - three of them.
+    """
+    c_value = "{0:02X}{1:02X}{2:02X}".format(*rgb)
+    return PatternFill(
+        patternType='solid',
+        fgColor=c_value,
+        bgColor=c_value
+    )
 
 
 def populate_blank_gmpp_form(openpyxl_template, project):

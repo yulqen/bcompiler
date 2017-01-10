@@ -13,6 +13,7 @@ from bcompiler.process import Cleanser
 from bcompiler.process.simple_comparitor import parse_master
 
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
+from bcompiler.utils import cell_bg_colour
 from openpyxl import load_workbook, Workbook
 
 from openpyxl.styles import PatternFill, Color
@@ -122,14 +123,7 @@ def write_excel(source_file, count, workbook, compare_workbook=None):
         for d in out_map:
             c = ws.cell(row=i, column=count + 1)
             c.value = d['gmpp_key_value']
-            rgb = [255, 0, 0]
-            red = "{0:02X}{1:02X}{2:02X}".format(*rgb)
-            redFill = PatternFill(
-                patternType='solid',
-                fgColor=red,
-                bgColor=red
-            )
-            c.fill = redFill
+            c.fill = cell_bg_colour([255, 0, 0])
             i += 1
 
 

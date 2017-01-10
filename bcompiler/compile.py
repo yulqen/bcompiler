@@ -100,7 +100,6 @@ def write_excel(source_file, count, workbook):
     ws.title = "Constructed BICC Data Master"
 
     out_map = parse_source_cells(source_file, DATAMAP_RETURN_TO_MASTER)
-    import pudb; pudb.set_trace()  # XXX BREAKPOINT
     if count == 1:
         i = 1
         for d in out_map:

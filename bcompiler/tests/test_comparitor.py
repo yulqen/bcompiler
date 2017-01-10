@@ -1,6 +1,6 @@
 import pytest
 
-from bcompiler.process.simple_comparitor import BCCell
+from bcompiler.process.simple_comparitor import BCCell, ParsedMaster
 from bcompiler.process.simple_comparitor import populate_cells
 
 from bcompiler.utils import cell_bg_colour
@@ -91,3 +91,10 @@ def test_populate_function():
 
 def test_cell_colours(populate_test_data):
     assert populate_test_data['C1'].fill.fgColor.rgb == '00FF0000'
+
+
+def test_parsed_master():
+    pm = ParsedMaster(
+        ("/home/lemon/Documents/bcompiler/output/"
+         "compiled_master_2017-01-10_Q2 1617.xlsx"))
+    assert 'Crossrail Programme' in pm.projects

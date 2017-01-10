@@ -123,7 +123,6 @@ def write_excel(source_file, count, workbook, compare_workbook=None):
         for d in out_map:
             c = ws.cell(row=i, column=count + 1)
             c.value = d['gmpp_key_value']
-            c.fill = cell_bg_colour([255, 0, 0])
             i += 1
 
 

@@ -10,14 +10,16 @@ class BCCell:
         self.cellref = cellref
 
 
-def parse_master(master_file):
-    wb = load_workbook(master_file)
-    ws = wb.active
-    projects = [cell.value for cell in ws[1][1:]].sort()
-    project_count = len(projects)
-    key_col = [cell.value for cell in ws['A']]
+class ParsedMaster:
 
-
+    def __init__(self, master_file):
+        self.master_file = master_file
+        wb = load_workbook(self.master_file)
+        ws = wb.active
+        self.projects = [cell.value for cell in ws[1][1:]]
+        self.projects.sort()
+        self.project_count = len(self.projects)
+        self.key_col = [cell.value for cell in ws['A']]
 
 
 def populate_cells(worksheet, bc_cells=[]):

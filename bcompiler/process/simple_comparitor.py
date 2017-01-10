@@ -31,13 +31,39 @@ class ParsedMaster:
     def projects(self):
         return self._projects
 
-    def _create_single_project_tuple(self, column):
-        col_data = self._ws[column]
-        z = list(zip(self._key_col, col_data))
-        return [((item[0]), (item[1].value)) for item in z]
+    def _create_single_project_tuple(self, column=None, col_index=None):
+        if col_index is None:
+            col_data = self._ws[column]
+            z = list(zip(self._key_col, col_data))
+            return [((item[0]), (item[1].value)) for item in z]
+        else:
+            col_data = []
+            for row in self._ws.iter_rows(
+                min_row=1,
+                max_col=col_index,
+                min_col=col_index,
+                max_row=len(self._key_col)
+            ):
+                count = 0
+                for cell in row:
+                    col_data.append(cell.value)
+                    count += 1
+            z = list(zip(self._key_col, col_data))
+            return [((item[0]), (item[1])) for item in z]
 
-    def get_project_data(self, column):
-        data = self._create_single_project_tuple(column)
+    def _create_dict_all_project_tuples(self):
+        pass
+
+    def __repr__(self):
+        return "ParsedMaster for {}".format(
+            self.master_file
+        )
+
+    def get_project_data(self, column=None, col_index=None):
+        if col_index:
+            data = self._create_single_project_tuple(col_index=col_index)
+        else:
+            data = self._create_single_project_tuple(column)
         return data
 
 

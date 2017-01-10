@@ -1,5 +1,4 @@
 import pytest
-import os
 
 from bcompiler.process.simple_comparitor import BCCell
 from bcompiler.process.simple_comparitor import populate_cells
@@ -58,37 +57,16 @@ project_b_data = [
 ]
 
 
-
-
-
-#@pytest.fixture
-#def old_master():
-#    wb = Workbook()
-#    ws = wb.active
-#    count = 0
-#    # first column
-#    for row in ws.iter_rows(min_row=1, max_col=1, max_row=len(key_col_data)):
-#        for cell in row:
-#            cell.value = key_col_data[count]
-#            print(f"cell {cell}: {cell.value}")
-#            count += 1
-#
-#    # project_b (as in b column)
-#    for row in ws.iter_rows(min_row=1, max_col=1, max_row=len(key_col_data)):
-#        for cell in row:
-#            cell.value = key_col_data[count]
-#            print(f"cell {cell}: {cell.value}")
-#            count += 1
-#
-#    yield wb
-
 @pytest.fixture
 def populate_cells_fixture():
     wb = Workbook()
     ws = wb.active
-    populate_cells(ws, [BCCell("Fist", cellref="A1"), BCCell("Snker", cellref="B1")])
-    populate_cells(ws, [BCCell("Fist", 2, 3), BCCell("Snker", 3, 3)])
+    populate_cells(
+        ws, [BCCell("Fist", cellref="A1"), BCCell("Snker", cellref="B1")])
+    populate_cells(
+        ws, [BCCell("Fist", 2, 3), BCCell("Snker", 3, 3)])
     yield ws
+
 
 def test_wb_creation(populate_cells_fixture):
     assert populate_cells_fixture['A1'].value == 'Fist'

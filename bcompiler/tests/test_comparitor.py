@@ -3,7 +3,6 @@ import os
 
 from openpyxl import Workbook
 
-from bcompiler.utils import SOURCE_DIR
 
 key_col_data = [
     'Project/Programme Name',
@@ -55,27 +54,46 @@ project_b_data = [
     'Waterfall',
 ]
 
-@pytest.fixture
-def old_master():
+
+
+def populate_col(worksheet, header, data=[]):
+    """
+    Populate a worksheet with data, in column header. header is an integer.
+    """
+    for item in data:
+        worksheet.cell(row=data.index(item)+1, column=header, value=item)
+    return worksheet
+
+
+
+#@pytest.fixture
+#def old_master():
+#    wb = Workbook()
+#    ws = wb.active
+#    count = 0
+#    # first column
+#    for row in ws.iter_rows(min_row=1, max_col=1, max_row=len(key_col_data)):
+#        for cell in row:
+#            cell.value = key_col_data[count]
+#            print(f"cell {cell}: {cell.value}")
+#            count += 1
+#
+#    # project_b (as in b column)
+#    for row in ws.iter_rows(min_row=1, max_col=1, max_row=len(key_col_data)):
+#        for cell in row:
+#            cell.value = key_col_data[count]
+#            print(f"cell {cell}: {cell.value}")
+#            count += 1
+#
+#    yield wb
+
+def test_populate_col():
     wb = Workbook()
-	ws = wb.active
-    count = 0
-	# first column
-    for row in ws.iter_rows(min_row=1, max_col=1, max_row=len(key_col_data)):
-        for cell in row:
-            cell.value = key_col_data[count]
-            print(f"cell {cell}: {cell.value}")
-            count += 1
+    ws = wb.active
+    populate_col(ws, 1, ['fucktits', 'snotters'])
+    populate_col(ws, 2, [1, 2, 3])
+    wb.save('fuckers.xlsx')
 
-	# project_b (as in b column)
-    for row in ws.iter_rows(min_row=1, max_col=1, max_row=len(key_col_data)):
-        for cell in row:
-            cell.value = key_col_data[count]
-            print(f"cell {cell}: {cell.value}")
-            count += 1
-
-    yield wb
-
-def test_wb_creation(old_master):
-    ws = active
-    assert ws['A1'].value == 'Project/Programme Name'
+#def test_wb_creation(old_master):
+#    ws = active
+#    assert ws['A1'].value == 'Project/Programme Name'

@@ -9,9 +9,13 @@ from datetime import date
 
 from bcompiler.datamap import Datamap
 from bcompiler.process import Cleanser
+
+from bcompiler.process.simple_comparitor import parse_master
+
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
 from openpyxl import load_workbook, Workbook
 
+from openpyxl.styles import PatternFill, Color
 
 CELL_REGEX = re.compile('[A-Z]+[0-9]+')
 DROPDOWN_REGEX = re.compile('^\D*$')
@@ -86,8 +90,7 @@ def parse_source_cells(source_file, datamap_source_file):
     return ls_of_dataline_dicts
 
 
-# noinspection PyTypeChecker,PyTypeChecker,PyTypeChecker
-def write_excel(source_file, count, workbook):
+def write_excel(source_file, count, workbook, compare_workbook=None):
     """
     count is used to count number of times function is run so that multiple
     returns can be added
@@ -98,6 +101,9 @@ def write_excel(source_file, count, workbook):
     ws = workbook.active
     # give it a title
     ws.title = "Constructed BICC Data Master"
+
+#    if compare_workbook:
+#        sc = parse_master(compare_workbook)
 
     out_map = parse_source_cells(source_file, DATAMAP_RETURN_TO_MASTER)
     if count == 1:
@@ -116,6 +122,14 @@ def write_excel(source_file, count, workbook):
         for d in out_map:
             c = ws.cell(row=i, column=count + 1)
             c.value = d['gmpp_key_value']
+            rgb = [255, 0, 0]
+            red = "{0:02X}{1:02X}{2:02X}".format(*rgb)
+            redFill = PatternFill(
+                patternType='solid',
+                fgColor=red,
+                bgColor=red
+            )
+            c.fill = redFill
             i += 1
 
 

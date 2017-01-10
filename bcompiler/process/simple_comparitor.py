@@ -1,5 +1,6 @@
 from openpyxl import load_workbook
 
+
 class BCCell:
 
     def __init__(self, value, row_num=None, col_num=None, cellref=None):
@@ -7,6 +8,16 @@ class BCCell:
         self.row_num = row_num
         self.col_num = col_num
         self.cellref = cellref
+
+
+def parse_master(master_file):
+    wb = load_workbook(master_file)
+    ws = wb.active
+    projects = [cell.value for cell in ws[1][1:]].sort()
+    project_count = len(projects)
+    key_col = [cell.value for cell in ws['A']]
+
+
 
 
 def populate_cells(worksheet, bc_cells=[]):
@@ -17,7 +28,8 @@ def populate_cells(worksheet, bc_cells=[]):
         if item.cellref:
             worksheet[item.cellref].value = item.value
         else:
-            worksheet.cell(row=item.row_num, column=item.col_num, value=item.value)
+            worksheet.cell(
+                row=item.row_num, column=item.col_num, value=item.value)
     return worksheet
 
 
@@ -46,3 +58,4 @@ class SimpleComparitor:
 
     def data(self, index, col):
         return self.get_data(self.masters[index], col)
+

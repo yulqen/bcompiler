@@ -55,13 +55,27 @@ project_b_data = [
 ]
 
 
+class BCCell:
 
-def populate_col(worksheet, header, data=[]):
+    def __init__(self, value, row_num=None, col_num=None, cellref=None):
+        self.value = value
+        self.row_num = row_num
+        self.col_num = col_num
+        self.cellref = cellref
+
+
+
+
+
+def populate_col(worksheet, bc_cells=[]):
     """
-    Populate a worksheet with data, in column header. header is an integer.
+    Populate a worksheet with bc_cell object data.
     """
-    for item in data:
-        worksheet.cell(row=data.index(item)+1, column=header, value=item)
+    for item in bc_cells:
+        if item.cellref:
+            worksheet[item.cellref].value = item.value
+        else:
+            worksheet.cell(row=item.row_num, column=item.col_num, value=item.value)
     return worksheet
 
 
@@ -87,13 +101,13 @@ def populate_col(worksheet, header, data=[]):
 #
 #    yield wb
 
-def test_populate_col():
+@pytest.fixture
+def populate_cols():
     wb = Workbook()
     ws = wb.active
-    populate_col(ws, 1, ['fucktits', 'snotters'])
-    populate_col(ws, 2, [1, 2, 3])
-    wb.save('fuckers.xlsx')
+    populate_col(ws, [BCCell("Fist", cellref="A1"), BCCell("Snker", cellref="B1")])
+    populate_col(ws, [BCCell("Fist", 2, 3), BCCell("Snker", 3, 3)])
+    yield ws
 
-#def test_wb_creation(old_master):
-#    ws = active
-#    assert ws['A1'].value == 'Project/Programme Name'
+def test_wb_creation(populate_cols):
+    assert populate_cols['A1'].value == 'Fist'

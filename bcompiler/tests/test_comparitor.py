@@ -1,6 +1,9 @@
 import pytest
 import os
 
+from bcompiler.process.simple_comparitor import BCCell
+from bcompiler.process.simple_comparitor import populate_cells
+
 from openpyxl import Workbook
 
 
@@ -55,28 +58,6 @@ project_b_data = [
 ]
 
 
-class BCCell:
-
-    def __init__(self, value, row_num=None, col_num=None, cellref=None):
-        self.value = value
-        self.row_num = row_num
-        self.col_num = col_num
-        self.cellref = cellref
-
-
-
-
-
-def populate_col(worksheet, bc_cells=[]):
-    """
-    Populate a worksheet with bc_cell object data.
-    """
-    for item in bc_cells:
-        if item.cellref:
-            worksheet[item.cellref].value = item.value
-        else:
-            worksheet.cell(row=item.row_num, column=item.col_num, value=item.value)
-    return worksheet
 
 
 
@@ -102,12 +83,12 @@ def populate_col(worksheet, bc_cells=[]):
 #    yield wb
 
 @pytest.fixture
-def populate_cols():
+def populate_cells_fixture():
     wb = Workbook()
     ws = wb.active
-    populate_col(ws, [BCCell("Fist", cellref="A1"), BCCell("Snker", cellref="B1")])
-    populate_col(ws, [BCCell("Fist", 2, 3), BCCell("Snker", 3, 3)])
+    populate_cells(ws, [BCCell("Fist", cellref="A1"), BCCell("Snker", cellref="B1")])
+    populate_cells(ws, [BCCell("Fist", 2, 3), BCCell("Snker", 3, 3)])
     yield ws
 
-def test_wb_creation(populate_cols):
-    assert populate_cols['A1'].value == 'Fist'
+def test_wb_creation(populate_cells_fixture):
+    assert populate_cells_fixture['A1'].value == 'Fist'

@@ -1,5 +1,25 @@
 from openpyxl import load_workbook
 
+class BCCell:
+
+    def __init__(self, value, row_num=None, col_num=None, cellref=None):
+        self.value = value
+        self.row_num = row_num
+        self.col_num = col_num
+        self.cellref = cellref
+
+
+def populate_cells(worksheet, bc_cells=[]):
+    """
+    Populate a worksheet with bc_cell object data.
+    """
+    for item in bc_cells:
+        if item.cellref:
+            worksheet[item.cellref].value = item.value
+        else:
+            worksheet.cell(row=item.row_num, column=item.col_num, value=item.value)
+    return worksheet
+
 
 class SimpleComparitor:
     """

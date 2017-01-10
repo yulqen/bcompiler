@@ -98,3 +98,4 @@ def test_parsed_master():
         ("/home/lemon/Documents/bcompiler/output/"
          "compiled_master_2017-01-10_Q2 1617.xlsx"))
     assert 'Crossrail Programme' in pm.projects
+    assert pm.get_project_data('C')[0][1] == 'Search and Rescue Helicopters'

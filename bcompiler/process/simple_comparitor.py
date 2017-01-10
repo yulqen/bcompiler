@@ -14,12 +14,31 @@ class ParsedMaster:
 
     def __init__(self, master_file):
         self.master_file = master_file
-        wb = load_workbook(self.master_file)
-        ws = wb.active
-        self.projects = [cell.value for cell in ws[1][1:]]
-        self.projects.sort()
-        self.project_count = len(self.projects)
-        self.key_col = [cell.value for cell in ws['A']]
+        self._projects = []
+        self._project_count = None
+        self._key_col = []
+        self._wb = load_workbook(self.master_file)
+        self._ws = self._wb.active
+        self._parse()
+
+    def _parse(self):
+        self._projects = [cell.value for cell in self._ws[1][1:]]
+        self._projects.sort()
+        self._project_count = len(self.projects)
+        self._key_col = [cell.value for cell in self._ws['A']]
+
+    @property
+    def projects(self):
+        return self._projects
+
+    def _create_single_project_tuple(self, column):
+        col_data = self._ws[column]
+        z = list(zip(self._key_col, col_data))
+        return [((item[0]), (item[1].value)) for item in z]
+
+    def get_project_data(self, column):
+        data = self._create_single_project_tuple(column)
+        return data
 
 
 def populate_cells(worksheet, bc_cells=[]):

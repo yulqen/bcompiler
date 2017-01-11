@@ -1,7 +1,7 @@
 import pytest
 
 from bcompiler.process.simple_comparitor import BCCell, ParsedMaster
-from bcompiler.process.simple_comparitor import SimpleComparitor
+from bcompiler.process.simple_comparitor import FileComparitor
 from bcompiler.process.simple_comparitor import populate_cells
 
 from bcompiler.utils import cell_bg_colour
@@ -120,7 +120,7 @@ def test_parsed_master():
 
 
 def test_comparitor():
-    comp = SimpleComparitor([SOURCE_EARLY, SOURCE_CURRENT])
+    comp = FileComparitor([SOURCE_EARLY, SOURCE_CURRENT])
     t = comp.compare(2, 'Project/Programme Name')
     t2 = comp.compare(3, 'Project/Programme Name')
     assert t[0] == 'Digital Signalling'

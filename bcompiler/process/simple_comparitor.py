@@ -148,7 +148,7 @@ def populate_cells(worksheet, bc_cells=[]):
     return worksheet
 
 
-class SimpleComparitor:
+class FileComparitor:
     """
     Simple method of comparing data in two master spreadsheets.
     """

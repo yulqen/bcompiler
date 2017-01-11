@@ -8,6 +8,7 @@ import re
 from datetime import date
 
 from bcompiler.datamap import Datamap
+
 from bcompiler.process import Cleanser
 
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
@@ -87,7 +88,7 @@ def parse_source_cells(source_file, datamap_source_file):
     return ls_of_dataline_dicts
 
 
-def write_excel(source_file, count, workbook, compare_workbook=None):
+def write_excel(source_file, count, workbook, compare_file=None):
     """
     count is used to count number of times function is run so that multiple
     returns can be added

@@ -109,10 +109,7 @@ def write_excel(source_file, count, workbook, compare_file=None):
                     'compiled_master_early.xlsx')
 
     comparitor = FileComparitor([compare_file])
-
-    project_name = [
-        item['gmpp_key_value'] for item in out_map if item[
-            'gmpp_key'] == 'Project/Programme Name']
+    req_types = [type(1), type(1.3)]
 
     if count == 1:
         i = 1
@@ -128,9 +125,11 @@ def write_excel(source_file, count, workbook, compare_file=None):
             c.value = d['gmpp_key_value']
             compare_val = comparitor.compare(2, d['gmpp_key'])
             if compare_val:
-                if isinstance(compare_val, type(1)) and compare_val < d['gmpp_key_value']:
+                if type(compare_val) in req_types \
+                        and compare_val < d['gmpp_key_value']:
                     c.fill = cell_bg_colour(rgb=[255, 0, 0])
-                if isinstance(compare_val, type(1)) and compare_val > d['gmpp_key_value']:
+                if type(compare_val) in req_types \
+                        and compare_val > d['gmpp_key_value']:
                     c.fill = cell_bg_colour(rgb=[3, 181, 0])
             i += 1
     else:
@@ -142,8 +141,12 @@ def write_excel(source_file, count, workbook, compare_file=None):
             c.value = d['gmpp_key_value']
             compare_val = comparitor.compare(count + 1, d['gmpp_key'])
             if compare_val:
-                if isinstance(compare_val, type(1)) and compare_val > d['gmpp_key_value']:
+                if type(compare_val) in req_types \
+                        and compare_val < d['gmpp_key_value']:
                     c.fill = cell_bg_colour(rgb=[255, 0, 0])
+                if type(compare_val) in req_types \
+                        and compare_val > d['gmpp_key_value']:
+                    c.fill = cell_bg_colour(rgb=[3, 181, 0])
             i += 1
 
 

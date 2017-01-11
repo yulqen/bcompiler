@@ -1,12 +1,12 @@
 import pytest
 
 from bcompiler.process.simple_comparitor import BCCell, ParsedMaster
+from bcompiler.process.simple_comparitor import SimpleComparitor
 from bcompiler.process.simple_comparitor import populate_cells
 
 from bcompiler.utils import cell_bg_colour
 
 from openpyxl import Workbook
-
 
 key_col_data = [
     'Project/Programme Name',
@@ -71,6 +71,12 @@ def populate_test_data():
     yield ws
 
 
+@pytest.fixture
+def parsed_master():
+    pm = ParsedMaster(populate_test_data)
+    return pm
+
+
 def test_populate_test_data(populate_test_data):
     assert populate_test_data['A1'].value == 'Project/Programme Name'
     assert populate_test_data['A2'].value == 'SRO Sign-Off'
@@ -93,12 +99,29 @@ def test_cell_colours(populate_test_data):
     assert populate_test_data['C1'].fill.fgColor.rgb == '00FF0000'
 
 
+SOURCE_EARLY = ('/home/lemon/Documents/bcompiler/'
+                'output/compiled_master_early.xlsx')
+SOURCE_CURRENT = ('/home/lemon/Documents/bcompiler/'
+                  'output/compiled_master_current.xlsx')
+
+
 def test_parsed_master():
-    pm = ParsedMaster(
-        ("/home/lemon/Documents/bcompiler/output/"
-         "compiled_master_2017-01-10_Q2 1617.xlsx"))
+    pm = ParsedMaster(SOURCE_CURRENT)
+    project_data = pm.get_project_data(col_index=2)
+    project_data2 = pm.get_project_data(col_index=13)
     assert 'Crossrail Programme' in pm.projects
     assert pm.get_project_data(
         'C')[0][1] == 'Search and Rescue Helicopters'
     assert pm.get_project_data(
         col_index=3)[0][1] == 'Search and Rescue Helicopters'
+    assert pm.get_data_with_key(project_data, 'Top 37') is None
+    assert pm.get_data_with_key(
+        project_data2, 'Project/Programme Name') == 'DfT Headquarters'
+
+
+def test_comparitor():
+    comp = SimpleComparitor([SOURCE_EARLY, SOURCE_CURRENT])
+    t = comp.compare(2, 'Project/Programme Name')
+    t2 = comp.compare(3, 'Project/Programme Name')
+    assert t[0] == 'Digital Signalling'
+    assert t2[0] == 'Search and Rescue Helicopters'

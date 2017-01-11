@@ -22,13 +22,15 @@ class ParsedMaster:
         self._key_col = []
         self._wb = load_workbook(self.master_file)
         self._ws = self._wb.active
+        self._project_header_index = {}
         self._parse()
 
     def _parse(self):
         self._projects = [cell.value for cell in self._ws[1][1:]]
-        self._projects.sort()
+#       self._projects.sort()
         self._project_count = len(self.projects)
         self._key_col = [cell.value for cell in self._ws['A']]
+        self._index_projects()
 
     @property
     def projects(self):
@@ -53,6 +55,18 @@ class ParsedMaster:
                     count += 1
             z = list(zip(self._key_col, col_data))
             return [((item[0]), (item[1])) for item in z]
+
+    def _index_projects(self):
+        self._project_header_index = {}
+        for cell in self._ws[1]:
+            if cell.value in self.projects:
+                self._project_header_index[cell.value] = cell.col_idx
+
+    def print_project_index(self):
+        print('{:<68}{:>5}'.format("Project Title", "Column Index"))
+        print('{:*^80}'.format(''))
+        for k, v in self._project_header_index.items():
+            print('{:<68}{:>5}'.format(k, v))
 
     def _create_dict_all_project_tuples(self):
         pass
@@ -132,15 +146,19 @@ class SimpleComparitor:
         if len(masters) > 2:
             raise ValueError("You can only analyse two spreadsheets.")
 
-        self.masters = masters
+        self._masters = masters
+        self._get_data()
 
-    def get_data(self, spreadsheet_file, col):
-        wb = load_workbook(spreadsheet_file)
-        ws = wb['Constructed BICC Data Master']
-        col_a = ws['A']
-        col_b = ws[col]
-        z = list(zip(col_a, col_b))
-        return [((item[0].value), (item[1].value)) for item in z]
+    def _get_data(self):
+        self._early_master = ParsedMaster(self._masters[0])
+        self._current_master = ParsedMaster(self._masters[1])
+        return (self._early_master, self._current_master)
 
-    def data(self, index, col):
-        return self.get_data(self.masters[index], col)
+    def compare(self, proj_index, key):
+        project_data_early = self._early_master.get_project_data(
+            col_index=proj_index)
+        project_data_current = self._current_master.get_project_data(
+            col_index=proj_index)
+        return(
+            self._early_master.get_data_with_key(project_data_early, key),
+            self._current_master.get_data_with_key(project_data_current, key))

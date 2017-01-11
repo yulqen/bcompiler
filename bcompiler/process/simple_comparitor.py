@@ -1,4 +1,7 @@
+import logging
 from openpyxl import load_workbook
+
+logger = logging.getLogger('bcompiler.process.simple_comparitor')
 
 
 class BCCell:
@@ -78,28 +81,29 @@ class ParsedMaster:
             else:
                 raise TypeError('col_index must be an integer')
 
-        for d in data:
-            yield d
+        return data
 
-    def query_for_key(self, gen, key):
+    def _query_for_key(self, data, key):
         """
         Iterate through keys in output from get_project_data
-        generator and return True if a key is found.
+        data list and return True if a key is found.
         """
-        for item in gen:
+        for item in data:
             if item[0] == key:
+                self._query_result = item[1]
                 return True
-            else:
-                self.query_for_key(gen, key)
-            return False
 
-    def get_data_with_key(self, gen, key):
+    def get_data_with_key(self, data, key):
         """
-        Given a generator with project key/values in it (derived from
+        Given a data list with project key/values in it (derived from
         a master spreadsheet, query a specific key to return a value.
         """
         # first query that the value exists
-        pass
+        if self._query_for_key(data, key):
+            return self._query_result
+        else:
+            logger.info("No key {}".format(key))
+            return None
 
 
 def populate_cells(worksheet, bc_cells=[]):

@@ -90,7 +90,16 @@ class ParsedMaster:
             if item[0] == key:
                 return True
             else:
-                return self.query_for_key(gen, key)
+                self.query_for_key(gen, key)
+            return False
+
+    def get_data_with_key(self, gen, key):
+        """
+        Given a generator with project key/values in it (derived from
+        a master spreadsheet, query a specific key to return a value.
+        """
+        # first query that the value exists
+        pass
 
 
 def populate_cells(worksheet, bc_cells=[]):

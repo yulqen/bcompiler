@@ -26,6 +26,10 @@ class ParsedMaster:
         self._parse()
 
     def _parse(self):
+        """
+        Private method to set up the class.
+        self._key_col is column 'A' in the masters format.
+        """
         self._projects = [cell.value for cell in self._ws[1][1:]]
 #       self._projects.sort()
         self._project_count = len(self.projects)
@@ -34,9 +38,19 @@ class ParsedMaster:
 
     @property
     def projects(self):
+        """
+        Returns a list of project titles in the master.
+        """
         return self._projects
 
     def _create_single_project_tuple(self, column=None, col_index=None):
+        """
+        Private method to construct a tuple of key, values based on
+        the particular project (identified by reference to the its column,
+        and can be given as a letter ('H') or an integer.
+
+        This method is internal and is called by self.get_project_data.
+        """
         if col_index is None:
             col_data = self._ws[column]
             z = list(zip(self._key_col, col_data))
@@ -100,7 +114,8 @@ class ParsedMaster:
     def _query_for_key(self, data, key):
         """
         Iterate through keys in output from get_project_data
-        data list and return True if a key is found.
+        data list and return True if a key is found. Does not return
+        anything if not found.
         """
         for item in data:
             if item[0] == key:
@@ -150,11 +165,23 @@ class SimpleComparitor:
         self._get_data()
 
     def _get_data(self):
+        """
+        Private method that creates two ParsedMaster objects in a tuple. First
+        is the earlier master, the second is the current. These states are
+        derived from the order that the file references are given to the
+        constructor.
+        """
         self._early_master = ParsedMaster(self._masters[0])
         self._current_master = ParsedMaster(self._masters[1])
         return (self._early_master, self._current_master)
 
     def compare(self, proj_index, key):
+        """
+        Returns a tuple of two values, the first is the value of key in
+        proj_index in the early master, the second the equivalent in the
+        current master. proj_index should be an integer and can be derived
+        from the import spreadsheet or by ParsedMaster.print_project_index.
+        """
         project_data_early = self._early_master.get_project_data(
             col_index=proj_index)
         project_data_current = self._current_master.get_project_data(

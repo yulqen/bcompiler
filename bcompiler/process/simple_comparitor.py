@@ -60,11 +60,37 @@ class ParsedMaster:
         )
 
     def get_project_data(self, column=None, col_index=None):
+        if column is None and col_index is None:
+            raise TypeError('Please include at least one param')
+
+        if column == 'A':
+            raise TypeError("column must be 'B' or later in alphabet")
+
+        if column:
+            if isinstance(column, type('b')):
+                data = self._create_single_project_tuple(column)
+            else:
+                raise TypeError('column must be a string')
+
         if col_index:
-            data = self._create_single_project_tuple(col_index=col_index)
-        else:
-            data = self._create_single_project_tuple(column)
-        return data
+            if isinstance(col_index, type(1)):
+                data = self._create_single_project_tuple(col_index=col_index)
+            else:
+                raise TypeError('col_index must be an integer')
+
+        for d in data:
+            yield d
+
+    def query_for_key(self, gen, key):
+        """
+        Iterate through keys in output from get_project_data
+        generator and return True if a key is found.
+        """
+        for item in gen:
+            if item[0] == key:
+                return True
+            else:
+                return self.query_for_key(gen, key)
 
 
 def populate_cells(worksheet, bc_cells=[]):
@@ -105,4 +131,3 @@ class SimpleComparitor:
 
     def data(self, index, col):
         return self.get_data(self.masters[index], col)
-

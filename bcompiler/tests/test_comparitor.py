@@ -125,3 +125,13 @@ def test_comparitor():
     t2 = comp.compare(3, 'Project/Programme Name')
     assert t[0] == 'Digital Signalling'
     assert t2[0] == 'Search and Rescue Helicopters'
+
+
+def test_single_comparitor():
+    comp = FileComparitor([SOURCE_EARLY])
+    t = comp.compare(2, 'Project/Programme Name')
+    t2 = comp.compare(3, 'Project/Programme Name')
+    t3 = comp.compare(5, 'Working Contact Name')
+    assert t == 'Digital Signalling'
+    assert t2 == 'Search and Rescue Helicopters'
+    assert t3 == 'Jonathan Daley'

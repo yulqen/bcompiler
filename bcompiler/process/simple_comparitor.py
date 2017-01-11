@@ -158,11 +158,22 @@ class FileComparitor:
         We want to get a list of master spreadsheets. These are simple
         file-references. The latest master should be master[-1].
         """
+        self._comp_type = None
+
         if len(masters) > 2:
             raise ValueError("You can only analyse two spreadsheets.")
 
-        self._masters = masters
-        self._get_data()
+        if len(masters) == 2:
+            # we're comparing two files
+            self._masters = masters
+            self._comp_type = 'two'
+            self._get_data()
+
+        if len(masters) == 1:
+            # we're comparing against one single master
+            self._master = masters[0]
+            self._comp_type = 'one'
+            self._get_data()
 
     def _get_data(self):
         """
@@ -171,9 +182,14 @@ class FileComparitor:
         derived from the order that the file references are given to the
         constructor.
         """
-        self._early_master = ParsedMaster(self._masters[0])
-        self._current_master = ParsedMaster(self._masters[1])
-        return (self._early_master, self._current_master)
+        if self._comp_type == 'two':
+            self._early_master = ParsedMaster(self._masters[0])
+            self._current_master = ParsedMaster(self._masters[1])
+            return (self._early_master, self._current_master)
+
+        if self._comp_type == 'one':
+            self._early_master = ParsedMaster(self._master)
+            return self._early_master
 
     def compare(self, proj_index, key):
         """
@@ -182,10 +198,19 @@ class FileComparitor:
         current master. proj_index should be an integer and can be derived
         from the import spreadsheet or by ParsedMaster.print_project_index.
         """
-        project_data_early = self._early_master.get_project_data(
-            col_index=proj_index)
-        project_data_current = self._current_master.get_project_data(
-            col_index=proj_index)
-        return(
-            self._early_master.get_data_with_key(project_data_early, key),
-            self._current_master.get_data_with_key(project_data_current, key))
+        if self._comp_type == 'two':
+            project_data_early = self._early_master.get_project_data(
+                col_index=proj_index)
+            project_data_current = self._current_master.get_project_data(
+                col_index=proj_index)
+            return(
+                self._early_master.get_data_with_key(
+                    project_data_early, key),
+                self._current_master.get_data_with_key(
+                    project_data_current, key))
+
+        if self._comp_type == 'one':
+            project_data_early = self._early_master.get_project_data(
+                col_index=proj_index)
+            return(
+                self._early_master.get_data_with_key(project_data_early, key))

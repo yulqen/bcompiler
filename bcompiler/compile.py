@@ -13,7 +13,7 @@ from bcompiler.process import Cleanser
 from bcompiler.process.simple_comparitor import FileComparitor
 
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
-from bcompiler.utils import cell_bg_colour
+from bcompiler.utils import cell_bg_colour, bc_is_close, quick_typechecker
 
 from openpyxl import load_workbook, Workbook
 
@@ -109,7 +109,6 @@ def write_excel(source_file, count, workbook, compare_file=None):
                     'compiled_master_early.xlsx')
 
     comparitor = FileComparitor([compare_file])
-    req_types = [type(1), type(1.3)]
 
     if count == 1:
         i = 1
@@ -119,18 +118,60 @@ def write_excel(source_file, count, workbook, compare_file=None):
             c.value = d['gmpp_key']
             i += 1
         i = 1
+
         # then it writes the second column with the values
         for d in out_map:
+
             c = ws.cell(row=i, column=2)
-            c.value = d['gmpp_key_value']
+
             compare_val = comparitor.compare(2, d['gmpp_key'])
+
+            # if there is something to compare it
             if compare_val:
-                if type(compare_val) in req_types \
-                        and compare_val < d['gmpp_key_value']:
-                    c.fill = cell_bg_colour(rgb=[255, 0, 0])
-                if type(compare_val) in req_types \
-                        and compare_val > d['gmpp_key_value']:
-                    c.fill = cell_bg_colour(rgb=[3, 181, 0])
+
+                # if compare_val is a float or int
+                if quick_typechecker(d['gmpp_key_value'], compare_val):
+
+                    # if there is enough of a difference in values
+                    if bc_is_close(d['gmpp_key_value'], compare_val) is False:
+
+                        # if current value is HIGHER than earlier value
+                        if compare_val < d['gmpp_key_value']:
+
+                            # ... round it
+                            compare_val = round(compare_val, 2)
+
+                            # ... fill the background cell with RED
+                            c.fill = cell_bg_colour(rgb=[255, 0, 0])
+
+                            # ... write to the cell
+                            c.value = d['gmpp_key_value']
+
+                        # if current value is LOWER than earlier value
+                        elif compare_val > d['gmpp_key_value']:
+
+                            # ... round it
+                            compare_val = round(compare_val, 2)
+
+                            # ... fill the background cell with GREEN
+                            c.fill = cell_bg_colour(rgb=[3, 180, 0])
+
+                            # ... write to the cell
+                            c.value = d['gmpp_key_value']
+
+                    else:
+                        # if there is no discernable difference in cells
+                        # write to the cell
+                        c.value = d['gmpp_key_value']
+                else:
+                    # if there is no discernable difference in cells
+                    # write to the cell
+                    c.value = d['gmpp_key_value']
+            else:
+                # if there is no compare value, just write to the cell
+                # this writes to the cell
+                c.value = d['gmpp_key_value']
+
             i += 1
     else:
         i = 1
@@ -138,15 +179,55 @@ def write_excel(source_file, count, workbook, compare_file=None):
         # values here
         for d in out_map:
             c = ws.cell(row=i, column=count + 1)
-            c.value = d['gmpp_key_value']
-            compare_val = comparitor.compare(count + 1, d['gmpp_key'])
+
+            compare_val = comparitor.compare(2, d['gmpp_key'])
+
+            # if there is something to compare it
             if compare_val:
-                if type(compare_val) in req_types \
-                        and compare_val < d['gmpp_key_value']:
-                    c.fill = cell_bg_colour(rgb=[255, 0, 0])
-                if type(compare_val) in req_types \
-                        and compare_val > d['gmpp_key_value']:
-                    c.fill = cell_bg_colour(rgb=[3, 181, 0])
+
+                # if compare_val is a float or int
+                if quick_typechecker(d['gmpp_key_value'], compare_val):
+
+                    # if there is enough of a difference in values
+                    if bc_is_close(d['gmpp_key_value'], compare_val) is False:
+
+                        # if current value is HIGHER than earlier value
+                        if compare_val < d['gmpp_key_value']:
+
+                            # ... round it
+                            compare_val = round(compare_val, 2)
+
+                            # ... fill the background cell with RED
+                            c.fill = cell_bg_colour(rgb=[255, 0, 0])
+
+                            # ... write to the cell
+                            c.value = d['gmpp_key_value']
+
+                        # if current value is LOWER than earlier value
+                        elif compare_val > d['gmpp_key_value']:
+
+                            # ... round it
+                            compare_val = round(compare_val, 2)
+
+                            # ... fill the background cell with GREEN
+                            c.fill = cell_bg_colour(rgb=[3, 180, 0])
+
+                            # ... write to the cell
+                            c.value = d['gmpp_key_value']
+
+                    else:
+                        # if there is no discernable difference in cells
+                        # write to the cell
+                        c.value = d['gmpp_key_value']
+                else:
+                    # if there is no discernable difference in cells
+                    # write to the cell
+                    c.value = d['gmpp_key_value']
+            else:
+                # if there is no compare value, just write to the cell
+                # this writes to the cell
+                c.value = d['gmpp_key_value']
+
             i += 1
 
 

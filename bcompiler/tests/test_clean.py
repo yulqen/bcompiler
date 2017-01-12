@@ -11,6 +11,8 @@ from datetime import date
 
 from bcompiler.process import Cleanser
 
+from bcompiler.utils import simple_round, bc_is_close, quick_typechecker
+
 
 def test_cleanser_class():
     # comma strings
@@ -119,3 +121,61 @@ def test_cleanser_class():
 #    assert d2.clean().month == 6
 #    assert d2.clean().year == 2017
 #    assert d2.clean().day == 3
+
+
+def test_simple_round():
+    x = 2.99000000002
+    x2 = 2.9323
+    x = simple_round(x, 2)
+    x2 = simple_round(x2, 2)
+    assert x == 2.99
+    assert x2 == 2.93
+
+
+def test_is_close():
+    x = 2.9900000002
+    y = 2.99
+
+    x1 = 2.98
+    y1 = 2.99
+
+    x2 = 2
+    y2 = 3
+
+    x3 = 2.995
+    y3 = 2.99
+
+    assert bc_is_close(x, y) is True
+    assert bc_is_close(x1, y1) is False
+    assert bc_is_close(x2, y2) is False
+    assert bc_is_close(x3, y3) is False
+
+
+def test_quick_typechecker():
+
+    class Tester:
+        pass
+    tester = Tester()
+
+    s = 'Shuttlecock'
+    i = 1
+    f = 1.65
+
+    s1 = 'Shuttlecock sneffles bobbins chorley'
+    i1 = 2339930
+    f1 = 1.23232114411144
+
+    d = date(2017, 1, 23)
+    n = None
+
+    assert quick_typechecker(s, i, f) is False
+    assert quick_typechecker(s, s, s) is False
+    assert quick_typechecker(i, i, i) is True
+    assert quick_typechecker(i) is True
+    assert quick_typechecker(f) is True
+    assert quick_typechecker(s1) is False
+    assert quick_typechecker(i1) is True
+    assert quick_typechecker(f1) is True
+    assert quick_typechecker(d) is False
+    assert quick_typechecker(n) is False
+    assert quick_typechecker(tester) is False

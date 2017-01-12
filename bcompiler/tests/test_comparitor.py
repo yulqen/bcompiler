@@ -134,4 +134,4 @@ def test_single_comparitor():
     t3 = comp.compare(5, 'Working Contact Name')
     assert t == 'Digital Signalling'
     assert t2 == 'Search and Rescue Helicopters'
-    assert t3 == 'Jonathan Daley'
+    assert t3 == 'Tiina Landen'

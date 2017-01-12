@@ -5,6 +5,8 @@ import csv
 import logging
 import os
 
+from math import isclose
+
 from bcompiler.datamap import DatamapGMPP
 
 from openpyxl import load_workbook
@@ -13,6 +15,31 @@ from openpyxl.styles import PatternFill
 logger = logging.getLogger('bcompiler.utils')
 
 rdel_cdel_merge = ''
+
+
+def quick_typechecker(*args):
+    """
+    Very simple function to filter allowed types (int, float). Any other type
+    returns False. All arguments must be of same type.
+    """
+    for arg in args:
+        if isinstance(arg, int):
+            pass
+        elif isinstance(arg, float):
+            pass
+        else:
+            return False
+    return True
+
+
+def simple_round(fl, prec):
+    """Rounds a fl to prec precision."""
+    return round(fl, prec)
+
+
+def bc_is_close(x, y):
+    """Returns true if acceptably close."""
+    return isclose(x, y, rel_tol=0.001)
 
 
 def cell_bg_colour(rgb=[]):

@@ -6,6 +6,7 @@ import fnmatch
 import logging
 import os
 
+from datetime import date
 from math import isclose
 
 from bcompiler.datamap import DatamapGMPP
@@ -24,9 +25,7 @@ def quick_typechecker(*args):
     returns False. All arguments must be of same type.
     """
     for arg in args:
-        if isinstance(arg, int):
-            pass
-        elif isinstance(arg, float):
+        if isinstance(arg, (int, float, date)):
             pass
         else:
             return False
@@ -40,7 +39,10 @@ def simple_round(fl, prec):
 
 def bc_is_close(x, y):
     """Returns true if acceptably close."""
-    return isclose(x, y, rel_tol=0.001)
+    if isinstance(x, date) and isinstance(y, date):
+        return False
+    else:
+        return isclose(x, y, rel_tol=0.001)
 
 
 def cell_bg_colour(rgb=[]):

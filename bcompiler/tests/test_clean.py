@@ -145,10 +145,14 @@ def test_is_close():
     x3 = 2.995
     y3 = 2.99
 
+    d = date(2017, 1, 28)
+    dy = date(2017, 1, 29)
+
     assert bc_is_close(x, y) is True
     assert bc_is_close(x1, y1) is False
     assert bc_is_close(x2, y2) is False
     assert bc_is_close(x3, y3) is False
+    assert bc_is_close(d, dy) is False
 
 
 def test_quick_typechecker():
@@ -176,6 +180,6 @@ def test_quick_typechecker():
     assert quick_typechecker(s1) is False
     assert quick_typechecker(i1) is True
     assert quick_typechecker(f1) is True
-    assert quick_typechecker(d) is False
+    assert quick_typechecker(d) is True
     assert quick_typechecker(n) is False
     assert quick_typechecker(tester) is False

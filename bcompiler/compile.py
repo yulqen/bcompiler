@@ -99,10 +99,15 @@ def write_excel(source_file, count, workbook, compare_master=None):
     it will have one worksheet - let's get it
     """
     ws = workbook.active
+
     # give it a title
     ws.title = "Constructed BICC Data Master"
 
+    # this is the data from the source spreadsheet
     out_map = parse_source_cells(source_file, DATAMAP_RETURN_TO_MASTER)
+
+    # we need to the project name to work out index order for comparing
+    # master file
     project_name = [
         item['gmpp_key_value']
         for item in out_map if item['gmpp_key'] == 'Project/Programme Name'][0]
@@ -119,6 +124,7 @@ def write_excel(source_file, count, workbook, compare_master=None):
         this_index = [v for k, v in hd_indices.items() if k == project_name][0]
 
     try:
+        # this deals with issue of not passing --compare to compile argument
         comparitor = FileComparitor([compare_file])
     except UnboundLocalError:
         pass
@@ -143,6 +149,7 @@ def write_excel(source_file, count, workbook, compare_master=None):
             # master, if we are comparing
 
             try:
+                # exception will be if we call without compare flag
                 compare_val = comparitor.compare(this_index, d['gmpp_key'])
             except UnboundLocalError:
                 compare_val = False
@@ -150,7 +157,8 @@ def write_excel(source_file, count, workbook, compare_master=None):
             # if there is something to compare it
             if compare_val:
 
-                # if compare_val is a float or int
+                # if compare_val is a valid type (float, int or date)
+                # but this can change - we need to add str
                 if quick_typechecker(d['gmpp_key_value'], compare_val):
 
                     # if there is enough of a difference in values
@@ -160,10 +168,19 @@ def write_excel(source_file, count, workbook, compare_master=None):
                         if compare_val < d['gmpp_key_value']:
 
                             # ... round it
-                            compare_val = round(compare_val, 2)
+                            try:
+                                # exception expected a date object
+                                # which round will not handle
+                                compare_val = round(compare_val, 2)
+                            except TypeError:
+                                pass
 
-                            # ... fill the background cell with RED
-                            c.fill = cell_bg_colour(rgb=[255, 0, 0])
+                            if isinstance(compare_val, (int, float)):
+                                # ... fill the background cell with RED
+                                c.fill = cell_bg_colour(rgb=[255, 0, 0])
+                            elif isinstance(compare_val, date):
+                                # ... fill the background cell with PURPLE
+                                c.fill = cell_bg_colour(rgb=[255, 0, 127])
 
                             # ... write to the cell
                             c.value = d['gmpp_key_value']
@@ -174,8 +191,12 @@ def write_excel(source_file, count, workbook, compare_master=None):
                             # ... round it
                             compare_val = round(compare_val, 2)
 
-                            # ... fill the background cell with GREEN
-                            c.fill = cell_bg_colour(rgb=[3, 180, 0])
+                            if isinstance(compare_val, (int, float)):
+                                # ... fill the background cell with GREEN
+                                c.fill = cell_bg_colour(rgb=[3, 180, 0])
+                            elif isinstance(compare_val, date):
+                                # ... fill the background cell with GREEN
+                                c.fill = cell_bg_colour(rgb=[93, 81, 0])
 
                             # ... write to the cell
                             c.value = d['gmpp_key_value']
@@ -219,10 +240,19 @@ def write_excel(source_file, count, workbook, compare_master=None):
                         if compare_val < d['gmpp_key_value']:
 
                             # ... round it
-                            compare_val = round(compare_val, 2)
+                            # exception expected a date object
+                            # which round will not handle
+                            try:
+                                compare_val = round(compare_val, 2)
+                            except TypeError:
+                                pass
 
-                            # ... fill the background cell with RED
-                            c.fill = cell_bg_colour(rgb=[255, 0, 0])
+                            if isinstance(compare_val, (int, float)):
+                                # ... fill the background cell with RED
+                                c.fill = cell_bg_colour(rgb=[255, 0, 0])
+                            elif isinstance(compare_val, date):
+                                # ... fill the background cell with PURPLE
+                                c.fill = cell_bg_colour(rgb=[255, 0, 127])
 
                             # ... write to the cell
                             c.value = d['gmpp_key_value']
@@ -231,10 +261,19 @@ def write_excel(source_file, count, workbook, compare_master=None):
                         elif compare_val > d['gmpp_key_value']:
 
                             # ... round it
-                            compare_val = round(compare_val, 2)
+                            # exception expected a date object
+                            # which round will not handle
+                            try:
+                                compare_val = round(compare_val, 2)
+                            except TypeError:
+                                pass
 
-                            # ... fill the background cell with GREEN
-                            c.fill = cell_bg_colour(rgb=[3, 180, 0])
+                            if isinstance(compare_val, (int, float)):
+                                # ... fill the background cell with GREEN
+                                c.fill = cell_bg_colour(rgb=[3, 180, 0])
+                            elif isinstance(compare_val, date):
+                                # ... fill the background cell with GREEN
+                                c.fill = cell_bg_colour(rgb=[93, 81, 0])
 
                             # ... write to the cell
                             c.value = d['gmpp_key_value']

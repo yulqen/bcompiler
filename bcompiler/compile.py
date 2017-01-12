@@ -10,7 +10,7 @@ from datetime import date
 from bcompiler.datamap import Datamap
 
 from bcompiler.process import Cleanser
-from bcompiler.process.simple_comparitor import FileComparitor
+from bcompiler.process.simple_comparitor import FileComparitor, ParsedMaster
 
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
 from bcompiler.utils import cell_bg_colour, bc_is_close, quick_typechecker
@@ -103,9 +103,20 @@ def write_excel(source_file, count, workbook, compare_master=None):
     ws.title = "Constructed BICC Data Master"
 
     out_map = parse_source_cells(source_file, DATAMAP_RETURN_TO_MASTER)
+    project_name = [
+        item['gmpp_key_value']
+        for item in out_map if item['gmpp_key'] == 'Project/Programme Name'][0]
+
+    try:
+        if compare_master:
+            compare_file = compare_master[0]
+    except TypeError:
+        compare_file = None
 
     if compare_master:
-        compare_file = compare_master[0]
+        parsed_master = ParsedMaster(compare_file)
+        hd_indices = parsed_master._project_header_index
+        this_index = [v for k, v in hd_indices.items() if k == project_name][0]
 
     try:
         comparitor = FileComparitor([compare_file])
@@ -126,8 +137,13 @@ def write_excel(source_file, count, workbook, compare_master=None):
 
             c = ws.cell(row=i, column=2)
 
+            # HERE WE NEED TO KNOW TWO THINGS:
+            # - name of project we're compiling
+            # - index of the header for that project in the comparing
+            # master, if we are comparing
+
             try:
-                compare_val = comparitor.compare(2, d['gmpp_key'])
+                compare_val = comparitor.compare(this_index, d['gmpp_key'])
             except UnboundLocalError:
                 compare_val = False
 
@@ -186,7 +202,7 @@ def write_excel(source_file, count, workbook, compare_master=None):
             c = ws.cell(row=i, column=count + 1)
 
             try:
-                compare_val = comparitor.compare(count + 1, d['gmpp_key'])
+                compare_val = comparitor.compare(this_index, d['gmpp_key'])
             except UnboundLocalError:
                 compare_val = False
 

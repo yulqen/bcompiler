@@ -2,6 +2,7 @@
 Docstring here
 """
 import csv
+import fnmatch
 import logging
 import os
 
@@ -150,6 +151,27 @@ CLEANED_DATAMAP = SOURCE_DIR + 'cleaned_datamap'
 MASTER = SOURCE_DIR + 'master.csv'
 TEMPLATE = SOURCE_DIR + 'bicc_template.xlsx'
 GMPP_TEMPLATE = SOURCE_DIR + 'gmpp_template.xlsx'
+
+
+def index_returns_directory():
+    """
+    Prior to compiling a master, it is useful to get the order of projects
+    by their file name, as the compile.run() function traverses the directory
+    top to bottom to build the master. We can then use this to compare with the
+    order or projects (columns) in the old master document we are comparing
+    the current compile. This is pretty hackish but needs must...
+    """
+    target_files = []
+    for f in os.listdir(RETURNS_DIR):
+        target_files.append(f)
+
+    pnames_in_returns_dir = []
+    for f in target_files:
+        if fnmatch.fnmatch(f, '*.xlsx'):
+            wb = load_workbook(os.path.join(RETURNS_DIR, f))
+            ws = wb['Summary']
+            pnames_in_returns_dir.append(ws['B5'].value)
+    return pnames_in_returns_dir
 
 
 VALIDATION_REFERENCES = {

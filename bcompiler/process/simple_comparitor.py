@@ -1,6 +1,8 @@
 import logging
 from openpyxl import load_workbook
 
+from bcompiler.utils import index_returns_directory
+
 logger = logging.getLogger('bcompiler.process.simple_comparitor')
 
 
@@ -133,6 +135,23 @@ class ParsedMaster:
         else:
             logger.info("No key {}".format(key))
             return None
+
+    def index_target_files_with_previous_master(self):
+        """
+        A previous master has a column-order of projects. If we are going
+        to compare this with a series of projects used in bcompiler compile,
+        which traverses a target directory and compiles each in turn into
+        a master spreadsheet, the order must match, otherwise comparing
+        values will not work.
+
+        This function first gets obtains the order of project names from the
+        files in the 'returns' directory, the it obtains the order or projects
+        from the column headers in the master file from this object.
+        """
+        target_project_names = index_returns_directory()
+        master_title_names = [
+            key for key, value in self._project_header_index.items()]
+        return (target_project_names, master_title_names)
 
 
 def populate_cells(worksheet, bc_cells=[]):

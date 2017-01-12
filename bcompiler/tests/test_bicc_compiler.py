@@ -8,6 +8,7 @@ from bcompiler.compile import parse_source_cells, get_current_quarter
 from bcompiler.datamap import Datamap, DatamapLine
 
 from bcompiler.utils import VALIDATION_REFERENCES, SHEETS
+from bcompiler.utils import index_returns_directory
 
 
 class TestCompilationFromReturns(unittest.TestCase):
@@ -124,6 +125,9 @@ class TestDatamapFunctionality(unittest.TestCase):
         self.assertEqual(
             dml.pretty_print(), ("Name: Test cellname | Sheet: Summary | "
                                  "Cellref: C12 | Dropdown: Finance Figures"))
+
+    def test_index_returns_directory(self):
+        assert index_returns_directory() == []
 
 
 if __name__ == "__main__":

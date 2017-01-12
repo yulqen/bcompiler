@@ -94,10 +94,13 @@ def get_parser():
         dest='f-create-wd',
         help='remove existing working directory and create a new one')
     parser.add_argument(
-        '--compile',
-        action="store_true",
-        dest='compile',
-        help='compile returns to master')
+        'compile',
+        help='compile BICC returns to master')
+    parser.add_argument(
+        '--compare',
+        nargs=1,
+        help=('to be used with compile action; file path to master file '
+              'to compare to compiled data'))
     parser.add_argument(
         '-ll', '--loglevel',
         type=str,
@@ -517,9 +520,12 @@ def main():
             return
         else:
             return
-    if args['compile']:
+    if args['compile'] and not args['compare']:
         clean_datamap(DATAMAP_RETURN_TO_MASTER)
         compile_returns.run()
+    if args['compare']:
+        clean_datamap(DATAMAP_RETURN_TO_MASTER)
+        compile_returns.run(args['compare'])
 
 
 if __name__ == '__main__':

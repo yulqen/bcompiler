@@ -90,7 +90,7 @@ def parse_source_cells(source_file, datamap_source_file):
     return ls_of_dataline_dicts
 
 
-def write_excel(source_file, count, workbook, compare_file=None):
+def write_excel(source_file, count, workbook, compare_master=None):
     """
     count is used to count number of times function is run so that multiple
     returns can be added
@@ -104,11 +104,13 @@ def write_excel(source_file, count, workbook, compare_file=None):
 
     out_map = parse_source_cells(source_file, DATAMAP_RETURN_TO_MASTER)
 
-    # TEST ONLY
-    compare_file = ('/home/lemon/Documents/bcompiler/output/'
-                    'compiled_master_early.xlsx')
+    if compare_master:
+        compare_file = compare_master[0]
 
-    comparitor = FileComparitor([compare_file])
+    try:
+        comparitor = FileComparitor([compare_file])
+    except UnboundLocalError:
+        pass
 
     if count == 1:
         i = 1
@@ -124,7 +126,10 @@ def write_excel(source_file, count, workbook, compare_file=None):
 
             c = ws.cell(row=i, column=2)
 
-            compare_val = comparitor.compare(2, d['gmpp_key'])
+            try:
+                compare_val = comparitor.compare(2, d['gmpp_key'])
+            except UnboundLocalError:
+                compare_val = False
 
             # if there is something to compare it
             if compare_val:
@@ -180,7 +185,10 @@ def write_excel(source_file, count, workbook, compare_file=None):
         for d in out_map:
             c = ws.cell(row=i, column=count + 1)
 
-            compare_val = comparitor.compare(count + 1, d['gmpp_key'])
+            try:
+                compare_val = comparitor.compare(count + 1, d['gmpp_key'])
+            except UnboundLocalError:
+                compare_val = False
 
             # if there is something to compare it
             if compare_val:
@@ -231,20 +239,49 @@ def write_excel(source_file, count, workbook, compare_file=None):
             i += 1
 
 
-def run():
+def run(compare_master=None):
     """
-    Doc string here.
+    Run the compile function.
     """
-    workbook = Workbook()
-    count = 1
-    for file in os.listdir(RETURNS_DIR):
-        if fnmatch.fnmatch(file, '*.xlsx'):
-            logger.info("Processing {}".format(file))
-            write_excel((RETURNS_DIR + file), count=count, workbook=workbook)
-            count += 1
-    for file in os.listdir(RETURNS_DIR):
-        cq = get_current_quarter(file)
-        if cq is not None:
-            break
-    OUTPUT_FILE = '{}compiled_master_{}_{}.xlsx'.format(OUTPUT_DIR, TODAY, cq)
-    workbook.save(OUTPUT_FILE)
+    # if we want to do a comparison
+    if compare_master:
+
+        workbook = Workbook()
+        count = 1
+        for file in os.listdir(RETURNS_DIR):
+            if fnmatch.fnmatch(file, '*.xlsx'):
+                logger.info("Processing {}".format(file))
+                write_excel(
+                    (RETURNS_DIR + file),
+                    count=count,
+                    workbook=workbook,
+                    compare_master=compare_master
+                )
+                count += 1
+        for file in os.listdir(RETURNS_DIR):
+            cq = get_current_quarter(file)
+            if cq is not None:
+                break
+        OUTPUT_FILE = '{}compiled_master_{}_{}.xlsx'.format(
+            OUTPUT_DIR, TODAY, cq)
+        workbook.save(OUTPUT_FILE)
+    else:
+        # we just want a straight master with no change indication
+        workbook = Workbook()
+        count = 1
+        for file in os.listdir(RETURNS_DIR):
+            if fnmatch.fnmatch(file, '*.xlsx'):
+                logger.info("Processing {}".format(file))
+                write_excel(
+                    (RETURNS_DIR + file),
+                    count=count,
+                    workbook=workbook,
+                )
+                count += 1
+        for file in os.listdir(RETURNS_DIR):
+            cq = get_current_quarter(file)
+            if cq is not None:
+                break
+        OUTPUT_FILE = '{}compiled_master_{}_{}.xlsx'.format(
+            OUTPUT_DIR, TODAY, cq)
+        workbook.save(OUTPUT_FILE)

@@ -180,7 +180,7 @@ def write_excel(source_file, count, workbook, compare_file=None):
         for d in out_map:
             c = ws.cell(row=i, column=count + 1)
 
-            compare_val = comparitor.compare(2, d['gmpp_key'])
+            compare_val = comparitor.compare(count + 1, d['gmpp_key'])
 
             # if there is something to compare it
             if compare_val:

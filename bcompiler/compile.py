@@ -191,7 +191,10 @@ def write_excel(source_file, count, workbook, compare_master=None):
                         elif compare_val > d['gmpp_key_value']:
 
                             # ... round it
-                            compare_val = round(compare_val, 2)
+                            try:
+                                compare_val = round(compare_val, 2)
+                            except TypeError:
+                                pass
 
                             if isinstance(compare_val, (int, float)):
                                 # ... fill the background cell with GREEN
@@ -296,6 +299,12 @@ def write_excel(source_file, count, workbook, compare_master=None):
                                 c.fill = cell_bg_colour(rgb=[93, 81, 0])
                                 c.number_format = 'd/mm/yy'
 
+                            # ... write to the cell
+                            c.value = d['gmpp_key_value']
+                            if isinstance(d['gmpp_key_value'], date):
+                                c.number_format = 'd/mm/yy'
+
+                        else:
                             # ... write to the cell
                             c.value = d['gmpp_key_value']
                             if isinstance(d['gmpp_key_value'], date):

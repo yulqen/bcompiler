@@ -3,7 +3,6 @@
 # Pull data from an Excel form, based on a datamap.
 import os
 import fnmatch
-import shelve
 
 from concurrent import futures
 
@@ -36,15 +35,19 @@ def digest_source_files() -> list:
                 parse_source_cells, f, DATAMAP_MASTER_TO_RETURN))
             print("Processing {}".format(f))
         for future in futures.as_completed(future_data):
+            print("{} completed".format(future))
             flattened_data.append(flatten_project(future))
     return flattened_data
 
 
 d = digest_source_files()
-print("{0:<60}{1:>20}{2:>30}".format('Imported Project', 'Data Length', 'DfT Group'))
-print("{:*<110}".format(""))
+print("{0:<67}{1:>20}{2:>40}".format(
+    'Imported Project',
+    'Data Length',
+    'DfT Group'))
+print("{:*<127}".format(""))
 for proj in d:
-    print("{0:<60}{1:>20}{2:>30}".format(
+    print("{0:<67}{1:>20}{2:>40}".format(
         proj['Project/Programme Name'],
         len(proj),
         proj['DfT Group']))

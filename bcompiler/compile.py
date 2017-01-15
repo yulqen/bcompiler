@@ -6,6 +6,7 @@ import logging
 import os
 import re
 from datetime import date
+from typing import List, Dict
 
 from bcompiler.datamap import Datamap
 
@@ -37,7 +38,8 @@ def get_current_quarter(source_file):
     return q
 
 
-def parse_source_cells(source_file, datamap_source_file):
+def parse_source_cells(source_file: str, datamap_source_file: str) -> \
+        List[Dict[str, str]]:
     """
     Doc string in here.
     """
@@ -90,7 +92,7 @@ def parse_source_cells(source_file, datamap_source_file):
     return ls_of_dataline_dicts
 
 
-def write_excel(source_file, count, workbook, compare_master=None):
+def write_excel(source_file, count, workbook, compare_master=None) -> None:
     """
     count is used to count number of times function is run so that multiple
     returns can be added

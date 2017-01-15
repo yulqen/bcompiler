@@ -1,4 +1,6 @@
 # digest.py
+
+from typing import List, Dict
 #
 # Pull data from an Excel form, based on a datamap.
 import os
@@ -10,7 +12,7 @@ from bcompiler.compile import parse_source_cells
 from bcompiler.utils import DATAMAP_MASTER_TO_RETURN
 
 
-def flatten_project(future) -> dict:
+def flatten_project(future) -> Dict[str, str]:
     """
     Get rid of the gmpp_key gmpp_key_value stuff pulled from a single
     spreadsheet. Must be given a future.
@@ -20,7 +22,7 @@ def flatten_project(future) -> dict:
     return p_data
 
 
-def digest_source_files() -> list:
+def digest_source_files() -> List[Dict[str, str]]:
     source_files = []
     future_data = []
     flattened_data = []

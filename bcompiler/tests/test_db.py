@@ -1,11 +1,11 @@
 from datetime import datetime
-from bcompiler.process.database import BCQuery, Connection
+from bcompiler.process.database import BCQuery, Database
 
 from tinydb import TinyDB
 
 
 def test_db_connection():
-    db = Connection('db.json')
+    db = Database('db.json')
     assert isinstance(db.connect(), TinyDB)
 
 
@@ -17,8 +17,8 @@ def test_query_for_project():
 
     # TODO refactor all this to use fixtures. Not worried about it for now.
     """
-
-    q = BCQuery('Digital Signalling')
+    db = Database('db.json').connect()
+    q = BCQuery(db, 'Digital Signalling')
     assert q.get_item('Project/Programme Name') == 'Digital Signalling'
     assert q.get_item('SRO Sign-Off') is None
     assert q.get_item('SRO Tenure Start Date') == datetime(2016, 1, 1)
@@ -26,10 +26,10 @@ def test_query_for_project():
     assert q.get_item('Fudgecake') == ("No item 'Fudgecake' in Digital "
                                        "Signalling")
 
-    q = BCQuery('Search and Rescue Helicopters')
+    q = BCQuery(db, 'Search and Rescue Helicopters')
     assert q.get_item('DFT ID Number') == 30
     assert q.get_item('Project cost to closure') == 318.4
 
-    q = BCQuery('North of England Programme')
+    q = BCQuery(db, 'North of England Programme')
     assert isinstance(q.data, dict)
     assert q.data['Quarter Joined'] == '1516 - Q4'

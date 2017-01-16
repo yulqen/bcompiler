@@ -21,13 +21,12 @@ class DateTimeSerializer(Serializer):
         return datetime.strptime(s, '%Y-%m-%d')
 
 
-serialization = SerializationMiddleware()
-serialization.register_serializer(DateTimeSerializer(), 'TinyDate')
-
-
-class Connection:
+class Database:
     def __init__(self, db_file):
-        self.db = TinyDB(db_file)
+        self.serialization = SerializationMiddleware()
+        self.serialization.register_serializer(
+            DateTimeSerializer(), 'TinyDate')
+        self.db = TinyDB(db_file, storage=self.serialization)
 
     def connect(self):
         return self.db
@@ -35,11 +34,12 @@ class Connection:
 
 class BCQuery:
 
-    def __init__(self, search_string, exact=True):
+    def __init__(self, db, search_string, exact=True):
+        """
+        db should be a TinyDB instance.
+        """
+        self.db = db
         self.search_string = search_string
-
-        # load the db
-        self.db = TinyDB('db.json', storage=serialization)
         self._query_result = self.db.search(
             where('Project/Programme Name') == self.search_string)
 

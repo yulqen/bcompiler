@@ -4,11 +4,12 @@
 # Pull data from an Excel form, based on a datamap.
 import os
 import fnmatch
+import re
 
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict
 
-from tinydb import TinyDB, Query
+from tinydb import TinyDB
 from tinydb_serialization import SerializationMiddleware
 from tinydb_serialization import Serializer
 
@@ -29,7 +30,11 @@ class Series:
     """
     A collective for SeriesItem objects.
     """
-    pass
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return self.name
 
 
 class SeriesItem:
@@ -49,7 +54,29 @@ class Digest:
     The result of a Digest is a SeriesItem, which is the name of the table in
     the database
     """
-    pass
+    def __init__(self, file_name, series, series_item):
+        self.file_name = file_name
+        self.series = series.__str__()
+        self.table = self.tableize(series_item)
+        self._data = self._digest_source_file(file_name)
+
+    def tableize(self, item):
+        return re.sub('\s', '-', item).lower()
+
+    def flatten_project(self, project_data):
+        """
+        Get rid of the gmpp_key gmpp_key_value stuff pulled from a single
+        spreadsheet. Must be given a future.
+        """
+        return {
+            item['gmpp_key']: item['gmpp_key_value'] for item in project_data}
+
+    def _digest_source_file(self, file_name):
+        return parse_source_cells(file_name, DATAMAP_MASTER_TO_RETURN)
+
+    @property
+    def data(self):
+        return self._data
 
 
 class DateTimeSerializer(Serializer):

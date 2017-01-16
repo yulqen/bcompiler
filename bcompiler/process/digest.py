@@ -72,7 +72,9 @@ class Digest:
             item['gmpp_key']: item['gmpp_key_value'] for item in project_data}
 
     def _digest_source_file(self, file_name):
-        return parse_source_cells(file_name, DATAMAP_MASTER_TO_RETURN)
+        flat = self.flatten_project(
+            parse_source_cells(file_name, DATAMAP_MASTER_TO_RETURN))
+        return flat
 
     @property
     def data(self):

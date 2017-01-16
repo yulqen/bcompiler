@@ -83,14 +83,12 @@ def flatten_project(future) -> Dict[str, str]:
     return p_data
 
 
-def digest_source_files() -> None:
+def digest_source_files(base_dir, db_connection) -> None:
     source_files = []
     future_data = []
-    for f in os.listdir('/home/lemon/Documents/bcompiler/source/returns'):
+    for f in os.listdir(base_dir):
         if fnmatch.fnmatch(f, '*.xlsx'):
-            source_files.append(
-                os.path.join(
-                    '/home/lemon/Documents/bcompiler/source/returns', f))
+            source_files.append(os.path.join(base_dir, f))
     with futures.ThreadPoolExecutor(max_workers=4) as executor:
         for f in source_files:
             future_data.append(executor.submit(

@@ -25,6 +25,14 @@ serialization = SerializationMiddleware()
 serialization.register_serializer(DateTimeSerializer(), 'TinyDate')
 
 
+class Connection:
+    def __init__(self, db_file):
+        self.db = TinyDB(db_file)
+
+    def connect(self):
+        return self.db
+
+
 class BCQuery:
 
     def __init__(self, search_string, exact=True):
@@ -41,3 +49,13 @@ class BCQuery:
         except KeyError:
             return "No item '{}' in {}".format(
                 item_name, self._query_result[0]['Project/Programme Name'])
+
+    def _get_data(self):
+        """
+        Private method to expose data member.
+        """
+        return self._query_result[0]
+
+    @property
+    def data(self):
+        return self._get_data()

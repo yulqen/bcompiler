@@ -70,11 +70,17 @@ def populate_blank_gmpp_form(openpyxl_template, project):
             d_to_migrate = project
             target_ws[line.cellref].value = d_to_migrate
         elif line.cellref is not None:
-            d_to_migrate = project_data[project][line.cellname]
-            target_ws[line.cellref].value = d_to_migrate
-            logger.debug(
-                "Migrating {} from {} to blank template".format(
-                    d_to_migrate, line.cellref))
+            try:
+                d_to_migrate = project_data[project][line.cellname]
+            except KeyError:
+                logger.warning("Unable to find {} in master.csv".format(
+                    line.cellref))
+                target_ws[line.cellref].value = "UNDEFINED IN DATAMAP"
+            else:
+                target_ws[line.cellref].value = d_to_migrate
+                logger.debug(
+                    "Migrating {} from {} to blank template".format(
+                        d_to_migrate, line.cellref))
     # inject additonal data
     additional_data = dm.add_additional_data()
     for line in additional_data:
@@ -102,14 +108,15 @@ def gmpp_project_data():
     data = project_data_line()
     gmpp_project_data_list = []
     for project in data:
-        if data[project]['GMPP'] == 'Yes':
+        if data[project]['GMPP (GMPP – formally joined GMPP)']:
             gmpp_project_data_list.append(data[project])
     return gmpp_project_data_list
 
 
 def gmpp_project_names():
     data = project_data_line()
-    return [project for project in data if data[project]['GMPP'] == 'Yes']
+    return [project for project in data if data[project][
+        'GMPP (GMPP – formally joined GMPP)']]
 
 
 def open_openpyxl_template(template_file):

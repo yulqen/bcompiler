@@ -123,7 +123,14 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
     if compare_master:
         parsed_master = ParsedMaster(compare_file)
         hd_indices = parsed_master._project_header_index
-        this_index = [v for k, v in hd_indices.items() if k == project_name][0]
+        try:
+            this_index = [
+                v for k, v in hd_indices.items() if k == project_name][0]
+        except IndexError:
+            logger.warning(
+                ("Cannot find project title '{}' in previous master. Consider"
+                 " correcting name return or past master").format(
+                    project_name))
 
     try:
         # this deals with issue of not passing --compare to compile argument
@@ -157,7 +164,8 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                 compare_val = False
 
             # if there is something to compare it
-            if compare_val:
+            if compare_val and (type(compare_val) and type(d['gmpp_key_value'])):
+#           if compare_val:
 
                 # if compare_val is a valid type (float, int or date)
                 # but this can change - we need to add str
@@ -250,7 +258,7 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                 compare_val = False
 
             # if there is something to compare it
-            if compare_val:
+            if compare_val and (type(compare_val) and type(d['gmpp_key_value'])):
 
                 # if compare_val is a float or int
                 if quick_typechecker(d['gmpp_key_value'], compare_val):

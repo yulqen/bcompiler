@@ -6,7 +6,7 @@ import fnmatch
 import logging
 import os
 
-from datetime import date
+from datetime import date, datetime
 from math import isclose
 
 from bcompiler.datamap import DatamapGMPP
@@ -39,7 +39,7 @@ def simple_round(fl, prec):
 
 def bc_is_close(x, y):
     """Returns true if acceptably close."""
-    if isinstance(x, date) and isinstance(y, date):
+    if isinstance(x, (date, datetime)) or isinstance(y, (date, datetime)):
         return False
     else:
         return isclose(x, y, rel_tol=0.001)

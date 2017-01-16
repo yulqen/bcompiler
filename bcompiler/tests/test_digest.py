@@ -33,7 +33,8 @@ def bicc_return():
 
 @pytest.fixture
 def db():
-    return Database('db.json').connect()
+    yield Database('/tmp/db.json').connect()
+    os.unlink('/tmp/db.json')
 
 
 def test_digest_single_file(bicc_return, series):

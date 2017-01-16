@@ -42,6 +42,7 @@ class SeriesItem:
     A SeriesItem is collective term for Digest objects. An example of a
     SeriesItem is a Financial Quarter. They are supposed to represent temporal
     change.
+    TODO implement this class: does it need to parent Digest?
     """
     pass
 
@@ -51,7 +52,7 @@ class Digest:
     A Digest object is a compilation of key/value pairs from a specific Excel
     file. By default, the Digest is serialized and written to a database.
 
-    The result of a Digest is a SeriesItem, which is the name of the table in
+    A Digest is a type of SeriesItem, which is the name of the table in
     the database
     """
     def __init__(self, file_name, series, series_item):

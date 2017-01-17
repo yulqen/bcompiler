@@ -133,7 +133,7 @@ class ParsedMaster:
         if self._query_for_key(data, key):
             return self._query_result
         else:
-            logger.info("No key {}".format(key))
+            logger.warning("No key {}".format(key))
             return None
 
     def index_target_files_with_previous_master(self):

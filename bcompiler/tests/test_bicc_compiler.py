@@ -142,7 +142,7 @@ class TestDatamapFunctionality(unittest.TestCase):
         assert index_returns_directory() == []
 
 
-#### LATER PYTEST-ONLY TESTS FOR COMPILATION PROCESS, USING FIXTURES
+# LATER PYTEST-ONLY TESTS FOR COMPILATION PROCESS, USING FIXTURES
 
 @pytest.fixture
 def bicc_return():
@@ -153,11 +153,26 @@ def bicc_return():
     wb.create_sheet('Resources')
     wb.create_sheet('Assurance planning')
     wb.create_sheet('GMPP info')
-    ws = wb['Summary']
+    ws_summary = wb['Summary']
     # enter some values in the right slots
-    ws['B5'].value = 'Cookfield Rebuild'
-    ws['B8'].value = 'Roads, Monitoring and Horse'
+    ws_summary['B5'].value = 'Cookfield Rebuild'
+    ws_summary['B8'].value = 'Roads, Monitoring and Horse'
+    ws_summary['C12'].value = 'Keith McGilvrey'
+    ws_summary['C13'].value = '0208 944 3554'
+    ws_summary['C14'].value = 'cleft.palet@screen.co.ok'
+    ws_summary['C21'].value = 'Cohort 13'
+    ws_summary['B26'].value = 'We think this is a really good idea, ok?'
 
     wb.save('/tmp/test-bicc-return.xlsx')
     yield '/tmp/test-bicc-return.xlsx'
     os.unlink('/tmp/test-bicc-return.xlsx')
+
+
+@pytest.fixture
+def old_master():
+    wb = Workbook()
+    wb.create_sheet('Constructed BICC Data Master')
+    ws = wb['Constructed BICC Data Master']
+    ws['A1'].value = 'Project/Programme Name'
+    ws['A2'].value = 'SRO Sign-Off'
+    # TODO carry on with this

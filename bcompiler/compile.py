@@ -1,6 +1,3 @@
-"""
-Initial Docstring.
-"""
 import fnmatch
 import logging
 import os
@@ -199,6 +196,56 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                 pass
             #   END OF PROJECT STAGES HACK ###
 
+            # ROWS 277 to 293 MEGAHACK!
+            target_keys = [
+                "Project Lifecycle Stage",
+                "If 'other' Project/programme Lifecycle Stage please specify",
+                "Significant Steel Requirement",
+                "SRO Finance confidence",
+                "BICC approval point",
+                "Latest Treasury Approval Point (TAP) or equivalent",
+                ("Business Case used to source figures (GMPP TAP used "
+                 "to source figures)"),
+                "Date of TAP used to source figures",
+                ("Name of source in not Business Case (GMPP -If not TAP "
+                 "please specify equivalent document used)"),
+                "If not TAP please specify date of equivalent document",
+                ("Version Number Of Document used to Source Figures (GMPP "
+                 "– TAP version Number)"),
+                "Real or Nominal - Baseline",
+                "Real or Nominal - Actual/Forecast",
+                "Index Year",
+                "Source of Finance",
+                "Other Finance type Description",
+                "NPV for all projects and NPV for programmes if available"
+                 ]
+            try:
+                if d['gmpp_key'] in target_keys:
+                    if compare_val != d['gmpp_key_value']:
+                        c.fill = cell_bg_colour(rgb=[50, 110, 130])
+            except Exception:
+                pass
+            #   END OF ROWS 277 to 293 MEGAHACK ###
+
+            # ROWS 603 to 610 MEGAHACK!
+            target_keys2 = [
+                "Benefits Map",
+                "Benefits Analysed",
+                "Benefits Realisation Plan",
+                "Initial Benefits Cost Ratio (BCR)",
+                "Adjusted Benefits Cost Ratio (BCR)",
+                "VfM Category",
+                "Present Value Cost (PVC)",
+                "Present Value Benefit (PVB)",
+            ]
+            try:
+                if d['gmpp_key'] in target_keys2:
+                    if compare_val != d['gmpp_key_value']:
+                        c.fill = cell_bg_colour(rgb=[70, 100, 130])
+            except Exception:
+                pass
+            #   END OF ROWS 603 to 610 MEGAHACK ###
+
             # if there is something to compare it
             if compare_val and (type(compare_val) and type(d['gmpp_key_value'])):
 
@@ -326,6 +373,56 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
             except Exception:
                 pass
             #   END OF PROJECT STAGES HACK ###
+
+            # ROWS 277 to 293 MEGAHACK!
+            target_keys = [
+                "Project Lifecycle Stage",
+                "If 'other' Project/programme Lifecycle Stage please specify",
+                "Significant Steel Requirement",
+                "SRO Finance confidence",
+                "BICC approval point",
+                "Latest Treasury Approval Point (TAP) or equivalent",
+                ("Business Case used to source figures (GMPP TAP used "
+                 "to source figures)"),
+                "Date of TAP used to source figures",
+                ("Name of source in not Business Case (GMPP -If not TAP "
+                 "please specify equivalent document used)"),
+                "If not TAP please specify date of equivalent document",
+                ("Version Number Of Document used to Source Figures (GMPP "
+                 "– TAP version Number)"),
+                "Real or Nominal - Baseline",
+                "Real or Nominal - Actual/Forecast",
+                "Index Year",
+                "Source of Finance",
+                "Other Finance type Description",
+                "NPV for all projects and NPV for programmes if available"
+                 ]
+            try:
+                if d['gmpp_key'] in target_keys:
+                    if compare_val != d['gmpp_key_value']:
+                        c.fill = cell_bg_colour(rgb=[50, 110, 130])
+            except Exception:
+                pass
+            #   END OF ROWS 277 to 293 MEGAHACK ###
+
+            # ROWS 603 to 610 MEGAHACK!
+            target_keys2 = [
+                "Benefits Map",
+                "Benefits Analysed",
+                "Benefits Realisation Plan",
+                "Initial Benefits Cost Ratio (BCR)",
+                "Adjusted Benefits Cost Ratio (BCR)",
+                "VfM Category",
+                "Present Value Cost (PVC)",
+                "Present Value Benefit (PVB)",
+            ]
+            try:
+                if d['gmpp_key'] in target_keys2:
+                    if compare_val != d['gmpp_key_value']:
+                        c.fill = cell_bg_colour(rgb=[70, 100, 130])
+            except Exception:
+                pass
+            #   END OF ROWS 603 to 610 MEGAHACK ###
 
             # if there is something to compare it
             if compare_val and (type(compare_val) and type(d['gmpp_key_value'])):

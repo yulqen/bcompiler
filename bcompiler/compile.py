@@ -163,9 +163,25 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
             except UnboundLocalError:
                 compare_val = False
 
+            # HACK FOR RAG RATINGS
+            rags = [
+                'Green',
+                'Amber/Green',
+                'Amber',
+                'Amber/Red'
+                'Red'
+            ]
+            try:
+                if compare_val in rags:
+                    rags.pop(rags.index(compare_val))
+                    if d['gmpp_key_value'] in rags:
+                        c.fill = cell_bg_colour(rgb=[150, 150, 150])
+            except Exception:
+                pass
+
             # if there is something to compare it
             if compare_val and (type(compare_val) and type(d['gmpp_key_value'])):
-#           if compare_val:
+
 
                 # if compare_val is a valid type (float, int or date)
                 # but this can change - we need to add str
@@ -256,6 +272,22 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                 compare_val = comparitor.compare(this_index, d['gmpp_key'])
             except UnboundLocalError:
                 compare_val = False
+
+            # HACK FOR RAG RATINGS
+            rags = [
+                'Green',
+                'Amber/Green',
+                'Amber',
+                'Amber/Red'
+                'Red'
+            ]
+            try:
+                if compare_val in rags:
+                    rags.pop(rags.index(compare_val))
+                    if d['gmpp_key_value'] in rags:
+                        c.fill = cell_bg_colour(rgb=[150, 150, 150])
+            except Exception:
+                pass
 
             # if there is something to compare it
             if compare_val and (type(compare_val) and type(d['gmpp_key_value'])):

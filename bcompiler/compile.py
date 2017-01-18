@@ -127,7 +127,7 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
             this_index = [
                 v for k, v in hd_indices.items() if k == project_name][0]
         except IndexError:
-            logger.warning(
+            logger.critical(
                 ("Cannot find project title '{}' in previous master. Consider"
                  " correcting name return or past master").format(
                     project_name))
@@ -168,7 +168,7 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                 'Green',
                 'Amber/Green',
                 'Amber',
-                'Amber/Red'
+                'Amber/Red',
                 'Red'
             ]
             try:
@@ -178,10 +178,29 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                         c.fill = cell_bg_colour(rgb=[150, 150, 150])
             except Exception:
                 pass
+            #   END OF RAG HACK ###
+
+            # HACK FOR PROJECT STAGES
+            project_stages = [
+                'Concept',
+                'Feasibility',
+                'Appraise & Select',
+                'Define and refine plan',
+                'Execute',
+                'Operate',
+                'On Hold'
+            ]
+            try:
+                if compare_val in project_stages:
+                    project_stages.pop(project_stages.index(compare_val))
+                    if d['gmpp_key_value'] in project_stages:
+                        c.fill = cell_bg_colour(rgb=[150, 110, 150])
+            except Exception:
+                pass
+            #   END OF PROJECT STAGES HACK ###
 
             # if there is something to compare it
             if compare_val and (type(compare_val) and type(d['gmpp_key_value'])):
-
 
                 # if compare_val is a valid type (float, int or date)
                 # but this can change - we need to add str
@@ -278,7 +297,7 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                 'Green',
                 'Amber/Green',
                 'Amber',
-                'Amber/Red'
+                'Amber/Red',
                 'Red'
             ]
             try:
@@ -288,6 +307,25 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                         c.fill = cell_bg_colour(rgb=[150, 150, 150])
             except Exception:
                 pass
+
+            # HACK FOR PROJECT STAGES
+            project_stages = [
+                'Concept',
+                'Feasibility',
+                'Appraise & Select',
+                'Define and refine plan',
+                'Execute',
+                'Operate',
+                'On Hold'
+            ]
+            try:
+                if compare_val in project_stages:
+                    project_stages.pop(project_stages.index(compare_val))
+                    if d['gmpp_key_value'] in project_stages:
+                        c.fill = cell_bg_colour(rgb=[150, 110, 150])
+            except Exception:
+                pass
+            #   END OF PROJECT STAGES HACK ###
 
             # if there is something to compare it
             if compare_val and (type(compare_val) and type(d['gmpp_key_value'])):

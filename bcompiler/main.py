@@ -36,8 +36,8 @@ from bcompiler.utils import working_directory, DATAMAP_RETURN_TO_MASTER
 from bcompiler.utils import project_data_line, populate_blank_gmpp_form
 from bcompiler.utils import open_openpyxl_template
 from bcompiler.utils import gmpp_project_names
-from bcompiler.pipelines.master_returns import parse_csv_to_file
-from bcompiler.pipelines.master_returns import create_master_dict_transposed
+from bcompiler.utils import parse_csv_to_file
+from bcompiler.utils import create_master_dict_transposed
 from bcompiler.process import Cleanser
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation

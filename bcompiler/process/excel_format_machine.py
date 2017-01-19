@@ -4,6 +4,8 @@ Ideas on implementation from 8.20 in Python Cookbook 3rd Ed.
 Partial implementation of a state machine. It doesn't need to return
 to its original state at the moment.
 """
+from datetime import datetime
+
 from openpyxl.styles import PatternFill
 
 
@@ -41,7 +43,7 @@ class CellFormatState:
 
     def set_style(self):
         """
-        Returns an openpyxl PatternFill object.
+        Returns a tuple of form (PatternFill, number_style)
         """
         raise NotImplementedError()
 
@@ -93,12 +95,22 @@ class BlankCellFormat(CellFormatState):
             self.compare_val = compare_val
             self.this_val = this_val
             self.key = key
+        elif isinstance(this_val, float) and isinstance(compare_val, float):
+            self.__class__ = FloatCellFormat
+            self.compare_val = compare_val
+            self.this_val = this_val
+            self.key = key
+        elif isinstance(this_val, datetime) and isinstance(compare_val, datetime):
+            self.__class__ = DateCellFormat
+            self.compare_val = compare_val
+            self.this_val = this_val
+            self.key = key
         else:
             pass
 
     def export_rule(self):
         # we have to return a PatternFill, even if blank
-        p = PatternFill()
+        p = (PatternFill(), "")
         return p
 
 
@@ -119,22 +131,23 @@ class StringCellFormat(CellFormatState):
     """
 
     rgb = [252, 245, 170]
+    number_format = ""
 
     def set_style(self, rgb):
         c_value = "{0:02X}{1:02X}{2:02X}".format(*rgb)
-        return PatternFill(
+        return (PatternFill(
             patternType='solid',
             fgColor=c_value,
             bgColor=c_value
-        )
+        ), StringCellFormat.number_format)
 
     def export_rule(self):
         if self.compare_val != self.this_val:
             return self.set_style(StringCellFormat.rgb)
         else:
             self.__class__ = BlankCellFormat
-            # blank PatternFill
-            p = PatternFill()
+            # blank PatternFill and number_style
+            p = (PatternFill(), StringCellFormat.number_format)
             return p
 
     def clear(self):
@@ -157,16 +170,17 @@ class IntegerCellFormat(CellFormatState):
     in the cell based on the compare_val and this_val data being different.
     """
 
-    rgb_this_higher = [155, 0, 0]
-    rgb_this_lower = [225, 0, 0]
+    rgb_this_higher = [255, 0, 0]  # red
+    rgb_this_lower = [3, 180, 0]  # green
+    number_format = ""
 
     def set_style(self, rgb):
         c_value = "{0:02X}{1:02X}{2:02X}".format(*rgb)
-        return PatternFill(
+        return (PatternFill(
             patternType='solid',
             fgColor=c_value,
             bgColor=c_value
-        )
+        ), IntegerCellFormat.number_format)
 
     def export_rule(self):
         if self.compare_val > self.this_val:
@@ -175,9 +189,64 @@ class IntegerCellFormat(CellFormatState):
             return self.set_style(IntegerCellFormat.rgb_this_higher)
         else:
             self.__class__ = BlankCellFormat
-            # blank PatternFill
-            p = PatternFill()
+            # blank PatternFill and number_style
+            p = (PatternFill(), IntegerCellFormat.number_format)
             return p
 
     def clear(self):
         self.new_state(BlankCellFormat)
+
+
+class FloatCellFormat(CellFormatState):
+
+    rgb_this_higher = [255, 0, 0]  # red
+    rgb_this_lower = [3, 180, 0]  # green
+    number_format = ""
+
+    def set_style(self, rgb):
+        c_value = "{0:02X}{1:02X}{2:02X}".format(*rgb)
+        return (PatternFill(
+            patternType='solid',
+            fgColor=c_value,
+            bgColor=c_value
+        ), FloatCellFormat.number_format)
+
+    def export_rule(self):
+        if self.compare_val > self.this_val:
+            return self.set_style(FloatCellFormat.rgb_this_lower)
+        elif self.compare_val < self.this_val:
+            return self.set_style(FloatCellFormat.rgb_this_higher)
+        else:
+            self.__class__ = BlankCellFormat
+            # blank PatternFill and number_style
+            p = (PatternFill(), FloatCellFormat.number_format)
+            return p
+
+    def clear(self):
+        self.new_state(BlankCellFormat)
+
+
+class DateCellFormat(CellFormatState):
+
+    rgb_this_higher = [171, 252, 169]  # light green
+    rgb_this_lower = [169, 170, 252]  # light violet
+    number_format = "dd/mm/yy"
+
+    def set_style(self, rgb):
+        c_value = "{0:02X}{1:02X}{2:02X}".format(*rgb)
+        return (PatternFill(
+            patternType='solid',
+            fgColor=c_value,
+            bgColor=c_value
+        ), DateCellFormat.number_format)
+
+    def export_rule(self):
+        if self.compare_val > self.this_val:
+            return self.set_style(DateCellFormat.rgb_this_lower)
+        elif self.compare_val < self.this_val:
+            return self.set_style(DateCellFormat.rgb_this_higher)
+        else:
+            self.__class__ = BlankCellFormat
+            # blank PatternFill
+            p = (PatternFill(), DateCellFormat.number_format)
+            return p

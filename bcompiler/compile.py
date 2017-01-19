@@ -163,8 +163,10 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
             # HACK FOR RAG RATINGS
             rags = [
                 'Green',
+                'Amber Green',
                 'Amber/Green',
                 'Amber',
+                'Amber Red',
                 'Amber/Red',
                 'Red'
             ]
@@ -342,8 +344,10 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
             # HACK FOR RAG RATINGS
             rags = [
                 'Green',
+                'Amber Green',
                 'Amber/Green',
                 'Amber',
+                'Amber Red',
                 'Amber/Red',
                 'Red'
             ]

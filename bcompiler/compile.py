@@ -164,10 +164,10 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                 formt = c_format.export_rule()
                 c.fill = formt[0]
                 if formt[1] == "":
-                    pass
+                    c.value = d['gmpp_key_value']
                 else:
+                    c.value = d['gmpp_key_value']
                     c.number_format = formt[1]
-                c.value = d['gmpp_key_value']
             else:
                 c.value = d['gmpp_key_value']
             i += 1
@@ -193,10 +193,10 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                 formt = c_format.export_rule()
                 c.fill = formt[0]
                 if formt[1] == "":
-                    pass
+                    c.value = d['gmpp_key_value']
                 else:
+                    c.value = d['gmpp_key_value']
                     c.number_format = formt[1]
-                c.value = d['gmpp_key_value']
             else:
                 c.value = d['gmpp_key_value']
             i += 1

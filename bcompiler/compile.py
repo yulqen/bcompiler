@@ -189,7 +189,6 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
 
             # if there is something to compare it
             if compare_val:
-                c_format = CellFormatState()
                 c_format.action(
                     compare_val=compare_val,
                     this_val=d['gmpp_key_value'],

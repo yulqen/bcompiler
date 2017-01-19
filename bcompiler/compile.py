@@ -148,15 +148,17 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
         for d in out_map:
 
             c = ws.cell(row=i, column=2)
+            c_format = CellFormatState()
 
             try:
                 compare_val = comparitor.compare(this_index, d['gmpp_key'])
             except UnboundLocalError:
                 compare_val = False
 
+            # TODO - apply number format WITHOUT a compare_val
+
             # if there is something to compare it
             if compare_val:
-                c_format = CellFormatState()
                 c_format.action(
                     compare_val=compare_val,
                     this_val=d['gmpp_key_value'],
@@ -170,6 +172,7 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                     c.number_format = formt[1]
             else:
                 c.value = d['gmpp_key_value']
+                c.number_format = formt[1]
             i += 1
     else:
         i = 1
@@ -177,6 +180,7 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
         # values here
         for d in out_map:
             c = ws.cell(row=i, column=count + 1)
+            c_format = CellFormatState()
 
             try:
                 compare_val = comparitor.compare(this_index, d['gmpp_key'])
@@ -199,6 +203,7 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                     c.number_format = formt[1]
             else:
                 c.value = d['gmpp_key_value']
+                c.number_format = formt[1]
             i += 1
 
 

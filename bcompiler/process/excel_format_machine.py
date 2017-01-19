@@ -97,7 +97,9 @@ class BlankCellFormat(CellFormatState):
             pass
 
     def export_rule(self):
-        return None
+        # we have to return a PatternFill, even if blank
+        p = PatternFill()
+        return p
 
 
 class StringCellFormat(CellFormatState):
@@ -116,7 +118,7 @@ class StringCellFormat(CellFormatState):
     in the cell based on the compare_val and this_val data being different.
     """
 
-    rgb = [255, 0, 0]
+    rgb = [252, 245, 170]
 
     def set_style(self, rgb):
         c_value = "{0:02X}{1:02X}{2:02X}".format(*rgb)
@@ -131,6 +133,9 @@ class StringCellFormat(CellFormatState):
             return self.set_style(StringCellFormat.rgb)
         else:
             self.__class__ = BlankCellFormat
+            # blank PatternFill
+            p = PatternFill()
+            return p
 
     def clear(self):
         self.new_state(BlankCellFormat)
@@ -170,6 +175,9 @@ class IntegerCellFormat(CellFormatState):
             return self.set_style(IntegerCellFormat.rgb_this_higher)
         else:
             self.__class__ = BlankCellFormat
+            # blank PatternFill
+            p = PatternFill()
+            return p
 
     def clear(self):
         self.new_state(BlankCellFormat)

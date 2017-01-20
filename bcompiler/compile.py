@@ -125,8 +125,9 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                 v for k, v in hd_indices.items() if k == project_name][0]
         except IndexError:
             logger.critical(
-                ("Cannot find project title '{}' in previous master. Consider"
-                 " correcting name return or past master").format(
+                ("Cannot find project title '{}' in previous master. Will "
+                 "compile data but not compare until return form and master "
+                 "match. Alternatively, this could be a new file.").format(
                     project_name))
 
     try:
@@ -249,7 +250,8 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
             #   END OF ROWS 603 to 610 MEGAHACK ###
 
             # if there is something to compare it
-            if compare_val and (type(compare_val) and type(d['gmpp_key_value'])):
+            if compare_val and (type(compare_val) and
+                                type(d['gmpp_key_value'])):
 
                 # if compare_val is a valid type (float, int or date)
                 # but this can change - we need to add str
@@ -429,7 +431,8 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
             #   END OF ROWS 603 to 610 MEGAHACK ###
 
             # if there is something to compare it
-            if compare_val and (type(compare_val) and type(d['gmpp_key_value'])):
+            if compare_val and (type(compare_val) and
+                                type(d['gmpp_key_value'])):
 
                 # if compare_val is a float or int
                 if quick_typechecker(d['gmpp_key_value'], compare_val):
@@ -523,7 +526,8 @@ def run(compare_master=None):
         workbook = Workbook()
         count = 1
         for file in os.listdir(RETURNS_DIR):
-            if fnmatch.fnmatch(file, '*.xlsx'):
+            if fnmatch.fnmatch(file, '*.xlsx') or \
+                    fnmatch.fnmatch(file, '*.XLSX'):
                 logger.info("Processing {}".format(file))
                 write_excel(
                     (RETURNS_DIR + file),

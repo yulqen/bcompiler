@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 import pytest
 
 from bcompiler.process.database import Database
@@ -29,6 +30,7 @@ def bicc_return():
     ws_finance['A6'].value = 'SRO Finance Confidence'
     ws_finance['C6'].value = 'Red'
     ws_finance['B11'].value = 'Date of Business Case'
+    ws_finance['C11'].value = datetime(2000, 10, 23)
     ws_finance['A19'].value = 'Index Year'
     ws_finance['B19'].value = '2012'
     ws_finance['A18'].value = 'Real or Nominal'
@@ -55,9 +57,20 @@ def bicc_return():
     # Approval and Project Milestones fixture
     ws_approvals = wb['Approval & Project milestones']
     ws_approvals['A10'].value = 'SOBC - HMT Approval'
-    ws_approvals['C10'].value = '20/2/2009'
+    ws_approvals['C10'].value = datetime(2009, 2, 20)
     ws_approvals['A19'].value = 'FBC - HMT Approval'
     ws_approvals['F19'].value = 'A lot of very uninteresting test text here.'
+    ws_approvals['A39'].value = 'Completion of Construction'
+    ws_approvals['B39'].value = datetime(2018, 9, 1)
+
+    # Assurance fixture
+    ws_assurance = wb['Assurance planning']
+    ws_assurance['B4'].value = 'Date Created'
+    ws_assurance['C4'].value = datetime(2017, 1, 12)
+    ws_assurance['A10'].value = 'Gate 0 (Programme)'
+    ws_assurance['D10'].value = datetime(2013, 5, 21)
+    ws_assurance['A17'].value = 'Review Point 4 MPRG'
+    ws_assurance['E17'].value = 'Amber/Green'
 
     wb.save('/tmp/test-bicc-return.xlsx')
     yield '/tmp/test-bicc-return.xlsx'

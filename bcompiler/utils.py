@@ -1,6 +1,3 @@
-"""
-Docstring here
-"""
 import csv
 import fnmatch
 import logging
@@ -17,7 +14,6 @@ from openpyxl.styles import PatternFill
 logger = logging.getLogger('bcompiler.utils')
 
 rdel_cdel_merge = ''
-
 
 
 def quick_typechecker(*args):
@@ -70,6 +66,10 @@ def populate_blank_gmpp_form(openpyxl_template, project):
         if 'Project/Programme Name' in line.cellname:
             d_to_migrate = project
             target_ws[line.cellref].value = d_to_migrate
+
+        # CONDITIONAL CODE FOR MERGING CELLS
+        # GOES HERE
+
         elif line.cellref is not None:
             try:
                 d_to_migrate = project_data[project][line.cellname]
@@ -182,6 +182,7 @@ def index_returns_directory():
             ws = wb['Summary']
             pnames_in_returns_dir.append(ws['B5'].value)
     return pnames_in_returns_dir
+
 
 def parse_csv_to_file(source_file):
     """

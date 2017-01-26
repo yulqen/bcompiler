@@ -54,6 +54,19 @@ def cell_bg_colour(rgb=[]):
     )
 
 
+def get_relevant_names(project_name, project_data):
+    sro_first_name = project_data[project_name]['SRO Full Name'].split(" ")[0]
+    sro_last_name = project_data[project_name]['SRO Full Name'].split(" ")[1]
+
+    pd_first_name = project_data[project_name]['PD Full Name'].split(" ")[0]
+    pd_last_name = project_data[project_name]['PD Full Name'].split(" ")[1]
+
+    sro_d = dict(first_name=sro_first_name, last_name=sro_last_name)
+    pd_d = dict(first_name=pd_first_name, last_name=pd_last_name)
+
+    return (sro_d, pd_d)
+
+
 def populate_blank_gmpp_form(openpyxl_template, project):
     blank = openpyxl_template
     dm = DatamapGMPP(
@@ -61,6 +74,9 @@ def populate_blank_gmpp_form(openpyxl_template, project):
     logger.info("Grabbing GMPP datamap {}".format(dm.source_file))
     target_ws = blank['GMPP Return']
     project_data = project_data_line()
+
+    relevant_names = get_relevant_names(project, project_data)
+
     logger.info("Grabbing project_data from master")
     for line in dm.data:
         if 'Project/Programme Name' in line.cellname:
@@ -74,8 +90,10 @@ def populate_blank_gmpp_form(openpyxl_template, project):
             try:
                 d_to_migrate = project_data[project][line.cellname]
             except KeyError:
-                logger.warning("Unable to find {} in master.csv".format(
-                    line.cellref))
+                logger.warning(("Unable to find {} in master intended for {}"
+                                " in template").format(
+                                    line.cellname,
+                                    line.cellref))
                 target_ws[line.cellref].value = "UNDEFINED IN DATAMAP"
             else:
                 target_ws[line.cellref].value = d_to_migrate

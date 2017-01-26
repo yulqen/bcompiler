@@ -77,8 +77,8 @@ def populate_blank_gmpp_form(openpyxl_template, project):
 
     relevant_names = get_relevant_names(project, project_data)
 
-    logger.info("Grabbing project_data from master")
     for line in dm.data:
+
         if 'Project/Programme Name' in line.cellname:
             d_to_migrate = project
             target_ws[line.cellref].value = d_to_migrate
@@ -87,14 +87,27 @@ def populate_blank_gmpp_form(openpyxl_template, project):
         # GOES HERE
 
         elif line.cellref is not None:
+            if line.cellname == 'SRO First Name':
+                d_to_migrate = relevant_names[0]['first_name']
+                target_ws[line.cellref].value = d_to_migrate
+            if line.cellname == 'SRO Last Name':
+                d_to_migrate = relevant_names[0]['last_name']
+                target_ws[line.cellref].value = d_to_migrate
+            if line.cellname == 'PD First Name':
+                d_to_migrate = relevant_names[1]['first_name']
+                target_ws[line.cellref].value = d_to_migrate
+            if line.cellname == 'PD Last Name':
+                d_to_migrate = relevant_names[1]['last_name']
+                target_ws[line.cellref].value = d_to_migrate
+
             try:
+                # pull the data if we can
                 d_to_migrate = project_data[project][line.cellname]
             except KeyError:
                 logger.warning(("Unable to find {} in master intended for {}"
                                 " in template").format(
                                     line.cellname,
                                     line.cellref))
-                target_ws[line.cellref].value = "UNDEFINED IN DATAMAP"
             else:
                 target_ws[line.cellref].value = d_to_migrate
                 logger.debug(

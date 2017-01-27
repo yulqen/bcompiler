@@ -83,9 +83,6 @@ def populate_blank_gmpp_form(openpyxl_template, project):
             d_to_migrate = project
             target_ws[line.cellref].value = d_to_migrate
 
-        # CONDITIONAL CODE FOR MERGING CELLS
-        # GOES HERE
-
         elif line.cellref is not None:
             if line.cellname == 'SRO First Name':
                 d_to_migrate = relevant_names[0]['first_name']

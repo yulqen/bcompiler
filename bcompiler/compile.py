@@ -8,7 +8,7 @@ from typing import List, Dict
 from bcompiler.datamap import Datamap
 
 from bcompiler.process import Cleanser
-from bcompiler.process.excel_format_machine import CellFormatState
+from bcompiler.process.cellformat import CellFormatState
 from bcompiler.process.simple_comparitor import FileComparitor, ParsedMaster
 
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
@@ -171,8 +171,9 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                     c.value = d['gmpp_key_value']
                     c.number_format = formt[1]
             else:
+                # there is nothing to compare to so no formatting required
+                # just print the value
                 c.value = d['gmpp_key_value']
-                c.number_format = formt[1]
             i += 1
     else:
         i = 1
@@ -201,8 +202,9 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                     c.value = d['gmpp_key_value']
                     c.number_format = formt[1]
             else:
+                # there is nothing to compare to so no formatting required
+                # just print the value
                 c.value = d['gmpp_key_value']
-                c.number_format = formt[1]
             i += 1
 
 

@@ -55,14 +55,47 @@ def cell_bg_colour(rgb=[]):
 
 
 def get_relevant_names(project_name, project_data):
-    sro_first_name = project_data[project_name]['SRO Full Name'].split(" ")[0]
-    sro_last_name = project_data[project_name]['SRO Full Name'].split(" ")[1]
 
-    pd_first_name = project_data[project_name]['PD Full Name'].split(" ")[0]
-    pd_last_name = project_data[project_name]['PD Full Name'].split(" ")[1]
+    try:
+        sro_first_name = project_data[
+                project_name]['SRO Full Name'].split(" ")[0]
+    except IndexError:
+        logger.warning(
+                "SRO Full Name ({0}) is not suitable for splitting".format(
+                    project_data[project_name]['SRO Full Name']))
 
-    sro_d = dict(first_name=sro_first_name, last_name=sro_last_name)
-    pd_d = dict(first_name=pd_first_name, last_name=pd_last_name)
+    try:
+        sro_last_name = project_data[
+                project_name]['SRO Full Name'].split(" ")[1]
+    except IndexError:
+        logger.warning(
+                "SRO Full Name ({0}) is not suitable for splitting".format(
+                    project_data[project_name]['SRO Full Name']))
+
+    try:
+        pd_first_name = project_data[
+                project_name]['PD Full Name'].split(" ")[0]
+    except IndexError:
+        logger.warning(
+                "PD Full Name ({0}) is not suitable for splitting".format(
+                    project_data[project_name]['PD Full Name']))
+
+    try:
+        pd_last_name = project_data[
+                project_name]['PD Full Name'].split(" ")[1]
+    except IndexError:
+        logger.warning(
+                "PD Full Name ({0}) is not suitable for splitting".format(
+                    project_data[project_name]['PD Full Name']))
+
+    try:
+        sro_d = dict(first_name=sro_first_name, last_name=sro_last_name)
+    except UnboundLocalError:
+        sro_d = None
+    try:
+        pd_d = dict(first_name=pd_first_name, last_name=pd_last_name)
+    except UnboundLocalError:
+        pd_d = None
 
     return (sro_d, pd_d)
 
@@ -76,6 +109,12 @@ def populate_blank_gmpp_form(openpyxl_template, project):
     project_data = project_data_line()
 
     relevant_names = get_relevant_names(project, project_data)
+    if relevant_names[0] and relevant_names[1]:
+        relevant_names = get_relevant_names(project, project_data)
+    else:
+        relevant_names = [
+                ({'first_name': '', 'last_name': ''}),
+                ({'first_name': '', 'last_name': ''})]
 
     for line in dm.data:
 

@@ -253,7 +253,7 @@ class DatamapGMPP(Datamap):
                         "rejected".format(extra_st))
                 if (row['gmpp_template_sheet_reference'] is ''
                         or row['gmpp_template_cell_reference']) is '':
-                    logger.debug("Not enough items in {}".format(row))
+#                    logger.debug("Not enough items in {}".format(row))
                     dml = DatamapLine()
                     if row['master_cellname'] == '':
                         dml.cellname = None

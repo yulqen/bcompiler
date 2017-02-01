@@ -176,15 +176,20 @@ def gmpp_project_data():
     data = project_data_line()
     gmpp_project_data_list = []
     for project in data:
-        if data[project]['GMPP (GMPP – formally joined GMPP)']:
+        if data[project]['GMPP (GMPP - formally joined GMPP)']:
             gmpp_project_data_list.append(data[project])
     return gmpp_project_data_list
 
 
 def gmpp_project_names():
     data = project_data_line()
-    return [project for project in data if data[project][
-        'GMPP (GMPP – formally joined GMPP)']]
+    return [project for project in data if
+            data[project][
+                'GMPP (GMPP - formally joined GMPP)'] != "No"
+            and data[project][
+                'GMPP (GMPP - formally joined GMPP)'] != "NA"
+            and data[project][
+                'GMPP (GMPP - formally joined GMPP)'] != ""]
 
 
 def open_openpyxl_template(template_file):

@@ -7,6 +7,8 @@ from dateutil.parser import parse
 
 logger = colorlog.getLogger('bcompiler.cleanser')
 
+ENDASH_REGEX = r"–"
+ENDASH_FIX = r"-"
 COMMA_REGEX = r",\s?"
 COMMA_FIX = r" "
 APOS_REGEX = r"^'"
@@ -46,6 +48,12 @@ class Cleanser:
         # string passed to class constructor. Method self.clean() runs through
         # them,  fixing each in turn.
         self._checks = [
+            dict(
+                c_type="emdash",
+                rule=ENDASH_REGEX,
+                fix=ENDASH_FIX,
+                func=self._endash,
+                count=0),
             dict(
                 c_type='commas',
                 rule=COMMA_REGEX,
@@ -125,6 +133,12 @@ class Cleanser:
         """
         self._checks = sorted(
             self._checks, key=itemgetter('count'), reverse=True)
+
+    def _endash(self, regex, fix):
+        """
+        Turns – into -.
+        """
+        return re.sub(regex, fix, self.string)
 
     def _pound(self, regex, fix):
         """

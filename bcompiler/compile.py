@@ -3,17 +3,15 @@ import logging
 import os
 import re
 from datetime import date
-from typing import List, Dict
+from typing import Dict, List
+
+from openpyxl import Workbook, load_workbook
 
 from bcompiler.datamap import Datamap
-
 from bcompiler.process import Cleanser
 from bcompiler.process.simple_comparitor import FileComparitor, ParsedMaster
-
-from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
-from bcompiler.utils import cell_bg_colour, bc_is_close, quick_typechecker
-
-from openpyxl import load_workbook, Workbook
+from bcompiler.utils import (DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR,
+                             bc_is_close, cell_bg_colour, quick_typechecker)
 
 CELL_REGEX = re.compile('[A-Z]+[0-9]+')
 DROPDOWN_REGEX = re.compile('^\D*$')

@@ -41,6 +41,8 @@ def test_cleanser_class():
     d_time_str2 = "2015-12-31 0:00:00"
     d_time_bad_date = "2015-12-32 0:00:00"
 
+    dash_str = "GMPP – Test"
+
     # integer strings
     i_str = "1234"
 
@@ -80,6 +82,10 @@ def test_cleanser_class():
     pnd3 = Cleanser(pound_str3)
     pnd_neg = Cleanser(pound_str_neg)
     pnd_context = Cleanser(pound_str_context)
+    dash1 = Cleanser(dash_str)
+
+    # assert EN-DASH (U+2013) converts to HYPHEN-MINUS (U+002D)
+    assert dash1.clean() == "GMPP - Test"
 
     # testing private interface to ensure counting of targets is done
     assert c._checks[c._access_checks('commas')]['count'] == 3

@@ -1,6 +1,3 @@
-"""
-Docstring here
-"""
 import csv
 import fnmatch
 import logging
@@ -17,7 +14,6 @@ from openpyxl.styles import PatternFill
 logger = logging.getLogger('bcompiler.utils')
 
 rdel_cdel_merge = ''
-
 
 
 def quick_typechecker(*args):
@@ -58,6 +54,52 @@ def cell_bg_colour(rgb=[]):
     )
 
 
+def get_relevant_names(project_name, project_data):
+
+    try:
+        sro_first_name = project_data[
+                project_name]['SRO Full Name'].split(" ")[0]
+    except IndexError:
+        logger.warning(
+                "SRO Full Name ({0}) is not suitable for splitting".format(
+                    project_data[project_name]['SRO Full Name']))
+
+    try:
+        sro_last_name = project_data[
+                project_name]['SRO Full Name'].split(" ")[1]
+    except IndexError:
+        logger.warning(
+                "SRO Full Name ({0}) is not suitable for splitting".format(
+                    project_data[project_name]['SRO Full Name']))
+
+    try:
+        pd_first_name = project_data[
+                project_name]['PD Full Name'].split(" ")[0]
+    except IndexError:
+        logger.warning(
+                "PD Full Name ({0}) is not suitable for splitting".format(
+                    project_data[project_name]['PD Full Name']))
+
+    try:
+        pd_last_name = project_data[
+                project_name]['PD Full Name'].split(" ")[1]
+    except IndexError:
+        logger.warning(
+                "PD Full Name ({0}) is not suitable for splitting".format(
+                    project_data[project_name]['PD Full Name']))
+
+    try:
+        sro_d = dict(first_name=sro_first_name, last_name=sro_last_name)
+    except UnboundLocalError:
+        sro_d = None
+    try:
+        pd_d = dict(first_name=pd_first_name, last_name=pd_last_name)
+    except UnboundLocalError:
+        pd_d = None
+
+    return (sro_d, pd_d)
+
+
 def populate_blank_gmpp_form(openpyxl_template, project):
     blank = openpyxl_template
     dm = DatamapGMPP(
@@ -65,18 +107,43 @@ def populate_blank_gmpp_form(openpyxl_template, project):
     logger.info("Grabbing GMPP datamap {}".format(dm.source_file))
     target_ws = blank['GMPP Return']
     project_data = project_data_line()
-    logger.info("Grabbing project_data from master")
+
+    relevant_names = get_relevant_names(project, project_data)
+    if relevant_names[0] and relevant_names[1]:
+        relevant_names = get_relevant_names(project, project_data)
+    else:
+        relevant_names = [
+                ({'first_name': '', 'last_name': ''}),
+                ({'first_name': '', 'last_name': ''})]
+
     for line in dm.data:
+
         if 'Project/Programme Name' in line.cellname:
             d_to_migrate = project
             target_ws[line.cellref].value = d_to_migrate
+
         elif line.cellref is not None:
+            if line.cellname == 'SRO First Name':
+                d_to_migrate = relevant_names[0]['first_name']
+                target_ws[line.cellref].value = d_to_migrate
+            if line.cellname == 'SRO Last Name':
+                d_to_migrate = relevant_names[0]['last_name']
+                target_ws[line.cellref].value = d_to_migrate
+            if line.cellname == 'PD First Name':
+                d_to_migrate = relevant_names[1]['first_name']
+                target_ws[line.cellref].value = d_to_migrate
+            if line.cellname == 'PD Last Name':
+                d_to_migrate = relevant_names[1]['last_name']
+                target_ws[line.cellref].value = d_to_migrate
+
             try:
+                # pull the data if we can
                 d_to_migrate = project_data[project][line.cellname]
             except KeyError:
-                logger.warning("Unable to find {} in master.csv".format(
-                    line.cellref))
-                target_ws[line.cellref].value = "UNDEFINED IN DATAMAP"
+                logger.warning(("Unable to find {} in master intended for {}"
+                                " in template").format(
+                                    line.cellname,
+                                    line.cellref))
             else:
                 target_ws[line.cellref].value = d_to_migrate
                 logger.debug(
@@ -109,15 +176,20 @@ def gmpp_project_data():
     data = project_data_line()
     gmpp_project_data_list = []
     for project in data:
-        if data[project]['GMPP (GMPP – formally joined GMPP)']:
+        if data[project]['GMPP (GMPP - formally joined GMPP)']:
             gmpp_project_data_list.append(data[project])
     return gmpp_project_data_list
 
 
 def gmpp_project_names():
     data = project_data_line()
-    return [project for project in data if data[project][
-        'GMPP (GMPP – formally joined GMPP)']]
+    return [project for project in data if
+            data[project][
+                'GMPP (GMPP - formally joined GMPP)'] != "No"
+            and data[project][
+                'GMPP (GMPP - formally joined GMPP)'] != "NA"
+            and data[project][
+                'GMPP (GMPP - formally joined GMPP)'] != ""]
 
 
 def open_openpyxl_template(template_file):
@@ -182,6 +254,7 @@ def index_returns_directory():
             ws = wb['Summary']
             pnames_in_returns_dir.append(ws['B5'].value)
     return pnames_in_returns_dir
+
 
 def parse_csv_to_file(source_file):
     """

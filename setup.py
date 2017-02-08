@@ -61,6 +61,8 @@ setup(
     },
     install_requires=[
                          'openpyxl',
+                         'python-dateutil',
+                         'colorlog'
                      ],
     test_suite='bcompiler.tests'
 )

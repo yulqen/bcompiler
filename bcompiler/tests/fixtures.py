@@ -3,8 +3,6 @@ import random
 from datetime import datetime
 import pytest
 
-from bcompiler.process.digest import Series
-
 from openpyxl import Workbook
 
 ws_summary_B5_rand = [
@@ -244,9 +242,3 @@ def bicc_return():
     wb.save('/tmp/test-bicc-return.xlsx')
     yield '/tmp/test-bicc-return.xlsx'
     os.unlink('/tmp/test-bicc-return.xlsx')
-
-
-@pytest.fixture
-def series():
-    series = Series('Financial Quarters')
-    return series

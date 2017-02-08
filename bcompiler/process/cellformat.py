@@ -10,6 +10,10 @@ from openpyxl.styles import PatternFill
 
 
 def flag_difference(first, second):
+    # TODO - need to implement a function that allows you to preselect
+    # which rules you want to apply. I'm writing this note a couple of weeks
+    # after developing this class so I'm a big foggy, but current
+    # implementation is not complete
     pass
 
 

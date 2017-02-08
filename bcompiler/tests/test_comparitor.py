@@ -9,27 +9,16 @@ from bcompiler.utils import cell_bg_colour
 from openpyxl import Workbook
 
 key_col_data = [
-    'Project/Programme Name',
-    'SRO Sign-Off',
-    'Reporting period (GMPP - Snapshot Date)',
-    'Quarter Joined',
-    'GMPP (GMPP – formally joined GMPP)',
-    'IUK top 40',
-    'Top 37',
-    'DfT Business Plan',
-    'GMPP - IPA ID Number',
-    'DFT ID Number',
-    'Working Contact Name',
-    'Working Contact Telephone',
-    'Working Contact Email',
-    'DfT Group',
-    'DfT Division',
+    'Project/Programme Name', 'SRO Sign-Off',
+    'Reporting period (GMPP - Snapshot Date)', 'Quarter Joined',
+    'GMPP (GMPP – formally joined GMPP)', 'IUK top 40', 'Top 37',
+    'DfT Business Plan', 'GMPP - IPA ID Number', 'DFT ID Number',
+    'Working Contact Name', 'Working Contact Telephone',
+    'Working Contact Email', 'DfT Group', 'DfT Division',
     'Agency or delivery partner (GMPP - Delivery Organisation primary)',
     'Strategic Alignment/Government Policy (GMPP – Key drivers)',
-    'Project Scope',
-    'Brief project description (GMPP – brief descripton)',
-    'Delivery Structure',
-    'Description if \'Other',
+    'Project Scope', 'Brief project description (GMPP – brief descripton)',
+    'Delivery Structure', 'Description if \'Other',
     'Change Delivery Methodology'
 ]
 
@@ -99,10 +88,10 @@ def test_cell_colours(populate_test_data):
     assert populate_test_data['C1'].fill.fgColor.rgb == '00FF0000'
 
 
-SOURCE_EARLY = ('/home/lemon/Documents/bcompiler/'
-                'output/compiled_master_early.xlsx')
-SOURCE_CURRENT = ('/home/lemon/Documents/bcompiler/'
-                  'output/compiled_master_current.xlsx')
+SOURCE_EARLY = ('/home/lemon/Documents/bcompiler/output/'
+                'compiled_master_2017-01-12_Q2 1617.xlsx')
+SOURCE_CURRENT = ('/home/lemon/Documents/bcompiler/output/'
+                  'compiled_master_2017-02-02_Q3 1617.xlsx')
 
 
 def test_parsed_master():
@@ -110,13 +99,13 @@ def test_parsed_master():
     project_data = pm.get_project_data(col_index=2)
     project_data2 = pm.get_project_data(col_index=13)
     assert 'Crossrail Programme' in pm.projects
+    assert pm.get_project_data('C')[0][
+        1] == 'Bound Pavement Materials Framework'
     assert pm.get_project_data(
-        'C')[0][1] == 'Search and Rescue Helicopters'
-    assert pm.get_project_data(
-        col_index=3)[0][1] == 'Search and Rescue Helicopters'
+        col_index=3)[0][1] == 'Bound Pavement Materials Framework'
     assert pm.get_data_with_key(project_data, 'Top 37') is None
     assert pm.get_data_with_key(
-        project_data2, 'Project/Programme Name') == 'DfT Headquarters'
+        project_data2, 'Project/Programme Name') == 'South West Route Capacity'
 
 
 def test_comparitor():

@@ -9,20 +9,6 @@ from datetime import datetime
 from openpyxl.styles import PatternFill
 
 
-def flag_difference(first, second):
-    # TODO - need to implement a function that allows you to preselect
-    # which rules you want to apply. I'm writing this note a couple of weeks
-    # after developing this class so I'm a big foggy, but current
-    # implementation is not complete
-    pass
-
-
-key_rules = {
-    'Project Name': flag_difference,
-    'Joining Date': flag_difference
-}
-
-
 class CellFormatState:
     """
     Base class. When initial class is implemented, it immediately switches
@@ -104,7 +90,8 @@ class BlankCellFormat(CellFormatState):
             self.compare_val = compare_val
             self.this_val = this_val
             self.key = key
-        elif isinstance(this_val, datetime) and isinstance(compare_val, datetime):
+        elif isinstance(this_val, datetime) and isinstance(compare_val,
+                                                           datetime):
             self.__class__ = DateCellFormat
             self.compare_val = compare_val
             self.this_val = this_val
@@ -140,10 +127,8 @@ class StringCellFormat(CellFormatState):
     def set_style(self, rgb):
         c_value = "{0:02X}{1:02X}{2:02X}".format(*rgb)
         return (PatternFill(
-            patternType='solid',
-            fgColor=c_value,
-            bgColor=c_value
-        ), StringCellFormat.number_format)
+            patternType='solid', fgColor=c_value, bgColor=c_value),
+                StringCellFormat.number_format)
 
     def export_rule(self):
         if self.compare_val != self.this_val:
@@ -181,10 +166,8 @@ class IntegerCellFormat(CellFormatState):
     def set_style(self, rgb):
         c_value = "{0:02X}{1:02X}{2:02X}".format(*rgb)
         return (PatternFill(
-            patternType='solid',
-            fgColor=c_value,
-            bgColor=c_value
-        ), IntegerCellFormat.number_format)
+            patternType='solid', fgColor=c_value, bgColor=c_value),
+                IntegerCellFormat.number_format)
 
     def export_rule(self):
         if self.compare_val > self.this_val:
@@ -210,10 +193,8 @@ class FloatCellFormat(CellFormatState):
     def set_style(self, rgb):
         c_value = "{0:02X}{1:02X}{2:02X}".format(*rgb)
         return (PatternFill(
-            patternType='solid',
-            fgColor=c_value,
-            bgColor=c_value
-        ), FloatCellFormat.number_format)
+            patternType='solid', fgColor=c_value, bgColor=c_value),
+                FloatCellFormat.number_format)
 
     def export_rule(self):
         if self.compare_val > self.this_val:
@@ -239,10 +220,8 @@ class DateCellFormat(CellFormatState):
     def set_style(self, rgb):
         c_value = "{0:02X}{1:02X}{2:02X}".format(*rgb)
         return (PatternFill(
-            patternType='solid',
-            fgColor=c_value,
-            bgColor=c_value
-        ), DateCellFormat.number_format)
+            patternType='solid', fgColor=c_value, bgColor=c_value),
+                DateCellFormat.number_format)
 
     def export_rule(self):
         if self.compare_val > self.this_val:

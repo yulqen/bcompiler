@@ -159,8 +159,8 @@ class IntegerCellFormat(CellFormatState):
     in the cell based on the compare_val and this_val data being different.
     """
 
-    rgb_this_higher = [255, 0, 0]  # red
-    rgb_this_lower = [3, 180, 0]  # green
+    rgb_this_higher = [250, 120, 120]  # red
+    rgb_this_lower = [120, 180, 120]  # green
     number_format = ""
 
     def set_style(self, rgb):
@@ -186,8 +186,8 @@ class IntegerCellFormat(CellFormatState):
 
 class FloatCellFormat(CellFormatState):
 
-    rgb_this_higher = [255, 0, 0]  # red
-    rgb_this_lower = [3, 180, 0]  # green
+    rgb_this_higher = [250, 120, 120]  # red
+    rgb_this_lower = [120, 180, 120]  # green
     number_format = ""
 
     def set_style(self, rgb):

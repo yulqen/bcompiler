@@ -1,12 +1,10 @@
 import pytest
+import os
+from openpyxl import Workbook
 
 import bcompiler.tests.fixtures
 
-from bcompiler.process.digest import digest_source_files, Digest
-
 BICC_RETURN_FIXTURE = bcompiler.tests.fixtures.bicc_return
-DB_FIXTURE = bcompiler.tests.fixtures.db
-SERIES_FIXTURE = bcompiler.tests.fixtures.series
 
 
 @pytest.fixture
@@ -26,12 +24,3 @@ def bicc_return():
     wb.save('/tmp/test-bicc-return.xlsx')
     yield '/tmp/test-bicc-return.xlsx'
     os.unlink('/tmp/test-bicc-return.xlsx')
-
-
-def test_digest_single_file(bicc_return, series):
-    digest = Digest(bicc_return, series, 'Q2 April')
-    assert digest.table == 'q2-april'
-    assert digest.series == 'Financial Quarters'
-    assert digest.data['Project/Programme Name'] == 'Cookfield Rebuild'
-    # this works because the comma is getting cleansed
-    assert digest.data['DfT Group'] == 'Roads Monitoring and Horse'

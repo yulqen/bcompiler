@@ -3,7 +3,6 @@ import random
 from datetime import datetime
 import pytest
 
-from bcompiler.process.database import Database
 from bcompiler.process.digest import Series
 
 from openpyxl import Workbook
@@ -251,9 +250,3 @@ def bicc_return():
 def series():
     series = Series('Financial Quarters')
     return series
-
-
-@pytest.fixture
-def db():
-    yield Database('/tmp/db.json').connect()
-    os.unlink('/tmp/db.json')

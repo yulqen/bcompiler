@@ -34,13 +34,13 @@ class TestGMPPDatamap(TestCase):
         self.assertEqual(self.dm.data[0].cellref, 'C23')
 
     def test_that_empty_cell_ref_returns_none(self):
-        self.assertIsNone(self.dm.data[3].cellref)
+        self.assertIsNone(self.dm.data[4].cellref)
 
     def test_report_lines_no_cellref(self):
         """
         Hard-coded test: FRAGILE!
         """
-        self.assertEqual(self.dm.no_cellrefs, 189)
+        self.assertEqual(self.dm.no_cellrefs, 190)
 
     def test_create_gmpp_datamap_object(self):
         """
@@ -59,7 +59,7 @@ class TestGMPPDatamap(TestCase):
         # there shouldn't be any 2 item lines either
         self.assertEqual(self.dm._dml_cname_sheet, [])
         # there should be lots of 3 item lines though!
-        self.assertEqual(len(self.dm._dml_cname_sheet_cref), 612)
+        self.assertEqual(len(self.dm._dml_cname_sheet_cref), 625)
 
     def test_transposed_master(self):
         """
@@ -83,7 +83,7 @@ class TestGMPPDatamap(TestCase):
 
     def test_get_list_of_gmpp_project_data(self):
         gmpp_list = gmpp_project_data()
-        self.assertEqual(len(gmpp_list), 17)
+        self.assertEqual(len(gmpp_list), 21)
 
     def test_get_list_of_gmpp_project_names(self):
         self.assertIn(self.project_to_test, gmpp_project_names())

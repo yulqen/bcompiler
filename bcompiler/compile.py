@@ -9,9 +9,12 @@ from openpyxl import Workbook, load_workbook
 
 from bcompiler.datamap import Datamap
 from bcompiler.process import Cleanser
+from bcompiler.process.cellformat import CellFormatState
 from bcompiler.process.simple_comparitor import FileComparitor, ParsedMaster
-from bcompiler.utils import (DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR,
-                             bc_is_close, cell_bg_colour, quick_typechecker)
+
+from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
+
+from openpyxl import load_workbook, Workbook
 
 CELL_REGEX = re.compile('[A-Z]+[0-9]+')
 DROPDOWN_REGEX = re.compile('^\D*$')
@@ -147,187 +150,32 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
         for d in out_map:
 
             c = ws.cell(row=i, column=2)
-
-            # HERE WE NEED TO KNOW TWO THINGS:
-            # - name of project we're compiling
-            # - index of the header for that project in the comparing
-            # master, if we are comparing
+            c_format = CellFormatState()
 
             try:
-                # exception will be if we call without compare flag
                 compare_val = comparitor.compare(this_index, d['gmpp_key'])
             except UnboundLocalError:
                 compare_val = False
 
-            # HACK FOR RAG RATINGS
-            rags = [
-                'Green',
-                'Amber Green',
-                'Amber/Green',
-                'Amber',
-                'Amber Red',
-                'Amber/Red',
-                'Red'
-            ]
-            try:
-                if compare_val in rags:
-                    rags.pop(rags.index(compare_val))
-                    if d['gmpp_key_value'] in rags:
-                        c.fill = cell_bg_colour(rgb=[150, 150, 150])
-            except Exception:
-                pass
-            #   END OF RAG HACK ###
-
-            # HACK FOR PROJECT STAGES
-            project_stages = [
-                'Concept',
-                'Feasibility',
-                'Appraise & Select',
-                'Define and refine plan',
-                'Execute',
-                'Operate',
-                'On Hold'
-            ]
-            try:
-                if compare_val in project_stages:
-                    project_stages.pop(project_stages.index(compare_val))
-                    if d['gmpp_key_value'] in project_stages:
-                        c.fill = cell_bg_colour(rgb=[150, 110, 150])
-            except Exception:
-                pass
-            #   END OF PROJECT STAGES HACK ###
-
-            # ROWS 277 to 293 MEGAHACK!
-            target_keys = [
-                "Project Lifecycle Stage",
-                "If 'other' Project/programme Lifecycle Stage please specify",
-                "Significant Steel Requirement",
-                "SRO Finance confidence",
-                "BICC approval point",
-                "Latest Treasury Approval Point (TAP) or equivalent",
-                ("Business Case used to source figures (GMPP TAP used "
-                 "to source figures)"),
-                "Date of TAP used to source figures",
-                ("Name of source in not Business Case (GMPP -If not TAP "
-                 "please specify equivalent document used)"),
-                "If not TAP please specify date of equivalent document",
-                ("Version Number Of Document used to Source Figures (GMPP "
-                 "– TAP version Number)"),
-                "Real or Nominal - Baseline",
-                "Real or Nominal - Actual/Forecast",
-                "Index Year",
-                "Source of Finance",
-                "Other Finance type Description",
-                "NPV for all projects and NPV for programmes if available"
-                 ]
-            try:
-                if d['gmpp_key'] in target_keys:
-                    if compare_val != d['gmpp_key_value']:
-                        c.fill = cell_bg_colour(rgb=[50, 110, 130])
-            except Exception:
-                pass
-            #   END OF ROWS 277 to 293 MEGAHACK ###
-
-            # ROWS 603 to 610 MEGAHACK!
-            target_keys2 = [
-                "Benefits Map",
-                "Benefits Analysed",
-                "Benefits Realisation Plan",
-                "Initial Benefits Cost Ratio (BCR)",
-                "Adjusted Benefits Cost Ratio (BCR)",
-                "VfM Category",
-                "Present Value Cost (PVC)",
-                "Present Value Benefit (PVB)",
-            ]
-            try:
-                if d['gmpp_key'] in target_keys2:
-                    if compare_val != d['gmpp_key_value']:
-                        c.fill = cell_bg_colour(rgb=[70, 100, 130])
-            except Exception:
-                pass
-            #   END OF ROWS 603 to 610 MEGAHACK ###
+            # TODO - apply number format WITHOUT a compare_val
 
             # if there is something to compare it
-            if compare_val and (type(compare_val) and
-                                type(d['gmpp_key_value'])):
-
-                # if compare_val is a valid type (float, int or date)
-                # but this can change - we need to add str
-                if quick_typechecker(d['gmpp_key_value'], compare_val):
-
-                    # if there is enough of a difference in values
-                    if bc_is_close(d['gmpp_key_value'], compare_val) is False:
-
-                        # if current value is HIGHER than earlier value
-                        if compare_val < d['gmpp_key_value']:
-
-                            # ... round it
-                            try:
-                                # exception expected a date object
-                                # which round will not handle
-                                compare_val = round(compare_val, 2)
-                            except TypeError:
-                                pass
-
-                            if isinstance(compare_val, (int, float)):
-                                # ... fill the background cell with RED
-                                c.fill = cell_bg_colour(rgb=[255, 0, 0])
-                            elif isinstance(compare_val, date):
-                                # ... fill the background cell with PURPLE
-                                c.fill = cell_bg_colour(rgb=[255, 0, 127])
-
-                            # ... write to the cell
-                            c.value = d['gmpp_key_value']
-                            if isinstance(d['gmpp_key_value'], date):
-                                c.number_format = 'd/mm/yy'
-
-                        # if current value is LOWER than earlier value
-                        elif compare_val > d['gmpp_key_value']:
-
-                            # ... round it
-                            try:
-                                compare_val = round(compare_val, 2)
-                            except TypeError:
-                                pass
-
-                            if isinstance(compare_val, (int, float)):
-                                # ... fill the background cell with GREEN
-                                c.fill = cell_bg_colour(rgb=[3, 180, 0])
-                            elif isinstance(compare_val, date):
-                                # ... fill the background cell with GREEN
-                                c.fill = cell_bg_colour(rgb=[93, 81, 0])
-                                c.number_format = 'd/mm/yy'
-
-                            # ... write to the cell
-                            c.value = d['gmpp_key_value']
-                            if isinstance(d['gmpp_key_value'], date):
-                                c.number_format = 'd/mm/yy'
-
-                        else:
-                            # ... write to the cell
-                            c.value = d['gmpp_key_value']
-                            if isinstance(d['gmpp_key_value'], date):
-                                c.number_format = 'd/mm/yy'
-
-                    else:
-                        # if there is no discernable difference in cells
-                        # write to the cell
-                        c.value = d['gmpp_key_value']
-                        if isinstance(d['gmpp_key_value'], date):
-                            c.number_format = 'd/mm/yy'
-                else:
-                    # not a type of interest for comparison
-                    # write to the cell
+            if compare_val:
+                c_format.action(
+                    compare_val=compare_val,
+                    this_val=d['gmpp_key_value'],
+                    key=d['gmpp_key'])
+                formt = c_format.export_rule()
+                c.fill = formt[0]
+                if formt[1] == "":
                     c.value = d['gmpp_key_value']
-                    if isinstance(d['gmpp_key_value'], date):
-                        c.number_format = 'd/mm/yy'
+                else:
+                    c.value = d['gmpp_key_value']
+                    c.number_format = formt[1]
             else:
-                # if there is no compare value, just write to the cell
-                # this writes to the cell
+                # there is nothing to compare to so no formatting required
+                # just print the value
                 c.value = d['gmpp_key_value']
-                if isinstance(d['gmpp_key_value'], date):
-                    c.number_format = 'd/mm/yy'
-
             i += 1
     else:
         i = 1
@@ -335,182 +183,30 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
         # values here
         for d in out_map:
             c = ws.cell(row=i, column=count + 1)
+            c_format = CellFormatState()
 
             try:
                 compare_val = comparitor.compare(this_index, d['gmpp_key'])
             except UnboundLocalError:
                 compare_val = False
 
-            # HACK FOR RAG RATINGS
-            rags = [
-                'Green',
-                'Amber Green',
-                'Amber/Green',
-                'Amber',
-                'Amber Red',
-                'Amber/Red',
-                'Red'
-            ]
-            try:
-                if compare_val in rags:
-                    rags.pop(rags.index(compare_val))
-                    if d['gmpp_key_value'] in rags:
-                        c.fill = cell_bg_colour(rgb=[150, 150, 150])
-            except Exception:
-                pass
-
-            # HACK FOR PROJECT STAGES
-            project_stages = [
-                'Concept',
-                'Feasibility',
-                'Appraise & Select',
-                'Define and refine plan',
-                'Execute',
-                'Operate',
-                'On Hold'
-            ]
-            try:
-                if compare_val in project_stages:
-                    project_stages.pop(project_stages.index(compare_val))
-                    if d['gmpp_key_value'] in project_stages:
-                        c.fill = cell_bg_colour(rgb=[150, 110, 150])
-            except Exception:
-                pass
-            #   END OF PROJECT STAGES HACK ###
-
-            # ROWS 277 to 293 MEGAHACK!
-            target_keys = [
-                "Project Lifecycle Stage",
-                "If 'other' Project/programme Lifecycle Stage please specify",
-                "Significant Steel Requirement",
-                "SRO Finance confidence",
-                "BICC approval point",
-                "Latest Treasury Approval Point (TAP) or equivalent",
-                ("Business Case used to source figures (GMPP TAP used "
-                 "to source figures)"),
-                "Date of TAP used to source figures",
-                ("Name of source in not Business Case (GMPP -If not TAP "
-                 "please specify equivalent document used)"),
-                "If not TAP please specify date of equivalent document",
-                ("Version Number Of Document used to Source Figures (GMPP "
-                 "– TAP version Number)"),
-                "Real or Nominal - Baseline",
-                "Real or Nominal - Actual/Forecast",
-                "Index Year",
-                "Source of Finance",
-                "Other Finance type Description",
-                "NPV for all projects and NPV for programmes if available"
-                 ]
-            try:
-                if d['gmpp_key'] in target_keys:
-                    if compare_val != d['gmpp_key_value']:
-                        c.fill = cell_bg_colour(rgb=[50, 110, 130])
-            except Exception:
-                pass
-            #   END OF ROWS 277 to 293 MEGAHACK ###
-
-            # ROWS 603 to 610 MEGAHACK!
-            target_keys2 = [
-                "Benefits Map",
-                "Benefits Analysed",
-                "Benefits Realisation Plan",
-                "Initial Benefits Cost Ratio (BCR)",
-                "Adjusted Benefits Cost Ratio (BCR)",
-                "VfM Category",
-                "Present Value Cost (PVC)",
-                "Present Value Benefit (PVB)",
-            ]
-            try:
-                if d['gmpp_key'] in target_keys2:
-                    if compare_val != d['gmpp_key_value']:
-                        c.fill = cell_bg_colour(rgb=[70, 100, 130])
-            except Exception:
-                pass
-            #   END OF ROWS 603 to 610 MEGAHACK ###
-
             # if there is something to compare it
-            if compare_val and (type(compare_val) and
-                                type(d['gmpp_key_value'])):
-
-                # if compare_val is a float or int
-                if quick_typechecker(d['gmpp_key_value'], compare_val):
-
-                    # if there is enough of a difference in values
-                    if bc_is_close(d['gmpp_key_value'], compare_val) is False:
-
-                        # if current value is HIGHER than earlier value
-                        if compare_val < d['gmpp_key_value']:
-
-                            # ... round it
-                            # exception expected a date object
-                            # which round will not handle
-                            try:
-                                compare_val = round(compare_val, 2)
-                            except TypeError:
-                                pass
-
-                            if isinstance(compare_val, (int, float)):
-                                # ... fill the background cell with RED
-                                c.fill = cell_bg_colour(rgb=[255, 0, 0])
-                            elif isinstance(compare_val, date):
-                                # ... fill the background cell with PURPLE
-                                c.fill = cell_bg_colour(rgb=[255, 0, 127])
-                                c.number_format = 'd/mm/yy'
-
-                            # ... write to the cell
-                            c.value = d['gmpp_key_value']
-                            if isinstance(d['gmpp_key_value'], date):
-                                c.number_format = 'd/mm/yy'
-
-                        # if current value is LOWER than earlier value
-                        elif compare_val > d['gmpp_key_value']:
-
-                            # ... round it
-                            # exception expected a date object
-                            # which round will not handle
-                            try:
-                                compare_val = round(compare_val, 2)
-                            except TypeError:
-                                pass
-
-                            if isinstance(compare_val, (int, float)):
-                                # ... fill the background cell with GREEN
-                                c.fill = cell_bg_colour(rgb=[3, 180, 0])
-                            elif isinstance(compare_val, date):
-                                # ... fill the background cell with GREEN
-                                c.fill = cell_bg_colour(rgb=[93, 81, 0])
-                                c.number_format = 'd/mm/yy'
-
-                            # ... write to the cell
-                            c.value = d['gmpp_key_value']
-                            if isinstance(d['gmpp_key_value'], date):
-                                c.number_format = 'd/mm/yy'
-
-                        else:
-                            # ... write to the cell
-                            c.value = d['gmpp_key_value']
-                            if isinstance(d['gmpp_key_value'], date):
-                                c.number_format = 'd/mm/yy'
-
-                    else:
-                        # if there is no discernable difference in cells
-                        # write to the cell
-                        c.value = d['gmpp_key_value']
-                        if isinstance(d['gmpp_key_value'], date):
-                            c.number_format = 'd/mm/yy'
-                else:
-                    # if there is no discernable difference in cells
-                    # write to the cell
+            if compare_val:
+                c_format.action(
+                    compare_val=compare_val,
+                    this_val=d['gmpp_key_value'],
+                    key=d['gmpp_key'])
+                formt = c_format.export_rule()
+                c.fill = formt[0]
+                if formt[1] == "":
                     c.value = d['gmpp_key_value']
-                    if isinstance(d['gmpp_key_value'], date):
-                        c.number_format = 'd/mm/yy'
+                else:
+                    c.value = d['gmpp_key_value']
+                    c.number_format = formt[1]
             else:
-                # if there is no compare value, just write to the cell
-                # this writes to the cell
+                # there is nothing to compare to so no formatting required
+                # just print the value
                 c.value = d['gmpp_key_value']
-                if isinstance(d['gmpp_key_value'], date):
-                    c.number_format = 'd/mm/yy'
-
             i += 1
 
 

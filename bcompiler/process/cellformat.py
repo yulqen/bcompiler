@@ -90,6 +90,16 @@ class BlankCellFormat(CellFormatState):
             self.compare_val = compare_val
             self.this_val = this_val
             self.key = key
+        elif isinstance(this_val, float) and isinstance(compare_val, int):
+            self.__class__ = FloatCellFormat
+            self.compare_val = compare_val
+            self.this_val = this_val
+            self.key = key
+        elif isinstance(this_val, int) and isinstance(compare_val, float):
+            self.__class__ = FloatCellFormat
+            self.compare_val = compare_val
+            self.this_val = this_val
+            self.key = key
         elif isinstance(this_val, datetime) and isinstance(compare_val,
                                                            datetime):
             self.__class__ = DateCellFormat

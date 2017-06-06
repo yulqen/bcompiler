@@ -42,7 +42,6 @@ from bcompiler.process import Cleanser
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 
-
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
 
@@ -51,63 +50,67 @@ def get_parser():
     parser = argparse.ArgumentParser(
         description='Compile BICC data or prepare Excel BICC return forms.')
     parser.add_argument(
-        '-c', '--clean-datamap',
+        '-c',
+        '--clean-datamap',
         action="store_true",
         dest="clean-datamap",
         help='clean datamap file whose path is given as string')
     parser.add_argument(
-        '-v', '--version',
+        '-v',
+        '--version',
         action="store_true",
         help='displays the current version of bcompiler')
     parser.add_argument(
-        '-p', '--parse',
+        '-p',
+        '--parse',
         dest='parse',
         metavar='source file',
         nargs=1,
         help='parse master.csv and flip to correct orientation')
     parser.add_argument(
-        '-b', '--populate-bicc-form',
+        '-b',
+        '--populate-bicc-form',
         dest='populate',
         metavar='project integer',
         help='populate blank bicc forms from master for project N')
     parser.add_argument(
-        '-g', '--populate-gmpp-form',
+        '-g',
+        '--populate-gmpp-form',
         dest='populate-gmpp',
         metavar='project title',
         help='populate blank gmpp forms from master for project N')
     parser.add_argument(
-        '-j', '--populate-all-gmpp',
+        '-j',
+        '--populate-all-gmpp',
         action="store_true",
         dest='populate-all-gmpp',
         help='populate blank gmpp forms from master for all projects')
+    parser.add_argument('-a', '--all', action="store_true")
     parser.add_argument(
-        '-a', '--all',
-        action="store_true")
-    parser.add_argument(
-        '-d', '--create-wd',
+        '-d',
+        '--create-wd',
         action="store_true",
         dest='create-wd',
         help='create working directory at $HOME/Documents/bcompiler')
     parser.add_argument(
-        '-f', '--force-create-wd',
+        '-f',
+        '--force-create-wd',
         action="store_true",
         dest='f-create-wd',
         help='remove existing working directory and create a new one')
-    parser.add_argument(
-        'compile',
-        help='compile BICC returns to master')
+    parser.add_argument('compile', help='compile BICC returns to master')
     parser.add_argument(
         '--compare',
         nargs=1,
         help=('to be used with compile action; file path to master file '
               'to compare to compiled data'))
     parser.add_argument(
-        '-ll', '--loglevel',
+        '-ll',
+        '--loglevel',
         type=str,
         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-        help=(
-            'Set the logging level for the console.'
-            'The log file is set to DEBUG.'))
+        help=('Set the logging level for the console.'
+              'The log file is set to DEBUG.'))
     return parser
 
 
@@ -123,17 +126,29 @@ def clean_datamap(dm_file):
     except FileNotFoundError:
         pass
     cleaned_datamap = open(cleaned_datamap_file, 'a+')
-    with open(dm_file, 'r', encoding='UTF-8') as f:
-        # make sure every line has a comma at the end
-        for line in f.readlines():
-            newline = line.rstrip()
-            if ',' in newline[-1]:
-                newline += '\n'
-                cleaned_datamap.write(newline)
-            else:
-                newline = newline + ',' + '\n'
-                cleaned_datamap.write(newline)
-    cleaned_datamap.close()
+    try:
+        with open(dm_file, 'r', encoding='UTF-8') as f:  # make sure every line has a comma at the end
+            for line in f.readlines():
+                newline = line.rstrip()
+                if ',' in newline[-1]:
+                    newline += '\n'
+                    cleaned_datamap.write(newline)
+                else:
+                    newline = newline + ',' + '\n'
+                    cleaned_datamap.write(newline)
+        cleaned_datamap.close()
+    except UnicodeDecodeError:
+        with open(dm_file, 'r', encoding='latin1') as f:  # make sure every line has a comma at the end
+            for line in f.readlines():
+                newline = line.rstrip()
+                if ',' in newline[-1]:
+                    newline += '\n'
+                    cleaned_datamap.write(newline)
+                else:
+                    newline = newline + ',' + '\n'
+                    cleaned_datamap.write(newline)
+        cleaned_datamap.close()
+
 
 
 def get_list_projects(source_master_file):
@@ -153,14 +168,16 @@ def get_datamap():
     cell_regex = re.compile('[A-Z]+[0-9]+')
     dropdown_headers = get_dropdown_headers()
     output_excel_map_list = []
-    f = open(SOURCE_DIR + 'cleaned_datamap', 'r')
+    f = open(SOURCE_DIR + 'cleaned_datamap.csv', 'r')
     data = f.readlines()
     for line in data:
         # split on , allowing us to access useful data from data map file
         data_map_line = line.split(',')
-        if data_map_line[1] in ['Summary', 'Finance & Benefits',
-                                'Resources', 'Approval & Project milestones',
-                                'Assurance planning', 'GMPP info']:
+        if data_map_line[1] in [
+                'Summary', 'Finance & Benefits', 'Resources',
+                'Approval & Project milestones', 'Assurance planning',
+                'GMPP info'
+        ]:
             # the end item in the list is a newline - get rid of that
             del data_map_line[-1]
         if cell_regex.search(data_map_line[-1]):
@@ -183,8 +200,8 @@ def get_datamap():
                     cell_coordinates=data_map_line[2],
                     validation_header=data_map_line[3])
             except IndexError:
-                logger.error(
-                    "Something wrong with the datamap indexing", m_map.items())
+                logger.error("Something wrong with the datamap indexing",
+                             m_map.items())
             output_excel_map_list.append(m_map)
     return output_excel_map_list
 
@@ -202,16 +219,15 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     blank = load_workbook(SOURCE_DIR + 'bicc_template.xlsx')
     ws_summary = blank['Summary']
     ws_fb = blank['Finance & Benefits']
-    ws_res = blank['Resources']
+    ws_res = blank['Resource']
     ws_apm = blank['Approval & Project milestones']
-    ws_ap = blank['Assurance planning']
-    ws_gmpp = blank['GMPP info']
+    ws_ap = blank['Assurance Planning']
+    ws_gmpp = blank['GMPP']
     logger.info("Getting data from master.csv...")
     for item in datamap:
         if item['sheet'] == 'Summary':
             if 'Project/Programme Name' in item['cell_description']:
-                ws_summary[
-                    item['cell_coordinates']].value = test_proj
+                ws_summary[item['cell_coordinates']].value = test_proj
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
                 cleaned = c.clean()
@@ -219,13 +235,11 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     "Changed {} to {} for cell_description: {}".format(
                         test_proj_data[item['cell_description']],
                         cleaned,
-                        item['cell_description'],
-                        ))
-                ws_summary[
-                    item['cell_coordinates']].value = cleaned
+                        item['cell_description'], ))
+                ws_summary[item['cell_coordinates']].value = cleaned
             except KeyError:
-                logger.error("Cannot find {} in master.csv".format(
-                    item['cell_description']))
+                logger.error("Cannot find {} in master.csv".format(item[
+                    'cell_description']))
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
@@ -239,13 +253,11 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     "Changed {} to {} for cell_description: {}".format(
                         test_proj_data[item['cell_description']],
                         cleaned,
-                        item['cell_description'],
-                        ))
-                ws_fb[
-                    item['cell_coordinates']].value = cleaned
+                        item['cell_description'], ))
+                ws_fb[item['cell_coordinates']].value = cleaned
             except KeyError:
-                logger.error("Cannot find {} in master.csv".format(
-                    item['cell_description']))
+                logger.error("Cannot find {} in master.csv".format(item[
+                    'cell_description']))
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
@@ -259,13 +271,11 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     "Changed {} to {} for cell_description: {}".format(
                         test_proj_data[item['cell_description']],
                         cleaned,
-                        item['cell_description'],
-                        ))
-                ws_res[
-                    item['cell_coordinates']].value = cleaned
+                        item['cell_description'], ))
+                ws_res[item['cell_coordinates']].value = cleaned
             except KeyError:
-                logger.error("Cannot find {} in master.csv".format(
-                    item['cell_description']))
+                logger.error("Cannot find {} in master.csv".format(item[
+                    'cell_description']))
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
@@ -279,13 +289,11 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     "Changed {} to {} for cell_description: {}".format(
                         test_proj_data[item['cell_description']],
                         cleaned,
-                        item['cell_description'],
-                        ))
-                ws_apm[
-                    item['cell_coordinates']].value = cleaned
+                        item['cell_description'], ))
+                ws_apm[item['cell_coordinates']].value = cleaned
             except KeyError:
-                logger.error("Cannot find {} in master.csv".format(
-                    item['cell_description']))
+                logger.error("Cannot find {} in master.csv".format(item[
+                    'cell_description']))
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
@@ -299,13 +307,11 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     "Changed {} to {} for cell_description: {}".format(
                         test_proj_data[item['cell_description']],
                         cleaned,
-                        item['cell_description'],
-                        ))
-                ws_ap[
-                    item['cell_coordinates']].value = cleaned
+                        item['cell_description'], ))
+                ws_ap[item['cell_coordinates']].value = cleaned
             except KeyError:
-                logger.error("Cannot find {} in master.csv".format(
-                    item['cell_description']))
+                logger.error("Cannot find {} in master.csv".format(item[
+                    'cell_description']))
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
@@ -319,13 +325,11 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     "Changed {} to {} for cell_description: {}".format(
                         test_proj_data[item['cell_description']],
                         cleaned,
-                        item['cell_description'],
-                        ))
-                ws_gmpp[
-                    item['cell_coordinates']].value = cleaned
+                        item['cell_description'], ))
+                ws_gmpp[item['cell_coordinates']].value = cleaned
             except KeyError:
-                logger.error("Cannot find {} in master.csv".format(
-                    item['cell_description']))
+                logger.error("Cannot find {} in master.csv".format(item[
+                    'cell_description']))
                 pass
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
@@ -419,7 +423,7 @@ def get_dropdown_data(header=None):
 
 def get_dropdown_headers():
     wb = load_workbook(SOURCE_DIR + 'bicc_template.xlsx', data_only=True)
-    ws = wb['Dropdown List']
+    ws = wb['Dropdown']
     rows = ws.rows
     a_row = next(rows)
     return [h.value for h in a_row]

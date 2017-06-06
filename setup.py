@@ -18,6 +18,7 @@ def read(*names):
         values[name] = value
     return values
 
+
 long_description = """
 %(README)s
 
@@ -44,6 +45,7 @@ setup(
         "Programming Language :: Python :: 3.2",
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
         "Topic :: Documentation",
     ],
     keywords='bcomiler help console command line excel',
@@ -51,18 +53,11 @@ setup(
     author_email='matt@matthewlemon.com',
     maintainer='Matthew Lemon',
     maintainer_email='matt@matthewlemon.com',
-    url='https://bitbucket.org/mrlemon/bicc_excel',
+    url='https://bitbucket.org/mrlemon/bcompiler',
     license='MIT',
     packages=find_packages(),
-    entry_points={
-        'console_scripts': [
-            'bcompiler = bcompiler.main:main',
-        ]
-    },
-    install_requires=[
-                         'openpyxl',
-                         'python-dateutil',
-                         'colorlog'
-                     ],
-    test_suite='bcompiler.tests'
-)
+    entry_points={'console_scripts': [
+        'bcompiler = bcompiler.main:main',
+    ]},
+    install_requires=['openpyxl', 'python-dateutil', 'colorlog'],
+    test_suite='bcompiler.tests')

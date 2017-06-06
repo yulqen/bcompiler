@@ -126,17 +126,29 @@ def clean_datamap(dm_file):
     except FileNotFoundError:
         pass
     cleaned_datamap = open(cleaned_datamap_file, 'a+')
-    with open(dm_file, 'r', encoding='UTF-8') as f:
-        # make sure every line has a comma at the end
-        for line in f.readlines():
-            newline = line.rstrip()
-            if ',' in newline[-1]:
-                newline += '\n'
-                cleaned_datamap.write(newline)
-            else:
-                newline = newline + ',' + '\n'
-                cleaned_datamap.write(newline)
-    cleaned_datamap.close()
+    try:
+        with open(dm_file, 'r', encoding='UTF-8') as f:  # make sure every line has a comma at the end
+            for line in f.readlines():
+                newline = line.rstrip()
+                if ',' in newline[-1]:
+                    newline += '\n'
+                    cleaned_datamap.write(newline)
+                else:
+                    newline = newline + ',' + '\n'
+                    cleaned_datamap.write(newline)
+        cleaned_datamap.close()
+    except UnicodeDecodeError:
+        with open(dm_file, 'r', encoding='latin1') as f:  # make sure every line has a comma at the end
+            for line in f.readlines():
+                newline = line.rstrip()
+                if ',' in newline[-1]:
+                    newline += '\n'
+                    cleaned_datamap.write(newline)
+                else:
+                    newline = newline + ',' + '\n'
+                    cleaned_datamap.write(newline)
+        cleaned_datamap.close()
+
 
 
 def get_list_projects(source_master_file):

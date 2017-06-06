@@ -168,7 +168,7 @@ def get_datamap():
     cell_regex = re.compile('[A-Z]+[0-9]+')
     dropdown_headers = get_dropdown_headers()
     output_excel_map_list = []
-    f = open(SOURCE_DIR + 'cleaned_datamap', 'r')
+    f = open(SOURCE_DIR + 'cleaned_datamap.csv', 'r')
     data = f.readlines()
     for line in data:
         # split on , allowing us to access useful data from data map file
@@ -219,10 +219,10 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     blank = load_workbook(SOURCE_DIR + 'bicc_template.xlsx')
     ws_summary = blank['Summary']
     ws_fb = blank['Finance & Benefits']
-    ws_res = blank['Resources']
+    ws_res = blank['Resource']
     ws_apm = blank['Approval & Project milestones']
-    ws_ap = blank['Assurance planning']
-    ws_gmpp = blank['GMPP info']
+    ws_ap = blank['Assurance Planning']
+    ws_gmpp = blank['GMPP']
     logger.info("Getting data from master.csv...")
     for item in datamap:
         if item['sheet'] == 'Summary':
@@ -423,7 +423,7 @@ def get_dropdown_data(header=None):
 
 def get_dropdown_headers():
     wb = load_workbook(SOURCE_DIR + 'bicc_template.xlsx', data_only=True)
-    ws = wb['Dropdown List']
+    ws = wb['Dropdown']
     rows = ws.rows
     a_row = next(rows)
     return [h.value for h in a_row]

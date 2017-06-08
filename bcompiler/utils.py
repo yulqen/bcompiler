@@ -153,7 +153,7 @@ def populate_blank_gmpp_form(openpyxl_template, project):
     additional_data = dm.add_additional_data()
     for line in additional_data:
         target_ws[line.cellref].value = line.added_data_field
-    fn = OUTPUT_DIR + project + ' Q3_GMPP.xlsx'
+    fn = OUTPUT_DIR + project + ' Q1_GMPP.xlsx'
     logger.info("Writing {}".format(fn))
     blank.save(fn)
 
@@ -303,7 +303,7 @@ VALIDATION_REFERENCES = {
     'Monetised / Non Monetised Benefits': "=\'Dropdown List\'!$J$2:$J$4",
     'SDP': "=\'Dropdown List\'!$K$2:$K$5",
     'RAG': "=\'Dropdown List\'!$L$2:$L$7",
-    'RAG_Short': "=\'Dropdown List\'!$M$2:$M$4",
+    'RAG 2': "=\'Dropdown List\'!$M$2:$M$4",
     'RPA level': "=\'Dropdown List\'!$N$2:$N$4",
     'MPLA / PLP': "=\'Dropdown List\'!$O$2:$O$29",
     'Yes/No': "=\'Dropdown List\'!$P$2:$P$3",

@@ -206,6 +206,19 @@ def get_datamap():
     return output_excel_map_list
 
 
+def has_whiff_of_total(desc: str) -> bool:
+    total_conditions = [
+        'Total',
+        'RDEL Total',
+        'CDEL Total',
+    ]
+    for cond in total_conditions:
+        if cond in desc:
+            return True
+        else:
+            return False
+
+
 def populate_blank_bicc_form(source_master_file, proj_num):
     logger.info("Reading datamap...")
     datamap = get_datamap()
@@ -246,59 +259,68 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 ws_summary.add_data_validation(dv)
                 dv.add(ws_summary[item['cell_coordinates']])
         elif item['sheet'] == 'Finance & Benefits':
-            try:
-                c = Cleanser(test_proj_data[item['cell_description']])
-                cleaned = c.clean()
-                logger.debug(
-                    "Changed {} to {} for cell_description: {}".format(
-                        test_proj_data[item['cell_description']],
-                        cleaned,
-                        item['cell_description'], ))
-                ws_fb[item['cell_coordinates']].value = cleaned
-            except KeyError:
-                logger.error("Cannot find {} in master.csv".format(item[
-                    'cell_description']))
+            if has_whiff_of_total(item['cell_description']):
                 pass
-            if item['validation_header']:
-                dv = create_validation(item['validation_header'])
-                ws_fb.add_data_validation(dv)
-                dv.add(ws_apm[item['cell_coordinates']])
+            else:
+                try:
+                    c = Cleanser(test_proj_data[item['cell_description']])
+                    cleaned = c.clean()
+                    logger.debug(
+                        "Changed {} to {} for cell_description: {}".format(
+                            test_proj_data[item['cell_description']],
+                            cleaned,
+                            item['cell_description'], ))
+                    ws_fb[item['cell_coordinates']].value = cleaned
+                except KeyError:
+                    logger.error("Cannot find {} in master.csv".format(item[
+                        'cell_description']))
+                    pass
+                if item['validation_header']:
+                    dv = create_validation(item['validation_header'])
+                    ws_fb.add_data_validation(dv)
+                    dv.add(ws_apm[item['cell_coordinates']])
         elif item['sheet'] == 'Resources':
-            try:
-                c = Cleanser(test_proj_data[item['cell_description']])
-                cleaned = c.clean()
-                logger.debug(
-                    "Changed {} to {} for cell_description: {}".format(
-                        test_proj_data[item['cell_description']],
-                        cleaned,
-                        item['cell_description'], ))
-                ws_res[item['cell_coordinates']].value = cleaned
-            except KeyError:
-                logger.error("Cannot find {} in master.csv".format(item[
-                    'cell_description']))
+            if has_whiff_of_total(item['cell_description']):
                 pass
-            if item['validation_header']:
-                dv = create_validation(item['validation_header'])
-                ws_res.add_data_validation(dv)
-                dv.add(ws_apm[item['cell_coordinates']])
+            else:
+                try:
+                    c = Cleanser(test_proj_data[item['cell_description']])
+                    cleaned = c.clean()
+                    logger.debug(
+                        "Changed {} to {} for cell_description: {}".format(
+                            test_proj_data[item['cell_description']],
+                            cleaned,
+                            item['cell_description'], ))
+                    ws_res[item['cell_coordinates']].value = cleaned
+                except KeyError:
+                    logger.error("Cannot find {} in master.csv".format(item[
+                        'cell_description']))
+                    pass
+                if item['validation_header']:
+                    dv = create_validation(item['validation_header'])
+                    ws_res.add_data_validation(dv)
+                    dv.add(ws_apm[item['cell_coordinates']])
         elif item['sheet'] == 'Approval & Project milestones':
-            try:
-                c = Cleanser(test_proj_data[item['cell_description']])
-                cleaned = c.clean()
-                logger.debug(
-                    "Changed {} to {} for cell_description: {}".format(
-                        test_proj_data[item['cell_description']],
-                        cleaned,
-                        item['cell_description'], ))
-                ws_apm[item['cell_coordinates']].value = cleaned
-            except KeyError:
-                logger.error("Cannot find {} in master.csv".format(item[
-                    'cell_description']))
+            if has_whiff_of_total(item['cell_description']):
                 pass
-            if item['validation_header']:
-                dv = create_validation(item['validation_header'])
-                ws_apm.add_data_validation(dv)
-                dv.add(ws_apm[item['cell_coordinates']])
+            else:
+                try:
+                    c = Cleanser(test_proj_data[item['cell_description']])
+                    cleaned = c.clean()
+                    logger.debug(
+                        "Changed {} to {} for cell_description: {}".format(
+                            test_proj_data[item['cell_description']],
+                            cleaned,
+                            item['cell_description'], ))
+                    ws_apm[item['cell_coordinates']].value = cleaned
+                except KeyError:
+                    logger.error("Cannot find {} in master.csv".format(item[
+                        'cell_description']))
+                    pass
+                if item['validation_header']:
+                    dv = create_validation(item['validation_header'])
+                    ws_apm.add_data_validation(dv)
+                    dv.add(ws_apm[item['cell_coordinates']])
         elif item['sheet'] == 'Assurance planning':
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
@@ -509,6 +531,7 @@ def main():
             populate_blank_gmpp_form(template_opyxl, project)
         return
     if args['all']:
+        clean_datamap(DATAMAP_RETURN_TO_MASTER)
         pop_all()
         return
     if args['create-wd']:

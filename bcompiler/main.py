@@ -176,7 +176,7 @@ def get_datamap():
         if data_map_line[1] in [
                 'Summary', 'Finance & Benefits', 'Resources',
                 'Approval & Project milestones', 'Assurance planning',
-                'GMPP info'
+                'GMPP'
         ]:
             # the end item in the list is a newline - get rid of that
             del data_map_line[-1]
@@ -317,7 +317,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv = create_validation(item['validation_header'])
                 ws_ap.add_data_validation(dv)
                 dv.add(ws_ap[item['cell_coordinates']])
-        elif item['sheet'] == 'GMPP info':
+        elif item['sheet'] == 'GMPP':
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
                 cleaned = c.clean()

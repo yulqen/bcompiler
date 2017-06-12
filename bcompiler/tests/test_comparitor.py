@@ -18,7 +18,7 @@ key_col_data = [
     'Agency or delivery partner (GMPP - Delivery Organisation primary)',
     'Strategic Alignment/Government Policy (GMPP – Key drivers)',
     'Project Scope', 'Brief project description (GMPP – brief descripton)',
-    'Delivery Structure', 'Description if \'Other',
+    'Entity format', 'Description if \'Other',
     'Change Delivery Methodology'
 ]
 

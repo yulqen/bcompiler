@@ -26,6 +26,8 @@ import re
 import shutil
 import sys
 
+import datetime
+
 import bcompiler.compile as compile_returns
 
 from bcompiler import __version__
@@ -250,6 +252,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                         cleaned,
                         item['cell_description'], ))
                 ws_summary[item['cell_coordinates']].value = cleaned
+                if isinstance(cleaned, datetime.date):
+                    ws_summary[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
             except KeyError:
                 logger.error("Cannot find {} in master.csv".format(item[
                     'cell_description']))
@@ -258,6 +262,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv = create_validation(item['validation_header'])
                 ws_summary.add_data_validation(dv)
                 dv.add(ws_summary[item['cell_coordinates']])
+                if isinstance(cleaned, datetime.date):
+                    ws_summary[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
         elif item['sheet'] == 'Finance & Benefits':
             if has_whiff_of_total(item['cell_description']):
                 pass
@@ -271,6 +277,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                             cleaned,
                             item['cell_description'], ))
                     ws_fb[item['cell_coordinates']].value = cleaned
+                    if isinstance(cleaned, datetime.date):
+                        ws_fb[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
                 except KeyError:
                     logger.error("Cannot find {} in master.csv".format(item[
                         'cell_description']))
@@ -278,7 +286,9 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 if item['validation_header']:
                     dv = create_validation(item['validation_header'])
                     ws_fb.add_data_validation(dv)
-                    dv.add(ws_apm[item['cell_coordinates']])
+                    dv.add(ws_fb[item['cell_coordinates']])
+                    if isinstance(cleaned, datetime.date):
+                        ws_fb[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
         elif item['sheet'] == 'Resources':
             if has_whiff_of_total(item['cell_description']):
                 pass
@@ -292,6 +302,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                             cleaned,
                             item['cell_description'], ))
                     ws_res[item['cell_coordinates']].value = cleaned
+                    if isinstance(cleaned, datetime.date):
+                        ws_res[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
                 except KeyError:
                     logger.error("Cannot find {} in master.csv".format(item[
                         'cell_description']))
@@ -299,7 +311,9 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 if item['validation_header']:
                     dv = create_validation(item['validation_header'])
                     ws_res.add_data_validation(dv)
-                    dv.add(ws_apm[item['cell_coordinates']])
+                    dv.add(ws_res[item['cell_coordinates']])
+                    if isinstance(cleaned, datetime.date):
+                        ws_res[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
         elif item['sheet'] == 'Approval & Project milestones':
             if has_whiff_of_total(item['cell_description']):
                 pass
@@ -313,6 +327,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                             cleaned,
                             item['cell_description'], ))
                     ws_apm[item['cell_coordinates']].value = cleaned
+                    if isinstance(cleaned, datetime.date):
+                        ws_apm[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
                 except KeyError:
                     logger.error("Cannot find {} in master.csv".format(item[
                         'cell_description']))
@@ -321,6 +337,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     dv = create_validation(item['validation_header'])
                     ws_apm.add_data_validation(dv)
                     dv.add(ws_apm[item['cell_coordinates']])
+                    if isinstance(cleaned, datetime.date):
+                        ws_apm[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
         elif item['sheet'] == 'Assurance planning':
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
@@ -331,6 +349,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                         cleaned,
                         item['cell_description'], ))
                 ws_ap[item['cell_coordinates']].value = cleaned
+                if isinstance(cleaned, datetime.date):
+                    ws_ap[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
             except KeyError:
                 logger.error("Cannot find {} in master.csv".format(item[
                     'cell_description']))
@@ -339,6 +359,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv = create_validation(item['validation_header'])
                 ws_ap.add_data_validation(dv)
                 dv.add(ws_ap[item['cell_coordinates']])
+                if isinstance(cleaned, datetime.date):
+                    ws_ap[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
         elif item['sheet'] == 'GMPP':
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
@@ -349,6 +371,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                         cleaned,
                         item['cell_description'], ))
                 ws_gmpp[item['cell_coordinates']].value = cleaned
+                if isinstance(cleaned, datetime.date):
+                    ws_gmpp[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
             except KeyError:
                 logger.error("Cannot find {} in master.csv".format(item[
                     'cell_description']))
@@ -356,7 +380,9 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             if item['validation_header']:
                 dv = create_validation(item['validation_header'])
                 ws_gmpp.add_data_validation(dv)
-                dv.add(ws_ap[item['cell_coordinates']])
+                dv.add(ws_gmpp[item['cell_coordinates']])
+                if isinstance(cleaned, datetime.date):
+                    ws_gmpp[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
 
     logger.info("Writing {}".format(test_proj))
     blank.save(OUTPUT_DIR + '{}_Q1_Return.xlsx'.format(test_proj))
@@ -531,6 +557,8 @@ def main():
             populate_blank_gmpp_form(template_opyxl, project)
         return
     if args['all']:
+        master = '{}master.csv'.format(working_directory('source'))
+        parse_csv_to_file(master)
         clean_datamap(DATAMAP_RETURN_TO_MASTER)
         pop_all()
         return

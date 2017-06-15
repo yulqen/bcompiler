@@ -28,6 +28,8 @@ import sys
 
 import datetime
 
+from typing import List, Dict
+
 import bcompiler.compile as compile_returns
 
 from bcompiler import __version__
@@ -43,6 +45,7 @@ from bcompiler.utils import create_master_dict_transposed
 from bcompiler.process import Cleanser
 from openpyxl import load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.styles import Protection
 
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
@@ -231,6 +234,36 @@ def imprint_current_quarter(sheet) -> None:
 
 
 
+def lock_cells(sheets: list, target_cells: List[Dict]) -> None:
+    """
+    This function will set projection for each sheet in sheets to True
+    and then mark all cells to be protected throughout the spreadsheet.
+
+    Example:
+
+        t_cells = [
+            {'ws_summary': 'A20'},
+            {'ws_summary': 'B10'}
+            ]
+
+        lock_cells([ws_summary], t_cells)
+    """
+
+    try:
+        for s in sheets:
+            s.protection.sheet = True
+    except:
+        print("Cannot access that sheet")
+
+    prot = Protection(locked=True, hidden=False)
+    for d in target_cells:
+        for k, v in d.items():
+            k[v].protection = prot
+
+
+
+
+
 def populate_blank_bicc_form(source_master_file, proj_num):
     logger.info("Reading datamap...")
     datamap = get_datamap()
@@ -248,6 +281,35 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     ws_apm = blank['Approval & Project milestones']
     ws_ap = blank['Assurance Planning']
     ws_gmpp = blank['GMPP']
+
+    TARGET_LOCK_CELLS = [
+        {ws_summary: 'B5'},
+        {ws_summary: 'B6'},
+        {ws_summary: 'C6'},
+        {ws_summary: 'G3'},
+        {ws_summary: 'G5'},
+        {ws_summary: 'I3'},
+        {ws_apm: 'A9'},
+        {ws_apm: 'A10'},
+        {ws_apm: 'A11'},
+        {ws_apm: 'A12'},
+        {ws_apm: 'A13'},
+        {ws_apm: 'A14'},
+        {ws_apm: 'A15'},
+        {ws_apm: 'A16'},
+        {ws_apm: 'A17'},
+        {ws_apm: 'A18'},
+        {ws_apm: 'A19'},
+        {ws_ap: 'A8'},
+        {ws_ap: 'A9'},
+        {ws_ap: 'A10'},
+        {ws_ap: 'A11'},
+        {ws_ap: 'A12'},
+        {ws_ap: 'A13'},
+        {ws_ap: 'A14'},
+        {ws_ap: 'A15'}
+    ]
+
     logger.info("Getting data from master.csv...")
     for item in datamap:
         if item['sheet'] == 'Summary':
@@ -395,6 +457,12 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     ws_gmpp[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
 
     imprint_current_quarter(ws_summary)
+    lock_cells([
+        ws_summary,
+        ws_apm,
+        ws_gmpp,
+        ws_ap,
+        ws_fb], TARGET_LOCK_CELLS)
 
     logger.info("Writing {}".format(test_proj))
     blank.save(OUTPUT_DIR + '{}_Q1_Return.xlsx'.format(test_proj))

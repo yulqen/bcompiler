@@ -47,6 +47,8 @@ from openpyxl.worksheet.datavalidation import DataValidation
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
 
+CURRENT_QUARTER = "Q1 Apr - Jun 2017"
+
 
 def get_parser():
     parser = argparse.ArgumentParser(
@@ -221,6 +223,14 @@ def has_whiff_of_total(desc: str) -> bool:
             return False
 
 
+def imprint_current_quarter(sheet) -> None:
+    """
+    Overwrites summary g3 cell.
+    """
+    sheet['G3'].value = CURRENT_QUARTER
+
+
+
 def populate_blank_bicc_form(source_master_file, proj_num):
     logger.info("Reading datamap...")
     datamap = get_datamap()
@@ -383,6 +393,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv.add(ws_gmpp[item['cell_coordinates']])
                 if isinstance(cleaned, datetime.date):
                     ws_gmpp[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
+
+    imprint_current_quarter(ws_summary)
 
     logger.info("Writing {}".format(test_proj))
     blank.save(OUTPUT_DIR + '{}_Q1_Return.xlsx'.format(test_proj))

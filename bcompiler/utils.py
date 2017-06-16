@@ -10,6 +10,7 @@ from bcompiler.datamap import DatamapGMPP
 
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
+from openpyxl.utils import quote_sheetname
 
 logger = logging.getLogger('bcompiler.utils')
 
@@ -47,46 +48,37 @@ def cell_bg_colour(rgb=[]):
     Give it a list of integers between 0 and 255 - three of them.
     """
     c_value = "{0:02X}{1:02X}{2:02X}".format(*rgb)
-    return PatternFill(
-        patternType='solid',
-        fgColor=c_value,
-        bgColor=c_value
-    )
+    return PatternFill(patternType='solid', fgColor=c_value, bgColor=c_value)
 
 
 def get_relevant_names(project_name, project_data):
 
     try:
-        sro_first_name = project_data[
-                project_name]['SRO Full Name'].split(" ")[0]
+        sro_first_name = project_data[project_name]['SRO Full Name'].split(
+            " ")[0]
     except IndexError:
-        logger.warning(
-                "SRO Full Name ({0}) is not suitable for splitting".format(
-                    project_data[project_name]['SRO Full Name']))
+        logger.warning("SRO Full Name ({0}) is not suitable for splitting".
+                       format(project_data[project_name]['SRO Full Name']))
 
     try:
-        sro_last_name = project_data[
-                project_name]['SRO Full Name'].split(" ")[1]
+        sro_last_name = project_data[project_name]['SRO Full Name'].split(" ")[
+            1]
     except IndexError:
-        logger.warning(
-                "SRO Full Name ({0}) is not suitable for splitting".format(
-                    project_data[project_name]['SRO Full Name']))
+        logger.warning("SRO Full Name ({0}) is not suitable for splitting".
+                       format(project_data[project_name]['SRO Full Name']))
 
     try:
-        pd_first_name = project_data[
-                project_name]['PD Full Name'].split(" ")[0]
+        pd_first_name = project_data[project_name]['PD Full Name'].split(" ")[
+            0]
     except IndexError:
-        logger.warning(
-                "PD Full Name ({0}) is not suitable for splitting".format(
-                    project_data[project_name]['PD Full Name']))
+        logger.warning("PD Full Name ({0}) is not suitable for splitting".
+                       format(project_data[project_name]['PD Full Name']))
 
     try:
-        pd_last_name = project_data[
-                project_name]['PD Full Name'].split(" ")[1]
+        pd_last_name = project_data[project_name]['PD Full Name'].split(" ")[1]
     except IndexError:
-        logger.warning(
-                "PD Full Name ({0}) is not suitable for splitting".format(
-                    project_data[project_name]['PD Full Name']))
+        logger.warning("PD Full Name ({0}) is not suitable for splitting".
+                       format(project_data[project_name]['PD Full Name']))
 
     try:
         sro_d = dict(first_name=sro_first_name, last_name=sro_last_name)
@@ -112,9 +104,13 @@ def populate_blank_gmpp_form(openpyxl_template, project):
     if relevant_names[0] and relevant_names[1]:
         relevant_names = get_relevant_names(project, project_data)
     else:
-        relevant_names = [
-                ({'first_name': '', 'last_name': ''}),
-                ({'first_name': '', 'last_name': ''})]
+        relevant_names = [({
+            'first_name': '',
+            'last_name': ''
+        }), ({
+            'first_name': '',
+            'last_name': ''
+        })]
 
     for line in dm.data:
 
@@ -141,14 +137,12 @@ def populate_blank_gmpp_form(openpyxl_template, project):
                 d_to_migrate = project_data[project][line.cellname]
             except KeyError:
                 logger.warning(("Unable to find {} in master intended for {}"
-                                " in template").format(
-                                    line.cellname,
-                                    line.cellref))
+                                " in template").format(line.cellname,
+                                                       line.cellref))
             else:
                 target_ws[line.cellref].value = d_to_migrate
-                logger.debug(
-                    "Migrating {} from {} to blank template".format(
-                        d_to_migrate, line.cellref))
+                logger.debug("Migrating {} from {} to blank template".format(
+                    d_to_migrate, line.cellref))
     # inject additonal data
     additional_data = dm.add_additional_data()
     for line in additional_data:
@@ -183,13 +177,12 @@ def gmpp_project_data():
 
 def gmpp_project_names():
     data = project_data_line()
-    return [project for project in data if
-            data[project][
-                'GMPP (GMPP - formally joined GMPP)'] != "No"
-            and data[project][
-                'GMPP (GMPP - formally joined GMPP)'] != "NA"
-            and data[project][
-                'GMPP (GMPP - formally joined GMPP)'] != ""]
+    return [
+        project for project in data
+        if data[project]['GMPP (GMPP - formally joined GMPP)'] != "No" and
+        data[project]['GMPP (GMPP - formally joined GMPP)'] != "NA" and data[
+            project]['GMPP (GMPP - formally joined GMPP)'] != ""
+    ]
 
 
 def open_openpyxl_template(template_file):
@@ -290,53 +283,100 @@ def create_master_dict_transposed(source_master_csv):
     return ls
 
 
+sheet_name = "Dropdown"
+
 VALIDATION_REFERENCES = {
-    'Quarter': "=\'Dropdown\'!$A$2:$A$9",
-    'Joining Qtr': "=\'Dropdown\'!$B$2:$B$25",
-    'Classification': "=\'Dropdown\'!$C$2:$C$4",
-    'Entity format': "=\'Dropdown\'!$D$2:$D$4",
-    'Methodology': "=\'Dropdown\'!$E$2:$E$10",
-    'Category': "=\'Dropdown\'!$F$2:$H$11",
-    'Scope Changed': "=\'Dropdown\'!$G$2:$I$4",
-    'Monetised / Non Monetised Benefits': "=\'Dropdown\'!$H$2:$H$4",
-    'RAG': "=\'Dropdown\'!$I$2:$I$6",
-    'RAG 2': "=\'Dropdown\'!$J$2:$J$4",
-    'RPA level': "=\'Dropdown\'!$K$2:$K$4",
-    'Capability RAG': "=\'Dropdown\'!$L$2:$L$5",
-    'MPLA / PLP': "=\'Dropdown\'!$M$2:$M$30",
-    'PL Changes': "=\'Dropdown\'!$N$2:$N$31",
-    'Stage': "=\'Dropdown\'!$O$2:$O$10",
-    'Business Cases': "=\'Dropdown\'!$P$2:$P$11",
-    'Milestone Types': "=\'Dropdown\'!$Q$2:$Q$4",
-    'Finance figures format': "=\'Dropdown\'!$R$2:$R$3",
-    'Index Years': "=\'Dropdown\'!$S$2:$S$27",
-    'Discount Rate': "=\'Dropdown\'!$T$2:$T$32",
-    'Finance type': "=\'Dropdown\'!$U$2:$U$6",
-    'Yes/No': "=\'Dropdown\'!$V$2:$V$3",
-    'Years (Spend)': "=\'Dropdown\'!$W$2:$W$90",
-    'Years (Benefits)': "=\'Dropdown\'!$X$2:$X$90",
-    'Snapshot Dates': "=\'Dropdown\'!$Y$2:$Y$9",
-    'Percentage of time spent on SRO role': "=\'Dropdown\'!$Z$2:$Z$21",
-    'AR Category': "=\'Dropdown\'!$AA$2:$AA$5",
-    'Project Lifecycle': "=\'Dropdown\'!$AB$2:$AB$6",
-    'Programme Lifecycle': "=\'Dropdown\'!$AC$2:$AC$7",
-    'Other': "=\'Dropdown\'!$AD$2:$AD$19",
-    'Start / Year end - FY': "=\'Dropdown\'!$AE$3:$AE$22",
-    'Count': "=\'Dropdown\'!$AF$2:$AF$22",
-    'VFM': "=\'Dropdown\'!$AG$2:$AG$11",
-    'DfT Group': "=\'Dropdown\'!$AH$2:$AH$7",
-    'DfT Division': "=\'Dropdown\'!$AI$2:$AI$15",
-    'Agency': "=\'Dropdown\'!$AJ$2:$AJ$9",
-    'High Speed Rail': "=\'Dropdown\'!$AK$2:$AK$4",
-    'Rail Group': "=\'Dropdown\'!$AL$2:$AL$4",
-    'Roads, Devolution & Motoring': "=\'Dropdown\'!$AM$2:$AM$5",
-    'International, Security and Environment': "=\'Dropdown\'!$AN$2:$AN$4",
-    'Resource and Strategy': "=\'Dropdown\'!$AO$2:$AO$2",
-    'Non-Group': "=\'Dropdown\'!$AP$2:$AP$2",
-    'GMPP Annual Report Category': "=\'Dropdown\'!$AQ$2:$AQ$2",
-    'SDP': "=\'Dropdown\'!$AR2:$AR$5",
+    'Quarter':
+    "{0}!$A$2:$A$9".format(quote_sheetname(sheet_name)),
+    'Joining Qtr':
+    "{0}!$B$2:$B$25".format(quote_sheetname(sheet_name)),
+    'Classification':
+    "{0}!$C$2:$C$4".format(quote_sheetname(sheet_name)),
+    'Entity format':
+    "{0}!$D$2:$D$4".format(quote_sheetname(sheet_name)),
+    'Methodology':
+    "{0}!$E$2:$E$10".format(quote_sheetname(sheet_name)),
+    'Category':
+    "{0}!$F$2:$H$11".format(quote_sheetname(sheet_name)),
+    'Scope Changed':
+    "{0}!$G$2:$I$4".format(quote_sheetname(sheet_name)),
+    'Monetised / Non Monetised Benefits':
+    "{0}!$H$2:$H$4".format(quote_sheetname(sheet_name)),
+    'RAG':
+    "{0}!$I$2:$I$6".format(quote_sheetname(sheet_name)),
+    'RAG 2':
+    "{0}!$J$2:$J$4".format(quote_sheetname(sheet_name)),
+    'RPA level':
+    "{0}!$K$2:$K$4".format(quote_sheetname(sheet_name)),
+    'Capability RAG':
+    "{0}!$L$2:$L$5".format(quote_sheetname(sheet_name)),
+    'MPLA / PLP':
+    "{0}!$M$2:$M$30".format(quote_sheetname(sheet_name)),
+    'PL Changes':
+    "{0}!$N$2:$N$31".format(quote_sheetname(sheet_name)),
+    'Stage':
+    "{0}!$O$2:$O$10".format(quote_sheetname(sheet_name)),
+    'Business Cases':
+    "{0}!$P$2:$P$11".format(quote_sheetname(sheet_name)),
+    'Milestone Types':
+    "{0}!$Q$2:$Q$4".format(quote_sheetname(sheet_name)),
+    'Finance figures format':
+    "{0}!$R$2:$R$3".format(quote_sheetname(sheet_name)),
+    'Index Years':
+    "{0}!$S$2:$S$27".format(quote_sheetname(sheet_name)),
+    'Discount Rate':
+    "{0}!$T$2:$T$32".format(quote_sheetname(sheet_name)),
+    'Finance type':
+    "{0}!$U$2:$U$6".format(quote_sheetname(sheet_name)),
+    'Yes/No':
+    "{0}!$V$2:$V$3".format(quote_sheetname(sheet_name)),
+    'Years (Spend)':
+    "{0}!$W$2:$W$90".format(quote_sheetname(sheet_name)),
+    'Years (Benefits)':
+    "{0}!$X$2:$X$90".format(quote_sheetname(sheet_name)),
+    'Snapshot Dates':
+    "{0}!$Y$2:$Y$9".format(quote_sheetname(sheet_name)),
+    'Percentage of time spent on SRO role':
+    "{0}!$Z$2:$Z$21".format(quote_sheetname(sheet_name)),
+    'AR Category':
+    "{0}!$AA$2:$AA$5".format(quote_sheetname(sheet_name)),
+    'Project Lifecycle':
+    "{0}!$AB$2:$AB$6".format(quote_sheetname(sheet_name)),
+    'Programme Lifecycle':
+    "{0}!$AC$2:$AC$7".format(quote_sheetname(sheet_name)),
+    'Other':
+    "{0}!$AD$2:$AD$19".format(quote_sheetname(sheet_name)),
+    'Start / Year end - FY':
+    "{0}!$AE$3:$AE$22".format(quote_sheetname(sheet_name)),
+    'Count':
+    "{0}!$AF$2:$AF$22".format(quote_sheetname(sheet_name)),
+    'VFM':
+    "{0}!$AG$2:$AG$11".format(quote_sheetname(sheet_name)),
+    'DfT Group':
+    "{0}!$AH$2:$AH$7".format(quote_sheetname(sheet_name)),
+    'DfT Division':
+    "{0}!$AI$2:$AI$15".format(quote_sheetname(sheet_name)),
+    'Agency':
+    "{0}!$AJ$2:$AJ$9".format(quote_sheetname(sheet_name)),
+    'High Speed Rail':
+    "{0}!$AK$2:$AK$4".format(quote_sheetname(sheet_name)),
+    'Rail Group':
+    "{0}!$AL$2:$AL$4".format(quote_sheetname(sheet_name)),
+    'Roads, Devolution & Motoring':
+    "{0}!$AM$2:$AM$5".format(quote_sheetname(sheet_name)),
+    'International, Security and Environment':
+    "{0}!$AN$2:$AN$4".format(quote_sheetname(sheet_name)),
+    'Resource and Strategy':
+    "{0}!$AO$2:$AO$2".format(quote_sheetname(sheet_name)),
+    'Non-Group':
+    "{0}!$AP$2:$AP$2".format(quote_sheetname(sheet_name)),
+    'GMPP Annual Report Category':
+    "{0}!$AQ$2:$AQ$2".format(quote_sheetname(sheet_name)),
+    'SDP':
+    "{0}!$AR2:$AR$5".format(quote_sheetname(sheet_name)),
 }
 
-SHEETS = ['Summary', 'Finance & Benefits', 'Resources',
-          'Approval & Project milestones',
-          'Assurance planning']
+SHEETS = [
+    'Summary', 'Finance & Benefits', 'Resources',
+    'Approval & Project milestones', 'Assurance planning'
+]

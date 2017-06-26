@@ -157,7 +157,6 @@ def clean_datamap(dm_file):
         cleaned_datamap.close()
 
 
-
 def get_list_projects(source_master_file):
     """
     Returns a list of Project/Programme Names.
@@ -233,7 +232,6 @@ def imprint_current_quarter(sheet) -> None:
     sheet['G3'].value = CURRENT_QUARTER
 
 
-
 def lock_cells(sheets: list, target_cells: List[Dict]) -> None:
     """
     This function will set projection for each sheet in sheets to True
@@ -259,9 +257,6 @@ def lock_cells(sheets: list, target_cells: List[Dict]) -> None:
     for d in target_cells:
         for k, v in d.items():
             k[v].protection = prot
-
-
-
 
 
 def populate_blank_bicc_form(source_master_file, proj_num):

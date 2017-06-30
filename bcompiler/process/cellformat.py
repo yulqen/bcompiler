@@ -4,6 +4,8 @@ Ideas on implementation from 8.20 in Python Cookbook 3rd Ed.
 Partial implementation of a state machine. It doesn't need to return
 to its original state at the moment.
 """
+import decimal
+
 from datetime import datetime
 
 from openpyxl.styles import PatternFill
@@ -86,6 +88,11 @@ class BlankCellFormat(CellFormatState):
             self.this_val = this_val
             self.key = key
         elif isinstance(this_val, float) and isinstance(compare_val, float):
+            self.__class__ = FloatCellFormat
+            self.compare_val = compare_val
+            self.this_val = this_val
+            self.key = key
+        elif isinstance(this_val, decimal.Decimal) and isinstance(compare_val, float):
             self.__class__ = FloatCellFormat
             self.compare_val = compare_val
             self.this_val = this_val

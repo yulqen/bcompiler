@@ -68,6 +68,8 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
                             item.sheet))
                 elif type(v) == str:
                     v = v.rstrip()
+                elif type(v) == float:
+                    v = round(v, 1)
                 else:
                     logger.debug(
                         "{} in {} is {}".format(

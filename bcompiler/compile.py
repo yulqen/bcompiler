@@ -71,7 +71,7 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
                     v = v.rstrip()
                 elif type(v) == float:
                     v = decimal.Decimal(v)
-                    v = v.quantize(decimal.Decimal('.1'), rounding=decimal.ROUND_HALF_EVEN)
+                    v = v.quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_HALF_EVEN)
                 else:
                     logger.debug(
                         "{} in {} is {}".format(

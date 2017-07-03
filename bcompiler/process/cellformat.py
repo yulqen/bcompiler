@@ -214,9 +214,9 @@ class FloatCellFormat(CellFormatState):
                 FloatCellFormat.number_format)
 
     def export_rule(self):
-        if self.compare_val > self.this_val:
+        if self.compare_val > float(self.this_val):
             return self.set_style(FloatCellFormat.rgb_this_lower)
-        elif self.compare_val < self.this_val:
+        elif self.compare_val < float(self.this_val):
             return self.set_style(FloatCellFormat.rgb_this_higher)
         else:
             self.__class__ = BlankCellFormat

@@ -6,7 +6,7 @@ to its original state at the moment.
 """
 import decimal
 
-from datetime import datetime
+from datetime import datetime, date
 
 from openpyxl.styles import PatternFill
 
@@ -107,8 +107,18 @@ class BlankCellFormat(CellFormatState):
             self.compare_val = compare_val
             self.this_val = this_val
             self.key = key
+        elif isinstance(this_val, datetime) and isinstance(compare_val, str):
+            self.__class__ = DateCellFormat
+            self.compare_val = compare_val
+            self.this_val = this_val
+            self.key = key
         elif isinstance(this_val, datetime) and isinstance(compare_val,
                                                            datetime):
+            self.__class__ = DateCellFormat
+            self.compare_val = compare_val
+            self.this_val = this_val
+            self.key = key
+        elif isinstance(this_val, date) and isinstance(compare_val, date):
             self.__class__ = DateCellFormat
             self.compare_val = compare_val
             self.this_val = this_val

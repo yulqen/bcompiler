@@ -2,7 +2,7 @@ import fnmatch
 import logging
 import os
 import re
-from datetime import date
+from datetime import date, datetime
 from typing import Dict, List
 import decimal
 
@@ -12,6 +12,7 @@ from bcompiler.datamap import Datamap
 from bcompiler.process import Cleanser
 from bcompiler.process.cellformat import CellFormatState
 from bcompiler.process.simple_comparitor import FileComparitor, ParsedMaster
+from .process.cleansers import DATE_REGEX_TIME
 
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
 
@@ -158,6 +159,11 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
 
             try:
                 compare_val = comparitor.compare(this_index, d['gmpp_key'])
+                if isinstance(compare_val, str) and compare_val is not None and re.match(DATE_REGEX_TIME, compare_val):
+                    ds = compare_val.split(' ')
+                    comps = [int(x) for x in ds[0].split('-')]
+                    compare_val = datetime(*comps)
+
             except UnboundLocalError:
                 compare_val = False
 
@@ -191,6 +197,10 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
 
             try:
                 compare_val = comparitor.compare(this_index, d['gmpp_key'])
+                if isinstance(compare_val, str) and compare_val is not None and re.match(DATE_REGEX_TIME, compare_val):
+                    ds = compare_val.split(' ')
+                    comps = [int(x) for x in ds[0].split('-')]
+                    compare_val = datetime(*comps)
             except UnboundLocalError:
                 compare_val = False
 

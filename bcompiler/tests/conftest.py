@@ -10,28 +10,28 @@ CONFIG_FILE = 'test_config.ini'
 print(CONFIG_FILE)
 config.read(CONFIG_FILE)
 
+
+def row_accessor(row: tuple):
+    for item in row:
+        yield (''.join([item.column, str(item.row)]), item.value)
+
+
+def gen_sheet_data(workbook):
+    wb = load_workbook(workbook)
+    sheets = wb._sheets
+    data = {}
+    for s in sheets:
+        rows = s.rows
+        title = s.title
+        data[title] = [list(row_accessor(x)) for x in rows]
+    return data
+
+
 if config['Template']['UseActualTemplate']:
     BICC_TEMPLATE_FOR_TESTS = config['Template']['ActualTemplatePath']
+    print(gen_sheet_data(BICC_TEMPLATE_FOR_TESTS))
 else:
     BICC_TEMPLATE_FOR_TESTS = False
-
-if BICC_TEMPLATE_FOR_TESTS:
-
-    def row_accessor(row: tuple):
-        for item in row:
-            yield (''.join([item.column, str(item.row)]), item.value)
-
-    def gen_sheet_data(workbook):
-        wb = load_workbook(workbook)
-        sheets = wb._sheets
-        data = {}
-        for s in sheets:
-            rows = s.rows
-            title = s.title
-            data[title] = [list(row_accessor(x)) for x in rows]
-        return data
-
-    print(gen_sheet_data(BICC_TEMPLATE_FOR_TESTS))
 
 dm_data = """
 Project/Programme Name,Summary,B5,
@@ -141,6 +141,7 @@ Finance - Future,Resource,J32,Capability RAG,
 Analysis Now,Resource,I33,Capability RAG,
 Analysis - future,Resource,J33,Capability RAG,
 """
+
 
 @pytest.fixture()
 def datamap():

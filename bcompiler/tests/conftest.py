@@ -1,437 +1,127 @@
-import csv
-import os
-import shutil
+import io
+import tempfile
 
 import pytest
 
-from tempfile import gettempdir
-from openpyxl import Workbook
+dm_data = """
+Project/Programme Name,Summary,B5,
+SRO Sign-Off,Summary,B49,
+Reporting period (GMPP - Snapshot Date),Summary,G3,
+Quarter Joined,Summary,I3,
+GMPP (GMPP - formally joined GMPP),Summary,G5,
+IUK top 40,Summary,G6,
+Top 37,Summary,I5,
+DfT Business Plan,Summary,I6,
+DFT ID Number,Summary,B6,
+MPA ID Number,Summary,C6,
+Working Contact Name,Summary,H8,
+Working Contact Telephone,Summary,H9,
+Working Contact Email,Summary,H10,
+DfT Group,Summary,B8,DfT Group,
+DfT Division,Summary,B9,DfT Division,
+Agency or delivery partner (GMPP - Delivery Organisation primary),Summary,B10,Agency,
+GMPP- Reporting Department,
+Strategic Alignment/Government Policy (GMPP - Key drivers),Summary,B26,
+Project stage,Approval & Project milestones,B5,Project stage,
+Project stage if Other,Approval & Project milestones,D5,
+Last time at BICC,Approval & Project milestones,B4,
+Next at BICC,Approval & Project milestones,D4,
+Approval MM1,Approval & Project milestones,A9,
+Approval MM1 Original Baseline,Approval & Project milestones,B9,
+Approval MM1 Latest Approved Baseline,Approval & Project milestones,C9,
+Approval MM1 Forecast / Actual,Approval & Project milestones,D9,
+Approval MM1 Milestone Type,Approval & Project milestones,E9,Milestone Types,
+Approval MM1 Notes,Approval & Project milestones,F9,
+Approval MM2,Approval & Project milestones,A10,
+Approval MM2 Original Baseline,Approval & Project milestones,B10,
+Approval MM2 Latest Approved Baseline,Approval & Project milestones,C10,
+Approval MM2 Forecast / Actual,Approval & Project milestones,D10,
+Approval MM2 Milestone Type,Approval & Project milestones,E10,
+Approval MM2 Notes,Approval & Project milestones,F10,
+Approval MM3,Approval & Project milestones,A11,
+Approval MM3 Original Baseline,Approval & Project milestones,B11,
+Approval MM3 Latest Approved Baseline,Approval & Project milestones,C11,
+Approval MM3 Forecast / Actual,Approval & Project milestones,D11,
+Approval MM3 Milestone Type,Approval & Project milestones,E11,Milestone Types,
+Approval MM3 Notes,Approval & Project milestones,F11,
+Significant Steel Requirement,Finance & Benefits,D15,Yes/No,
+SRO Finance confidence,Finance & Benefits,C6,RAG 2,
+BICC approval point,Finance & Benefits,E9,Business Cases,
+Latest Treasury Approval Point (TAP) or equivalent,Finance & Benefits,E10,Business Cases,
+Business Case used to source figures (GMPP TAP used to source figures),Finance & Benefits,C9,Business Cases,
+Date of TAP used to source figures,Finance & Benefits,E11,
+Name of source in not Business Case (GMPP -If not TAP please specify equivalent document used),Finance & Benefits,C10,
+If not TAP please specify date of equivalent document,Finance & Benefits,C11,
+Version Number Of Document used to Source Figures (GMPP - TAP version Number),Finance & Benefits,C12,
+Date document approved by SRO,Finance & Benefits,C13,
+Real or Nominal - Baseline,Finance & Benefits,C18,Finance figures format,
+Real or Nominal - Actual/Forecast,Finance & Benefits,E18,Finance figures format,
+Index Year,Finance & Benefits,B19,Index Years,
+Deflator,Finance & Benefits,B20,Finance type,
+Source of Finance,Finance & Benefits,B21,Finance type,
+Other Finance type Description,Finance & Benefits,D21,
+NPV for all projects and NPV for programmes if available,Finance & Benefits,B22,
+Project cost to closure,Finance & Benefits,B23,
+RDEL Total Budget/BL,Finance & Benefits,C72,
+CDEL Total Budget/BL,Finance & Benefits,C125,
+Non-Gov Total Budget/BL,Finance & Benefits,C135,
+Total Budget/BL,Finance & Benefits,C136,
+RDEL Total Forecast,Finance & Benefits,D133,
+CDEL Total Forecast,Finance & Benefits,D134,
+Non-Gov Total Forecast,Finance & Benefits,D135,
+Total Forecast,Finance & Benefits,D136,
+RDEL Total Variance,Finance & Benefits,E133,
+CDEL Total Variance ,Finance & Benefits,E134,
+ssurance MM1,Assurance Planning,A8,
+Assurance MM1 Original Baseline,Assurance Planning,B8,
+Assurance MM1 Latest Approved Baseline,Assurance Planning,C8,
+Assurance MM1 Forecast - Actual,Assurance Planning,D8,
+Assurance MM1 DCA,Assurance Planning,E8,RAG,
+Assurance MM1 Notes,Assurance Planning,F8,
+Assurance MM2,Assurance Planning,A9,
+Assurance MM2 Original Baseline,Assurance Planning,B9,
+Assurance MM2 Latest Approved Baseline,Assurance Planning,C9,
+Assurance MM2 Forecast - Actual,Assurance Planning,D9,
+Assurance MM2 DCA,Assurance Planning,E9,RAG,
+Assurance MM2 Notes,Assurance Planning,F9,
+Total Number of public sector employees working on the project,Resource,C37,
+Total Number of external contractors working on the project,Resource,E37,
+Total Number or vacancies on the project,Resource,G37,
+Resources commentary,Resource,C19,
+Total number of employees funded to work on project,Resource,I17,
+Resources commentary,Resource,C19,
+Overall Resource DCA - Now,Resource,I38,Capability RAG,
+Overall Resource DCA - Future,Resource,J38,Capability RAG,
+Digital - Now,Resource,I25,Capability RAG,
+Digital - Future,Resource,J25,Capability RAG,
+Information Technology - Now,Resource,I26,Capability RAG,
+Information Technology - Future,Resource,J26,Capability RAG,
+Legal Commercial Contract Management - Now,Resource,I27,Capability RAG,
+Legal Commercial Contract Management - Future,Resource,J27,Capability RAG,
+Project Delivery - Now,Resource,I28,Capability RAG,
+Project Delivery - Future,Resource,J28,Capability RAG,
+Change Implementation - Now,Resource,I29,Capability RAG,
+Change Implementation - Future,Resource,J29,Capability RAG,
+Technical - Now,Resource,I30,Capability RAG,
+Technical - Future,Resource,J30,Capability RAG,
+Industry Knowledge - Now,Resource,I31,Capability RAG,
+Industry Knowledge - Future,Resource,J31,Capability RAG,
+Finance - Now,Resource,I32,Capability RAG,
+Finance - Future,Resource,J32,Capability RAG,
+Analysis Now,Resource,I33,Capability RAG,
+Analysis - future,Resource,J33,Capability RAG,
+"""
 
-TMP_DIR = gettempdir()
-
-
-ws_summary_B5_rand = [
-    'Cookfield, Rebuild',
-    'Smithson Glenn Park Editing',
-    'Brinkles Bypass Havensmere',
-    'Folicles On Fire Ltd Extradition',
-    'Puddlestein Havelock Underpass',
-]
-
-ws_summary_B8_rand = [
-    'Aerobics, Maritime and Commerce',
-    'TSAD',
-    'Special Transport Needs for the Northern Populace',
-    'Parenting, Levels and Financial Irregularity',
-    'HR',
-]
-
-
-ws_finance_C6_rand = [
-    'Green',
-    'Amber/Green',
-    'Amber',
-    'Amber/Red',
-    'Red',
-]
-
-ws_finance_C11_rand = [
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-]
-
-
-ws_finance_B19_rand = [
-    '2012',
-    '2013',
-    '2011',
-    '2018',
-    '2002',
-    '2007',
-]
-
-ws_finance_C18_rand = [
-    'Real',
-    'Nominal',
-]
-
-ws_finance_C36_rand = [
-    '2.00',
-    '4.20',
-    '1.13',
-    '12.09',
-    '222.07',
-]
-
-ws_finance_C44_rand = [
-    '12.00',
-    '41.20',
-    '13.13',
-    '122.09',
-    '22.07',
-]
-
-ws_finance_C77_rand = [
-    '29.00',
-    '49.23',
-    '23.43',
-    '1.89',
-    '290.37',
-]
-
-
-ws_resources_C7_rand = [
-    '9.00',
-    '19.00',
-    '29.5',
-    '12.00',
-    '20.5',
-]
-
-ws_resources_G17_rand = [
-    '9.90',
-    '19.22',
-    '29.93',
-    '1202.89',
-    '20.37',
-]
-
-
-ws_resources_I30_rand = [
-    'Green',
-    'Amber/Green',
-    'Amber',
-    'Amber/Red',
-    'Red',
-]
-
-
-ws_resources_J30_rand = [
-    'Green',
-    'Amber/Green',
-    'Amber',
-    'Amber/Red',
-    'Red',
-]
-
-
-ws_resources_J38_rand = [
-    'Green',
-    'Amber/Green',
-    'Amber',
-    'Amber/Red',
-    'Red',
-]
-
-ws_approval_C10_rand = [
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-]
-
-
-ws_approval_F19_rand = [
-    'A load of absolute\n horseradish.',
-    'When people speak of these kind of things, they are often surprised.',
-    'It is very bad here. Completely unacceptable when you think about it.',
-    'Never worry too much about it - it wont last forever',
-    'There is a forester on this project who is disrupting everything.'
-]
-
-
-ws_approval_B39_rand = [
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-]
-
-
-ws_assurance_C4_rand = [
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-]
-
-
-ws_assurance_D10_rand = [
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-    '02-2-2011',
-]
-
-
-ws_resources_E17_rand = [
-    'Green',
-    'Amber/Green',
-    'Amber',
-    'Amber/Red',
-    'Red',
-]
-
-
-dm_data = [
-    ('Project/Programme Name', 'Summary', 'A5', 'GMPP Sheet', 'A15', None),
-    ('SRO Name', 'Summary', 'B5', 'GMPP Sheet', 'B15', None),
-    ('SRO Age', 'Summary', 'C5', 'GMPP Sheet', 'C15', None),
-    ('Top 37', 'Summary', 'I5', 'GMPP Sheet', 'C29', None),
-    ('DfT Business Plan', 'Summary', 'I6', 'GMPP Sheet', 'C30', None),
-    ('DFT ID Number', 'Summary', 'B6', 'GMPP Sheet', 'C31', None),
-    ('Working Contact Name', 'Summary', 'H8', 'GMPP Sheet', 'C32', None),
-    ('Working Contact Telephone', 'Summary', 'H9', 'GMPP Sheet', 'C33', None),
-    ('Working Contact Email', 'Summary', 'H10', 'GMPP Sheet', 'C34', None),
-    ('DfT Group', 'Summary', 'B8', 'GMPP Sheet', 'C35', None),
-    ('DfT Division', 'Summary', 'B9', 'GMPP Sheet', 'C36', None),
-    ('Agency or delivery partner (GMPP - Delivery Organisation primary)',
-     'Summary', 'B10', 'GMPP Sheet', 'C37', None),
-]
-
-return_data = [
-    (1, 1, 1, "P1 Q1 DM1"),
-    (1, 1, 2, "P1 Q1 DM2"),
-    (1, 1, 3, "P1 Q1 DM3"),
-    (1, 1, 4, "P1 Q1 DM4"),
-    (1, 1, 5, "P1 Q1 DM5"),
-    (1, 1, 6, "P1 Q1 DM6"),
-    (1, 1, 7, "P1 Q1 DM7"),
-    (1, 1, 8, "P1 Q1 DM8"),
-    (1, 1, 9, "P1 Q1 DM9"),
-    (1, 1, 10, "P1 Q1 DM10"),
-    (1, 1, 11, "P1 Q1 DM11"),
-    (1, 1, 12, "P1 Q1 DM12"),
-    (2, 1, 1, "P2 Q1 DM1"),
-    (2, 1, 2, "P2 Q1 DM2"),
-    (2, 1, 3, "P2 Q1 DM3"),
-    (2, 1, 4, "P2 Q1 DM4"),
-    (2, 1, 5, "P2 Q1 DM5"),
-    (2, 1, 6, "P2 Q1 DM6"),
-    (2, 1, 7, "P2 Q1 DM7"),
-    (2, 1, 8, "P2 Q1 DM8"),
-    (2, 1, 9, "P2 Q1 DM9"),
-    (2, 1, 10, "P2 Q1 DM10"),
-    (2, 1, 11, "P2 Q1 DM11"),
-    (2, 1, 12, "P2 Q1 DM12"),
-    (1, 2, 1, "P1 Q2 DM1"),
-    (1, 2, 2, "P1 Q2 DM2"),
-    (1, 2, 3, "P1 Q2 DM3"),
-    (1, 2, 4, "P1 Q2 DM4"),
-    (1, 2, 5, "P1 Q2 DM5"),
-    (1, 2, 6, "P1 Q2 DM6"),
-    (1, 2, 7, "P1 Q2 DM7"),
-    (1, 2, 8, "P1 Q2 DM8"),
-    (1, 2, 9, "P1 Q2 DM9"),
-    (1, 2, 10, "P1 Q2 DM10"),
-    (1, 2, 11, "P1 Q2 DM11"),
-    (1, 2, 12, "P1 Q2 DM12"),
-    (2, 2, 1, "P2 Q2 DM1"),
-    (2, 2, 2, "P2 Q2 DM2"),
-    (2, 2, 3, "P2 Q2 DM3"),
-    (2, 2, 4, "P2 Q2 DM4"),
-    (2, 2, 5, "P2 Q2 DM5"),
-    (2, 2, 6, "P2 Q2 DM6"),
-    (2, 2, 7, "P2 Q2 DM7"),
-    (2, 2, 8, "P2 Q2 DM8"),
-    (2, 2, 9, "P2 Q2 DM9"),
-    (2, 2, 10, "P2 Q2 DM10"),
-    (2, 2, 11, "P2 Q2 DM11"),
-    (2, 2, 12, "P2 Q2 DM12"),
-]
-
-
-@pytest.fixture
-def bicc_return():
-    wb = Workbook()
-    wb.create_sheet('Summary')
-    wb.create_sheet('Finance & Benefits')
-    wb.create_sheet('Approval & Project milestones')
-    wb.create_sheet('Resources')
-    wb.create_sheet('Assurance planning')
-    wb.create_sheet('GMPP info')
-
-    # Summary fixture
-    ws_summary = wb['Summary']
-    ws_summary['A5'].value = 'Project/Programme Name'
-    ws_summary['B1'].value = 'Return Value 1 Project 1 SeriesItem 1'
-    ws_summary['B5'].value = ws_summary_B5_rand[0]
-    ws_summary['A8'].value = 'DfT Group'
-    ws_summary['B8'].value = ws_summary_B8_rand[0]
-
-    # Finance & Benefits fixture
-    ws_finance = wb['Finance & Benefits']
-    ws_finance['A6'].value = 'SRO Finance Confidence'
-    ws_finance['C6'].value = ws_finance_C6_rand[0]
-    ws_finance['B11'].value = 'Date of Business Case'
-    ws_finance['C11'].value = ws_finance_C11_rand[0]
-    ws_finance['A19'].value = 'Index Year'
-    ws_finance['B19'].value = ws_finance_B19_rand[0]
-    ws_finance['A18'].value = 'Real or Nominal'
-    ws_finance['C18'].value = ws_finance_C18_rand[0]
-    ws_finance['A36'].value = '2019/2020'
-    ws_finance['C36'].value = ws_finance_C36_rand[0]
-    ws_finance['A44'].value = 'Total'
-    ws_finance['C44'].value = ws_finance_C44_rand[0]
-    ws_finance['A77'].value = 'Total WLC (RDEL)'
-    ws_finance['C77'].value = ws_finance_C77_rand[0]
-
-    # Resources fixture
-    ws_resources = wb['Resources']
-    ws_resources['A7'].value = 'SCS(PB2)'
-    ws_resources['C7'].value = ws_resources_C7_rand[0]
-    ws_resources['A17'].value = 'Total'
-    ws_resources['G17'].value = ws_resources_G17_rand[0]
-    ws_resources['A30'].value = 'Change Implementation'
-    ws_resources['I30'].value = ws_resources_I30_rand[0]
-    ws_resources['J30'].value = ws_resources_I30_rand[1]
-    ws_resources['G38'].value = 'Overall Assessment'
-    ws_resources['J38'].value = ws_resources_J38_rand[0]
-
-    # Approval and Project Milestones fixture
-    ws_approvals = wb['Approval & Project milestones']
-    ws_approvals['A10'].value = 'SOBC - HMT Approval'
-    ws_approvals['C10'].value = ws_approval_C10_rand[0]
-    ws_approvals['A19'].value = 'FBC - HMT Approval'
-    ws_approvals['F19'].value = ws_approval_F19_rand[0]
-    ws_approvals['A39'].value = 'Completion of Construction'
-    ws_approvals['B39'].value = ws_approval_B39_rand[0]
-
-    # Assurance fixture
-    ws_assurance = wb['Assurance planning']
-    ws_assurance['B4'].value = 'Date Created'
-    ws_assurance['C4'].value = ws_assurance_C4_rand[0]
-    ws_assurance['A10'].value = 'Gate 0 (Programme)'
-    ws_assurance['D10'].value = ws_assurance_D10_rand[0]
-    ws_assurance['A17'].value = 'Review Point 4 MPRG'
-    ws_assurance['E17'].value = 'Amber/Green'
-
-    wb.save(os.path.join(TMP_DIR, 'test-bicc-return.xlsx'))
-    yield os.path.join(TMP_DIR, 'test-bicc-return.xlsx')
-    os.unlink(os.path.join(TMP_DIR, 'test-bicc-return.xlsx'))
-
-
-@pytest.fixture
-def mock_datamap_source_file() -> None:
-    data = [
-        [
-            'Project/Programme Name', 'Summary', 'B5', 'red', 'white', '',
-            'Yes/No'
-        ], ['SRO Sign-Off', 'Summary', 'B49', 'red', 'white', '', 'Yes/No'],
-        ['GMPP - FD Sign-Off', 'Summary'],
-        ['GMPP - Person completing this return'],
-        ['GMPP - Single Point of Contact Email Address'],
-        ['GMPP - Single Point of Contact (SPOC)'], ['GMPP - Email Address'], [
-            'Reporting period (GMPP - Snapshot Date)', 'Summary', 'G3', 'red',
-            'white', '', 'Yes/No'
-        ], ['Quarter Joined', 'Summary', 'I3', 'red', 'white', '', 'Yes/No'],
-        ['GMPP - Sub-portfolio'], [
-            'Index Year', 'Finance & Benefits', 'B19', 'red', 'white', '',
-            'Yes/No'
-        ], [
-            'Real or Nominal - Baseline', 'Finance & Benefits', 'C18', 'red',
-            'white', '', 'Yes/No'
-        ], ['GMPP/quarter formally joined'], [
-            'GMPP (GMPP – formally joined GMPP)', 'Summary', 'G5', 'red',
-            'white', '', 'Yes/No'
-        ], ['IUK top 40', 'Summary', 'G6', 'red', 'white', '', 'Yes/No'],
-        ['Top 37', 'Summary', 'I5', 'red', 'white', '', 'Yes/No'],
-        ['DfT Business Plan', 'Summary', 'I6', 'red', 'white', '', 'Yes/No'], [
-            'GMPP - IPA ID Number', 'Summary', 'C6', 'red', 'white', '',
-            'Yes/No'
-        ], ['DFT ID Number', 'Summary', 'B6', 'red', 'white', '', 'Yes/No'], [
-            'Working Contact Name', 'Summary', 'H8', 'red', 'white', '',
-            'Yes/No'
-        ], ['Working Contact Telephone', 'Summary', 'H9', 'red', '', ''], [
-            'Working Contact Email', 'Summary', 'H10', 'red', 'white', '',
-            'Yes/No'
-        ], ['DfT Group', 'Summary', 'B8', 'red', 'yellow', '', 'DfT Group'], [
-            'Significant Steel Requirement', 'Finance & Benefits', 'D15',
-            'blue', 'yello', '', 'Yes/No'
-        ], [
-            'SRO Finance confidence', 'Finance & Benefits', 'C6', 'green',
-            'red', '', 'RAG_Short'
-        ], [
-            'BICC approval point', 'Finance & Benefits', 'E9', 'orange', 'red',
-            '', 'Business Cases'
-        ], [
-            'Assurance MM2 Latest Approved Baseline', 'Assurance planning',
-            'C10', 'red', 'white', '', 'Yes/No'
-        ], [
-            'Approval MM11 Notes', 'Approval & Project milestones', 'F19',
-            'red', 'yellow', '', 'Yes/No'
-        ], [
-            'SCS PB2 No public sector', 'Resources', 'C7', 'red', 'white', '',
-            'Yes/No'
-        ], [
-            'Project MM31 Original Baseline', 'Approval & Project milestones',
-            'B39', 'red', 'white', 'd/mm/yy', 'Yes/No'
-        ], [
-            'Change Implementation - Now', 'Resources', 'I30', 'black',
-            'yellow', 'd/mm/yy', 'Capability RAG'
-        ]
-    ]
-    with open(os.path.join(TMP_DIR, 'mock_datamap.csv'), 'w') as f:
-        datamap_writer = csv.writer(f, delimiter=',')
-        f.write('cell_key,template_sheet,cell_reference,bg_colour,fg_colour'
-                ',number_format,verification_list\n')
-        for item in data:
-            datamap_writer.writerow(item)
-    yield os.path.join(TMP_DIR, 'mock_datamap.csv')
-    os.unlink(os.path.join(TMP_DIR, 'mock_datamap.csv'))
-
-
-@pytest.fixture
-def test_blank_xls():
-    wb = Workbook()
-    wb.create_sheet('Summary')
-    wb.create_sheet('Finance & Benefits')
-    wb.create_sheet('Approval & Project milestones')
-    wb.create_sheet('Resources')
-    wb.create_sheet('Assurance planning')
-    wb.create_sheet('GMPP info')
-    wb.save(os.path.join(TMP_DIR, 'test.xlsx'))
-    return os.path.join(TMP_DIR, 'test.xlsx')
-
-
-def mock_blank_xlsx_file(
-        source_dir: str,
-        empty: bool=False,
-        mix: bool=False) -> None:
-    wb = Workbook()
-    wb.create_sheet('Test')
-
-    # Test sheet fixtures
-    ws_summary = wb['Test']
-    ws_summary['A5'].value = 'Project/Programme Name'
-    ws_summary['B5'].value = ws_summary_B5_rand[0]
-    ws_summary['A8'].value = 'DfT Group'
-    ws_summary['B8'].value = ws_summary_B8_rand[0]
-    try:
-        os.mkdir(source_dir)
-        wb.save(os.path.join(os.path.abspath(source_dir), 'test-blank.xlsx'))
-        if mix:  # we want to throw another file type in there
-            with open(source_dir + '/' + 'baws.txt', 'w') as f:
-                f.write("Some random bollocks")
-        if empty:  # we want the dir but no files in it
-            for test_file in os.path.abspath(source_dir):
-                os.unlink(os.path.abspath(source_dir).join(test_file))
-    except:
-        shutil.rmtree(source_dir)
-        os.mkdir(source_dir)
-        wb.save(os.path.join(os.path.abspath(source_dir), 'test-blank.xlsx'))
-        if mix:
-            with open(source_dir + '/' + 'baws.txt', 'w') as f:
-                f.write("Some random bollocks")
-        if empty:
-            for test_file in os.listdir(os.path.abspath(source_dir)):
-                os.unlink(os.path.join(os.path.abspath(source_dir), test_file))
+@pytest.fixture()
+def datamap():
+    tmp = tempfile.gettempdir()
+    name = 'datamap.csv'
+    s = io.StringIO()
+    s.write(dm_data)
+    s.seek(0)
+    s_string = s.readlines()
+    del s_string[0]
+    with open('/'.join([tmp, name]), 'w') as csv_file:
+        for x in s_string:
+            csv_file.write(x)
+    return '/'.join([tmp, name])

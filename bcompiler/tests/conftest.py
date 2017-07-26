@@ -1,7 +1,37 @@
+import configparser
 import io
 import tempfile
 
 import pytest
+from openpyxl import load_workbook
+
+config = configparser.ConfigParser()
+CONFIG_FILE = 'test_config.ini'
+print(CONFIG_FILE)
+config.read(CONFIG_FILE)
+
+if config['Template']['UseActualTemplate']:
+    BICC_TEMPLATE_FOR_TESTS = config['Template']['ActualTemplatePath']
+else:
+    BICC_TEMPLATE_FOR_TESTS = False
+
+if BICC_TEMPLATE_FOR_TESTS:
+
+    def row_accessor(row: tuple):
+        for item in row:
+            yield (''.join([item.column, str(item.row)]), item.value)
+
+    def gen_sheet_data(workbook):
+        wb = load_workbook(workbook)
+        sheets = wb._sheets
+        data = {}
+        for s in sheets:
+            rows = s.rows
+            title = s.title
+            data[title] = [list(row_accessor(x)) for x in rows]
+        return data
+
+    print(gen_sheet_data(BICC_TEMPLATE_FOR_TESTS))
 
 dm_data = """
 Project/Programme Name,Summary,B5,

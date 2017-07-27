@@ -2,15 +2,14 @@ import csv
 import fnmatch
 import logging
 import os
-
 from datetime import date, datetime
 from math import isclose
-
-from bcompiler.datamap import DatamapGMPP
 
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from openpyxl.utils import quote_sheetname
+
+from bcompiler.datamap import DatamapGMPP
 
 logger = logging.getLogger('bcompiler.utils')
 
@@ -380,3 +379,19 @@ SHEETS = [
     'Summary', 'Finance & Benefits', 'Resources',
     'Approval & Project milestones', 'Assurance planning'
 ]
+
+
+def row_accessor(row: tuple):
+    for item in row:
+        yield (''.join([item.column, str(item.row)]), item.value)
+
+
+def gen_sheet_data(workbook):
+    wb = load_workbook(workbook)
+    sheets = wb._sheets
+    data = {}
+    for s in sheets:
+        rows = s.rows
+        title = s.title
+        data[title] = [list(row_accessor(x)) for x in rows]
+    return data

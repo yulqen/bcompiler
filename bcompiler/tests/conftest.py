@@ -1,5 +1,6 @@
 import configparser
 import io
+import os
 import tempfile
 
 import pytest
@@ -130,7 +131,8 @@ Analysis - future,Resource,J33,Capability RAG,
 @pytest.fixture(scope='module')
 def blank_template():
     gen_template('/home/lemon/Documents/bcompiler/source/bicc_template.xlsx', '/tmp')
-    return '/tmp/gen_bicc_template.xlsx'
+    yield '/tmp/gen_bicc_template.xlsx'
+    os.remove('/tmp/gen_bicc_template.xlsx')
 
 
 @pytest.fixture(scope='module')

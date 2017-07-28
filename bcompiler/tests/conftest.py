@@ -12,23 +12,23 @@ from ..utils import generate_test_template_from_real as gen_template
 TEMPDIR = tempfile.gettempdir()
 
 try:
-    working_folder = "/".join([TEMPDIR, 'bcompiler-test'])
-    working_folder_output = "/".join([TEMPDIR, 'bcompiler-test-output'])
-    os.mkdir(working_folder)
-    WORKING_FOLDER = working_folder
-    WORKING_OUTPUT_FOLDER = working_folder_output
+    returns_folder = "/".join([TEMPDIR, 'bcompiler-test'])
+    output_folder = "/".join([TEMPDIR, 'bcompiler-test-output'])
+    os.mkdir(returns_folder)
+    RETURNS_FOLDER = returns_folder
+    OUTPUT_FOLDER = output_folder
 except FileExistsError:
-    for the_file in os.listdir(working_folder):
-        file_path = os.path.join(working_folder, the_file)
+    for the_file in os.listdir(returns_folder):
+        file_path = os.path.join(returns_folder, the_file)
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
         except Exception as e:
             print(e)
-    WORKING_FOLDER = working_folder
-    WORKING_OUTPUT_FOLDER = working_folder_output
+    RETURNS_FOLDER = returns_folder
+    OUTPUT_FOLDER = output_folder
 try:
-    os.mkdir(working_folder_output)
+    os.mkdir(output_folder)
 except FileExistsError:
     pass
 
@@ -149,8 +149,8 @@ Analysis - future,Resource,J33,Capability RAG,
 
 @pytest.fixture(scope='module')
 def blank_template():
-    gen_template(BICC_TEMPLATE_FOR_TESTS, WORKING_FOLDER)
-    output_file = '/'.join([WORKING_FOLDER,'gen_bicc_template.xlsx'])
+    gen_template(BICC_TEMPLATE_FOR_TESTS, RETURNS_FOLDER)
+    output_file = '/'.join([RETURNS_FOLDER, 'gen_bicc_template.xlsx'])
     yield output_file
     os.remove(output_file)
 
@@ -163,7 +163,7 @@ def datamap():
     s.seek(0)
     s_string = s.readlines()
     del s_string[0]
-    with open('/'.join([WORKING_FOLDER, name]), 'w') as csv_file:
+    with open('/'.join([RETURNS_FOLDER, name]), 'w') as csv_file:
         for x in s_string:
             csv_file.write(x)
     return '/'.join([TEMPDIR, name])
@@ -171,15 +171,21 @@ def datamap():
 
 @pytest.fixture(scope='module')
 def populated_template():
-    gen_template(BICC_TEMPLATE_FOR_TESTS, WORKING_FOLDER)
+    gen_template(BICC_TEMPLATE_FOR_TESTS, RETURNS_FOLDER)
     datamap()
-    dm = "/".join([WORKING_FOLDER, 'datamap.csv'])
-    wb = load_workbook("/".join([WORKING_FOLDER, 'gen_bicc_template.xlsx']))
-    output_file = "/".join([WORKING_FOLDER, 'populated_test_template.xlsx'])
+    dm = "/".join([RETURNS_FOLDER, 'datamap.csv'])
+    wb = load_workbook("/".join([RETURNS_FOLDER, 'gen_bicc_template.xlsx']))
+    output_file = "/".join([RETURNS_FOLDER, 'populated_test_template.xlsx'])
     with open(dm, 'r') as f:
         reader = csv.reader(f)
         for line in reader:
             wb[line[1]][line[2]].value = line[0].upper()
     wb.save(output_file)
+    # REMOVE LOOP IF ONLY NEED SINGLE POPULATED TEMPLATE
+    # EXPERIMENTAL
+    for f in range(10):
+        output_file = "/".join([RETURNS_FOLDER, 'populated_test_template{}.xlsx'
+                                .format(f)])
+        wb.save(output_file)
     return output_file
 

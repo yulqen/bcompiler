@@ -77,6 +77,7 @@ def test_compile(populated_template, datamap):
 
 def test_run(datamap):
     # print([item for item in dir(compile_module) if not item.startswith("__")])
+    # patching module attributes to get it working
     setattr(compile_module, 'RETURNS_DIR', '/tmp/bcompiler-test/')
     setattr(compile_module, 'OUTPUT_DIR', '/tmp/bcompiler-test-output/')
     setattr(compile_module, 'TODAY',  '2017-07-28')

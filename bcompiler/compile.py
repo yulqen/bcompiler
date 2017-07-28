@@ -1,22 +1,19 @@
+import decimal
 import fnmatch
 import logging
 import os
 import re
 from datetime import date, datetime
 from typing import Dict, List
-import decimal
 
-from openpyxl import Workbook, load_workbook
+from openpyxl import load_workbook, Workbook
 
 from bcompiler.datamap import Datamap
 from bcompiler.process import Cleanser
 from bcompiler.process.cellformat import CellFormatState
 from bcompiler.process.simple_comparitor import FileComparitor, ParsedMaster
-from .process.cleansers import DATE_REGEX_TIME
-
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
-
-from openpyxl import load_workbook, Workbook
+from .process.cleansers import DATE_REGEX_TIME
 
 CELL_REGEX = re.compile('[A-Z]+[0-9]+')
 DROPDOWN_REGEX = re.compile('^\D*$')
@@ -244,12 +241,8 @@ def run(compare_master=None):
                     compare_master=compare_master
                 )
                 count += 1
-        for file in os.listdir(RETURNS_DIR):
-            cq = get_current_quarter(file)
-            if cq is not None:
-                break
         OUTPUT_FILE = '{}compiled_master_{}_{}.xlsx'.format(
-            OUTPUT_DIR, TODAY, cq)
+            OUTPUT_DIR, TODAY, "Q2")
         workbook.save(OUTPUT_FILE)
     else:
         # we just want a straight master with no change indication
@@ -264,10 +257,6 @@ def run(compare_master=None):
                     workbook=workbook,
                 )
                 count += 1
-        for file in os.listdir(RETURNS_DIR):
-            cq = get_current_quarter(file)
-            if cq is not None:
-                break
         OUTPUT_FILE = '{}compiled_master_{}_{}.xlsx'.format(
-            OUTPUT_DIR, TODAY, cq)
+            OUTPUT_DIR, TODAY, "Q2")
         workbook.save(OUTPUT_FILE)

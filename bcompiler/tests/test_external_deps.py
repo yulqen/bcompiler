@@ -11,9 +11,13 @@ import csv
 
 from openpyxl import load_workbook
 
+import bcompiler.compile as compile_module
+from ..compile import parse_source_cells as parse, run
+
 config = configparser.ConfigParser()
 CONFIG_FILE = 'test_config.ini'
 config.read(CONFIG_FILE)
+
 
 def test_existence(datamap):
     with open(datamap, 'r', newline='') as f:
@@ -39,11 +43,13 @@ def test_generated_template(blank_template):
     assert sheet_ap['B32'].value == config['AssurancePlanning']['B32']
     assert sheet_ap['C31'].value == None  # can't put None value in config file
 
+
 def test_incorrect_template_cells(blank_template):
     wb = load_workbook(blank_template)
     sheet_apm = wb['Approval & Project milestones']
     assert sheet_apm['A43'].value == None
     assert sheet_apm['A430'].value == None
+
 
 # the test data is just the field name uppercased
 # check the fixture code if you don't believe me
@@ -61,3 +67,19 @@ def test_populated_template(populated_template):
     assert sheet_r['I25'].value == 'DIGITAL - NOW'
     assert sheet_apm['B9'].value == 'APPROVAL MM1 ORIGINAL BASELINE'
     assert sheet_ap['D8'].value == 'ASSURANCE MM1 FORECAST - ACTUAL'
+
+
+def test_compile(populated_template, datamap):
+    data = parse(populated_template, datamap)
+    assert data[0]['gmpp_key'] == 'Project/Programme Name'
+    assert data[0]['gmpp_key_value'] == 'PROJECT/PROGRAMME NAME'
+
+
+def test_run(datamap):
+    # print([item for item in dir(compile_module) if not item.startswith("__")])
+    setattr(compile_module, 'RETURNS_DIR', '/home/lemon/Desktop/bcompiler-test/')
+    setattr(compile_module, 'OUTPUT_DIR', '/home/lemon/Desktop/bcompiler-test-output/')
+    setattr(compile_module, 'TODAY',  '2017-07-28')
+    setattr(compile_module, 'DATAMAP_RETURN_TO_MASTER', datamap)
+    run()
+

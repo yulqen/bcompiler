@@ -11,6 +11,27 @@ from ..utils import generate_test_template_from_real as gen_template
 
 TEMPDIR = tempfile.gettempdir()
 
+try:
+    working_folder = "/".join([TEMPDIR, 'bcompiler-test'])
+    working_folder_output = "/".join([TEMPDIR, 'bcompiler-test-output'])
+    os.mkdir(working_folder)
+    WORKING_FOLDER = working_folder
+    WORKING_OUTPUT_FOLDER = working_folder_output
+except FileExistsError:
+    for the_file in os.listdir(working_folder):
+        file_path = os.path.join(working_folder, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(e)
+    WORKING_FOLDER = working_folder
+    WORKING_OUTPUT_FOLDER = working_folder_output
+try:
+    os.mkdir(working_folder_output)
+except FileExistsError:
+    pass
+
 config = configparser.ConfigParser()
 CONFIG_FILE = 'test_config.ini'
 config.read(CONFIG_FILE)
@@ -128,8 +149,8 @@ Analysis - future,Resource,J33,Capability RAG,
 
 @pytest.fixture(scope='module')
 def blank_template():
-    gen_template(BICC_TEMPLATE_FOR_TESTS, TEMPDIR)
-    output_file = '/'.join([TEMPDIR,'gen_bicc_template.xlsx'])
+    gen_template(BICC_TEMPLATE_FOR_TESTS, WORKING_FOLDER)
+    output_file = '/'.join([WORKING_FOLDER,'gen_bicc_template.xlsx'])
     yield output_file
     os.remove(output_file)
 
@@ -142,7 +163,7 @@ def datamap():
     s.seek(0)
     s_string = s.readlines()
     del s_string[0]
-    with open('/'.join([TEMPDIR, name]), 'w') as csv_file:
+    with open('/'.join([WORKING_FOLDER, name]), 'w') as csv_file:
         for x in s_string:
             csv_file.write(x)
     return '/'.join([TEMPDIR, name])
@@ -150,11 +171,11 @@ def datamap():
 
 @pytest.fixture(scope='module')
 def populated_template():
-    gen_template(BICC_TEMPLATE_FOR_TESTS, TEMPDIR)
+    gen_template(BICC_TEMPLATE_FOR_TESTS, WORKING_FOLDER)
     datamap()
-    dm = "/".join([TEMPDIR, 'datamap.csv'])
-    wb = load_workbook("/".join([TEMPDIR, 'gen_bicc_template.xlsx']))
-    output_file = "/".join([TEMPDIR, 'populated_test_template.xlsx'])
+    dm = "/".join([WORKING_FOLDER, 'datamap.csv'])
+    wb = load_workbook("/".join([WORKING_FOLDER, 'gen_bicc_template.xlsx']))
+    output_file = "/".join([WORKING_FOLDER, 'populated_test_template.xlsx'])
     with open(dm, 'r') as f:
         reader = csv.reader(f)
         for line in reader:

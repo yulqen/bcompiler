@@ -77,8 +77,8 @@ def test_compile(populated_template, datamap):
 
 def test_run(datamap):
     # print([item for item in dir(compile_module) if not item.startswith("__")])
-    setattr(compile_module, 'RETURNS_DIR', '/home/lemon/Desktop/bcompiler-test/')
-    setattr(compile_module, 'OUTPUT_DIR', '/home/lemon/Desktop/bcompiler-test-output/')
+    setattr(compile_module, 'RETURNS_DIR', '/tmp/bcompiler-test/')
+    setattr(compile_module, 'OUTPUT_DIR', '/tmp/bcompiler-test-output/')
     setattr(compile_module, 'TODAY',  '2017-07-28')
     setattr(compile_module, 'DATAMAP_RETURN_TO_MASTER', datamap)
     run()

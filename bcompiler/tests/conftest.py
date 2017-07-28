@@ -5,18 +5,13 @@ import tempfile
 
 import pytest
 
-from ..utils import gen_sheet_data as gen_sheet
 from ..utils import generate_test_template_from_real as gen_template
 
 config = configparser.ConfigParser()
 CONFIG_FILE = 'test_config.ini'
 config.read(CONFIG_FILE)
 
-if config['Template']['UseActualTemplate']:
-    BICC_TEMPLATE_FOR_TESTS = config['Template']['ActualTemplatePath']
-    BLANK_TEMPLATE = gen_sheet(BICC_TEMPLATE_FOR_TESTS)
-else:
-    BICC_TEMPLATE_FOR_TESTS = False
+BICC_TEMPLATE_FOR_TESTS = config['Template']['ActualTemplatePath']
 
 datamap_data = """
 Project/Programme Name,Summary,B5,
@@ -130,21 +125,23 @@ Analysis - future,Resource,J33,Capability RAG,
 
 @pytest.fixture(scope='module')
 def blank_template():
-    gen_template('/home/lemon/Documents/bcompiler/source/bicc_template.xlsx', '/tmp')
-    yield '/tmp/gen_bicc_template.xlsx'
-    os.remove('/tmp/gen_bicc_template.xlsx')
+    tmpdir = tempfile.gettempdir()
+    gen_template(BICC_TEMPLATE_FOR_TESTS, tmpdir)
+    output_file = '/'.join([tmpdir,'gen_bicc_template.xlsx'])
+    yield output_file
+    os.remove(output_file)
 
 
 @pytest.fixture(scope='module')
 def datamap():
-    tmp = tempfile.gettempdir()
+    tmpdir = tempfile.gettempdir()
     name = 'datamap.csv'
     s = io.StringIO()
     s.write(datamap_data)
     s.seek(0)
     s_string = s.readlines()
     del s_string[0]
-    with open('/'.join([tmp, name]), 'w') as csv_file:
+    with open('/'.join([tmpdir, name]), 'w') as csv_file:
         for x in s_string:
             csv_file.write(x)
-    return '/'.join([tmp, name])
+    return '/'.join([tmpdir, name])

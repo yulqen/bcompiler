@@ -5,7 +5,7 @@ import os
 from datetime import date, datetime
 from math import isclose
 
-from openpyxl import load_workbook
+from openpyxl import load_workbook, Workbook
 from openpyxl.styles import PatternFill
 from openpyxl.utils import quote_sheetname
 
@@ -395,3 +395,40 @@ def gen_sheet_data(workbook):
         title = s.title
         data[title] = [list(row_accessor(x)) for x in rows]
     return data
+
+def parse_data_row(row: list):
+    for item in row:
+        yield item[0], item[1]
+
+
+def get_sheets_in_workbook(real_template: str) -> list:
+    wb = load_workbook(real_template)
+    sheets = wb._sheets
+    return sheets
+
+
+def generate_test_template_from_real(real_template: str, save_path: str) -> None:
+    """
+    Given the bicc_template.xlsx file, this function strips it of
+    everything but cell data.
+    :param real_template: str path of location of bicc_template.xlsx
+    :param save_path: str path of output directory; file will be named 'gen_bicc_template.xlsx',
+    of the form "~/Documents"
+    :return:
+    """
+    data = gen_sheet_data(real_template)
+    sheets = get_sheets_in_workbook(real_template)
+    blank = Workbook()
+    sheet_order = 0
+    for sheet in sheets:
+        summary_sheet = blank.create_sheet(sheet.title, sheet_order)
+        for row in data[sheet.title]:
+            r = parse_data_row(row)
+            for cell in r:
+                summary_sheet[cell[0]] = cell[1]
+        sheet_order += 1
+    if save_path.endswith('/'):
+        save_path = save_path[:-1]
+    blank.save(''.join([save_path, '/gen_bicc_template.xlsx']))
+
+

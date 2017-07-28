@@ -3,7 +3,8 @@ This module tests external dependencies in the bcompiler system,
 including the datamap and the bicc_template.xlsx.
 
 If the template changes, the cell references in test_generated_template()
-function below MUST be amended accordingly.
+function below should be ameneded in the test_config.ini file. All cellrefs
+in this file are fixed - their contents may change with template changes.
 """
 import configparser
 import csv

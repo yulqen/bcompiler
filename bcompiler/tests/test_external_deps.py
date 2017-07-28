@@ -60,19 +60,19 @@ def test_populated_template(populated_template):
     sheet_r = wb['Resource']
     sheet_apm = wb['Approval & Project milestones']
     sheet_ap = wb['Assurance Planning']
-    assert sheet_summary['B5'].value == "PROJECT/PROGRAMME NAME"
-    assert sheet_summary['B10'].value == "AGENCY OR DELIVERY PARTNER (GMPP - DELIVERY ORGANISATION PRIMARY)"
-    assert sheet_summary['H10'].value == "WORKING CONTACT EMAIL"
-    assert sheet_fb['C18'].value == "REAL OR NOMINAL - BASELINE"
-    assert sheet_r['I25'].value == 'DIGITAL - NOW'
-    assert sheet_apm['B9'].value == 'APPROVAL MM1 ORIGINAL BASELINE'
-    assert sheet_ap['D8'].value == 'ASSURANCE MM1 FORECAST - ACTUAL'
+    assert sheet_summary['B5'].value == "PROJECT/PROGRAMME NAME 9" #  always 9 as it's the last one generated
+    assert sheet_summary['B10'].value == "AGENCY OR DELIVERY PARTNER (GMPP - DELIVERY ORGANISATION PRIMARY) 9"
+    assert sheet_summary['H10'].value == "WORKING CONTACT EMAIL 9"
+    assert sheet_fb['C18'].value == "REAL OR NOMINAL - BASELINE 9"
+    assert sheet_r['I25'].value == 'DIGITAL - NOW 9'
+    assert sheet_apm['B9'].value == 'APPROVAL MM1 ORIGINAL BASELINE 9'
+    assert sheet_ap['D8'].value == 'ASSURANCE MM1 FORECAST - ACTUAL 9'
 
 
 def test_compile(populated_template, datamap):
     data = parse(populated_template, datamap)
     assert data[0]['gmpp_key'] == 'Project/Programme Name'
-    assert data[0]['gmpp_key_value'] == 'PROJECT/PROGRAMME NAME'
+    assert data[0]['gmpp_key_value'] == 'PROJECT/PROGRAMME NAME 9'
 
 
 def test_run(datamap):

@@ -176,16 +176,14 @@ def populated_template():
     dm = "/".join([TEMPDIR, 'datamap.csv'])
     wb = load_workbook("/".join([TEMPDIR, 'gen_bicc_template.xlsx']))
     output_file = "/".join([RETURNS_FOLDER, 'populated_test_template.xlsx'])
-    with open(dm, 'r') as f:
-        reader = csv.reader(f)
-        for line in reader:
-            wb[line[1]][line[2]].value = line[0].upper()
-    wb.save(output_file)
-    # REMOVE LOOP IF ONLY NEED SINGLE POPULATED TEMPLATE
-    # EXPERIMENTAL
-    for f in range(10):
-        output_file = "/".join([RETURNS_FOLDER, 'populated_test_template{}.xlsx'
-                                .format(f)])
-        wb.save(output_file)
+    for fl in range(10):
+        with open(dm, 'r', newline='') as f:
+            reader = csv.reader(f)
+            for line in reader:
+                wb[line[1]][line[2]].value = " ".join([line[0].upper(), str(fl)])
+            output_file = "/".join([RETURNS_FOLDER, 'populated_test_template{}.xlsx'
+                           .format(fl)])
+            wb.save(output_file)
+    # we save 10 of them but only return the first for testing
     return output_file
 

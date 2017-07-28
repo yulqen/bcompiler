@@ -1,11 +1,15 @@
 import configparser
+import csv
 import io
 import os
 import tempfile
 
 import pytest
+from openpyxl import load_workbook
 
 from ..utils import generate_test_template_from_real as gen_template
+
+TEMPDIR = tempfile.gettempdir()
 
 config = configparser.ConfigParser()
 CONFIG_FILE = 'test_config.ini'
@@ -30,7 +34,6 @@ Working Contact Email,Summary,H10,
 DfT Group,Summary,B8,DfT Group,
 DfT Division,Summary,B9,DfT Division,
 Agency or delivery partner (GMPP - Delivery Organisation primary),Summary,B10,Agency,
-GMPP- Reporting Department,
 Strategic Alignment/Government Policy (GMPP - Key drivers),Summary,B26,
 Project stage,Approval & Project milestones,B5,Project stage,
 Project stage if Other,Approval & Project milestones,D5,
@@ -81,8 +84,8 @@ CDEL Total Forecast,Finance & Benefits,D134,
 Non-Gov Total Forecast,Finance & Benefits,D135,
 Total Forecast,Finance & Benefits,D136,
 RDEL Total Variance,Finance & Benefits,E133,
-CDEL Total Variance ,Finance & Benefits,E134,
-ssurance MM1,Assurance Planning,A8,
+CDEL Total Variance,Finance & Benefits,E134,
+Assurance MM1,Assurance Planning,A8,
 Assurance MM1 Original Baseline,Assurance Planning,B8,
 Assurance MM1 Latest Approved Baseline,Assurance Planning,C8,
 Assurance MM1 Forecast - Actual,Assurance Planning,D8,
@@ -125,23 +128,37 @@ Analysis - future,Resource,J33,Capability RAG,
 
 @pytest.fixture(scope='module')
 def blank_template():
-    tmpdir = tempfile.gettempdir()
-    gen_template(BICC_TEMPLATE_FOR_TESTS, tmpdir)
-    output_file = '/'.join([tmpdir,'gen_bicc_template.xlsx'])
+    gen_template(BICC_TEMPLATE_FOR_TESTS, TEMPDIR)
+    output_file = '/'.join([TEMPDIR,'gen_bicc_template.xlsx'])
     yield output_file
     os.remove(output_file)
 
 
 @pytest.fixture(scope='module')
 def datamap():
-    tmpdir = tempfile.gettempdir()
     name = 'datamap.csv'
     s = io.StringIO()
     s.write(datamap_data)
     s.seek(0)
     s_string = s.readlines()
     del s_string[0]
-    with open('/'.join([tmpdir, name]), 'w') as csv_file:
+    with open('/'.join([TEMPDIR, name]), 'w') as csv_file:
         for x in s_string:
             csv_file.write(x)
-    return '/'.join([tmpdir, name])
+    return '/'.join([TEMPDIR, name])
+
+
+@pytest.fixture(scope='module')
+def populated_template():
+    gen_template(BICC_TEMPLATE_FOR_TESTS, TEMPDIR)
+    datamap()
+    dm = "/".join([TEMPDIR, 'datamap.csv'])
+    wb = load_workbook("/".join([TEMPDIR, 'gen_bicc_template.xlsx']))
+    output_file = "/".join([TEMPDIR, 'populated_test_template.xlsx'])
+    with open(dm, 'r') as f:
+        reader = csv.reader(f)
+        for line in reader:
+            wb[line[1]][line[2]].value = line[0].upper()
+    wb.save(output_file)
+    return output_file
+

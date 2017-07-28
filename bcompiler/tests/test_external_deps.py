@@ -45,5 +45,19 @@ def test_incorrect_template_cells(blank_template):
     assert sheet_apm['A43'].value == None
     assert sheet_apm['A430'].value == None
 
-
-
+# the test data is just the field name uppercased
+# check the fixture code if you don't believe me
+def test_populated_template(populated_template):
+    wb = load_workbook(populated_template)
+    sheet_summary = wb['Summary']
+    sheet_fb = wb['Finance & Benefits']
+    sheet_r = wb['Resource']
+    sheet_apm = wb['Approval & Project milestones']
+    sheet_ap = wb['Assurance Planning']
+    assert sheet_summary['B5'].value == "PROJECT/PROGRAMME NAME"
+    assert sheet_summary['B10'].value == "AGENCY OR DELIVERY PARTNER (GMPP - DELIVERY ORGANISATION PRIMARY)"
+    assert sheet_summary['H10'].value == "WORKING CONTACT EMAIL"
+    assert sheet_fb['C18'].value == "REAL OR NOMINAL - BASELINE"
+    assert sheet_r['I25'].value == 'DIGITAL - NOW'
+    assert sheet_apm['B9'].value == 'APPROVAL MM1 ORIGINAL BASELINE'
+    assert sheet_ap['D8'].value == 'ASSURANCE MM1 FORECAST - ACTUAL'

@@ -149,8 +149,8 @@ Analysis - future,Resource,J33,Capability RAG,
 
 @pytest.fixture(scope='module')
 def blank_template():
-    gen_template(BICC_TEMPLATE_FOR_TESTS, RETURNS_FOLDER)
-    output_file = '/'.join([RETURNS_FOLDER, 'gen_bicc_template.xlsx'])
+    gen_template(BICC_TEMPLATE_FOR_TESTS, TEMPDIR)
+    output_file = '/'.join([TEMPDIR, 'gen_bicc_template.xlsx'])
     yield output_file
     os.remove(output_file)
 
@@ -163,7 +163,7 @@ def datamap():
     s.seek(0)
     s_string = s.readlines()
     del s_string[0]
-    with open('/'.join([RETURNS_FOLDER, name]), 'w') as csv_file:
+    with open('/'.join([TEMPDIR, name]), 'w') as csv_file:
         for x in s_string:
             csv_file.write(x)
     return '/'.join([TEMPDIR, name])
@@ -171,10 +171,10 @@ def datamap():
 
 @pytest.fixture(scope='module')
 def populated_template():
-    gen_template(BICC_TEMPLATE_FOR_TESTS, RETURNS_FOLDER)
+    gen_template(BICC_TEMPLATE_FOR_TESTS, TEMPDIR)
     datamap()
-    dm = "/".join([RETURNS_FOLDER, 'datamap.csv'])
-    wb = load_workbook("/".join([RETURNS_FOLDER, 'gen_bicc_template.xlsx']))
+    dm = "/".join([TEMPDIR, 'datamap.csv'])
+    wb = load_workbook("/".join([TEMPDIR, 'gen_bicc_template.xlsx']))
     output_file = "/".join([RETURNS_FOLDER, 'populated_test_template.xlsx'])
     with open(dm, 'r') as f:
         reader = csv.reader(f)

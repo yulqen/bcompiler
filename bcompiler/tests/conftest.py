@@ -4,7 +4,8 @@ import tempfile
 
 import pytest
 
-from bcompiler.utils import gen_sheet_data, generate_test_template_from_real
+from ..utils import gen_sheet_data as gen_sheet
+from ..utils import generate_test_template_from_real as gen_template
 
 config = configparser.ConfigParser()
 CONFIG_FILE = 'test_config.ini'
@@ -12,7 +13,7 @@ config.read(CONFIG_FILE)
 
 if config['Template']['UseActualTemplate']:
     BICC_TEMPLATE_FOR_TESTS = config['Template']['ActualTemplatePath']
-    BLANK_TEMPLATE = gen_sheet_data(BICC_TEMPLATE_FOR_TESTS)
+    BLANK_TEMPLATE = gen_sheet(BICC_TEMPLATE_FOR_TESTS)
 else:
     BICC_TEMPLATE_FOR_TESTS = False
 
@@ -125,12 +126,14 @@ Analysis Now,Resource,I33,Capability RAG,
 Analysis - future,Resource,J33,Capability RAG,
 """
 
-@pytest.fixture()
+
+@pytest.fixture(scope='module')
 def blank_template():
-    generate_test_template_from_real('/home/lemon/Documents/bcompiler/source/bicc_template.xlsx', '/tmp')
+    gen_template('/home/lemon/Documents/bcompiler/source/bicc_template.xlsx', '/tmp')
     return '/tmp/gen_bicc_template.xlsx'
 
-@pytest.fixture()
+
+@pytest.fixture(scope='module')
 def datamap():
     tmp = tempfile.gettempdir()
     name = 'datamap.csv'

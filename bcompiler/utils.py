@@ -382,11 +382,23 @@ SHEETS = [
 
 
 def row_accessor(row: tuple):
+    """
+    Utility generator yielding tuple of form (str, str); e.g
+    ('A10', 'Project/Programme Name').
+    :param row:
+    :return:
+    """
     for item in row:
         yield (''.join([item.column, str(item.row)]), item.value)
 
 
-def gen_sheet_data(workbook):
+def gen_sheet_data(workbook: str) -> dict:
+    """
+    Returns a dict containing data from a given xlsx file, by sheet
+    within that workbook.
+    :param path to xlsx file:
+    :return: dict of data by sheet in workbook
+    """
     wb = load_workbook(workbook)
     sheets = wb._sheets
     data = {}
@@ -396,12 +408,23 @@ def gen_sheet_data(workbook):
         data[title] = [list(row_accessor(x)) for x in rows]
     return data
 
-def parse_data_row(row: list):
+
+def parse_data_row(row: list) -> tuple:
+    """
+    Utility generator which processes two-item tuples in a list.
+    :param row:
+    :return: tuple of form (str, str); e.g. ('A10', 'Project/Programme Name')
+    """
     for item in row:
         yield item[0], item[1]
 
 
 def get_sheets_in_workbook(real_template: str) -> list:
+    """
+    Utility function to return a list of sheet names from an xlsx file.
+    :param real_template:
+    :return: list of sheet names
+    """
     wb = load_workbook(real_template)
     sheets = wb._sheets
     return sheets

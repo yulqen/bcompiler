@@ -8,11 +8,14 @@ in this file are fixed - their contents may change with template changes.
 """
 import configparser
 import csv
+from datetime import date
 
 from openpyxl import load_workbook
 
 import bcompiler.compile as compile_module
-from ..compile import parse_source_cells as parse, run
+
+from ..compile import parse_source_cells as parse
+from ..compile import run
 
 config = configparser.ConfigParser()
 CONFIG_FILE = 'test_config.ini'
@@ -80,7 +83,6 @@ def test_run(datamap):
     # patching module attributes to get it working
     setattr(compile_module, 'RETURNS_DIR', '/tmp/bcompiler-test/')
     setattr(compile_module, 'OUTPUT_DIR', '/tmp/bcompiler-test-output/')
-    setattr(compile_module, 'TODAY',  '2017-07-28')
+    setattr(compile_module, 'TODAY',  date.today().isoformat())
     setattr(compile_module, 'DATAMAP_RETURN_TO_MASTER', datamap)
     run()
-

@@ -5,7 +5,7 @@ import os
 import tempfile
 
 import pytest
-from openpyxl import load_workbook
+from openpyxl import load_workbook, Workbook
 
 from ..utils import generate_test_template_from_real as gen_template
 
@@ -183,8 +183,29 @@ def populated_template():
             for line in reader:
                 wb[line[1]][line[2]].value = " ".join([line[0].upper(), str(fl)])
             output_file = "/".join([RETURNS_FOLDER, 'populated_test_template{}.xlsx'
-                           .format(fl)])
+                                    .format(fl)])
             wb.save(output_file)
     # we save 10 of them but only return the first for testing
     return output_file
 
+
+def split_datamap_line(line: tuple):
+    for item in line:
+        yield item
+
+
+@pytest.fixture(scope='module')
+def master():
+    wb = Workbook()
+    output_file = "/".join([OUTPUT_FOLDER, 'master_transposed.xlsx'])
+    ws = wb.active
+    ws.title = "Master for Testing"
+    for item in enumerate(datamap_data.split('\n')):
+        print(item)
+        if not item[0] == 0:
+            g = split_datamap_line(item)
+            next(g)
+            ix = next(g).split(',')[0]
+            ws[f"A{str(item[0])}"] = ix
+    wb.save(output_file)
+    return output_file

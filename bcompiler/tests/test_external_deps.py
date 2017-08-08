@@ -12,10 +12,6 @@ from datetime import date
 
 from openpyxl import load_workbook
 
-import bcompiler.compile as compile_module
-
-from ..compile import parse_source_cells as parse
-from ..compile import run
 
 config = configparser.ConfigParser()
 CONFIG_FILE = 'test_config.ini'
@@ -72,17 +68,3 @@ def test_populated_template(populated_template):
     assert sheet_ap['D8'].value == 'ASSURANCE MM1 FORECAST - ACTUAL 9'
 
 
-def test_compile(populated_template, datamap):
-    data = parse(populated_template, datamap)
-    assert data[0]['gmpp_key'] == 'Project/Programme Name'
-    assert data[0]['gmpp_key_value'] == 'PROJECT/PROGRAMME NAME 9'
-
-
-def test_run(datamap):
-    # print([item for item in dir(compile_module) if not item.startswith("__")])
-    # patching module attributes to get it working
-    setattr(compile_module, 'RETURNS_DIR', '/tmp/bcompiler-test/')
-    setattr(compile_module, 'OUTPUT_DIR', '/tmp/bcompiler-test-output/')
-    setattr(compile_module, 'TODAY',  date.today().isoformat())
-    setattr(compile_module, 'DATAMAP_RETURN_TO_MASTER', datamap)
-    run()

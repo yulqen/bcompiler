@@ -201,11 +201,14 @@ def master():
     ws = wb.active
     ws.title = "Master for Testing"
     for item in enumerate(datamap_data.split('\n')):
-        print(item)
-        if not item[0] == 0:
+        if not item[0] == 0 and not item[1] == "":
             g = split_datamap_line(item)
             next(g)
+            print(item)
             ix = next(g).split(',')[0]
             ws[f"A{str(item[0])}"] = ix
+            ws[f"B{str(item[0])}"] = " ".join([ix.upper(), "1"])
+            ws[f"C{str(item[0])}"] = " ".join([ix.upper(), "2"])
+            ws[f"D{str(item[0])}"] = " ".join([ix.upper(), "3"])
     wb.save(output_file)
     return output_file

@@ -26,10 +26,11 @@ ROOT_PATH = os.path.join(DOCS, BCOMPILER_WORKING_D)
 CONFIG_FILE = os.path.join(DOCS, BCOMPILER_WORKING_D, 'config.ini')
 
 
-config = configparser.ConfigParser()
-config.read(CONFIG_FILE)
+runtime_config = configparser.ConfigParser()
+runtime_config.read(CONFIG_FILE)
 
-SHEETS = [i for i in dict((config.items('TemplateSheets'))).values()]
+SHEETS = [i for i in dict((runtime_config.items('TemplateSheets'))).values()]
+
 
 def quick_typechecker(*args):
     """
@@ -258,7 +259,7 @@ def index_returns_directory():
     for f in target_files:
         if fnmatch.fnmatch(f, '*.xlsx'):
             wb = load_workbook(os.path.join(RETURNS_DIR, f))
-            ws = wb['Summary']
+            ws = wb[runtime_config['TemplateSheets']['summary_sheet']]
             pnames_in_returns_dir.append(ws['B5'].value)
     return pnames_in_returns_dir
 

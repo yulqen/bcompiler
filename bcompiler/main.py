@@ -43,6 +43,7 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              open_openpyxl_template, parse_csv_to_file,
                              populate_blank_gmpp_form, project_data_line,
                              working_directory, SHEETS, CURRENT_QUARTER)
+from bcompiler.utils import runtime_config as config
 
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
@@ -260,12 +261,12 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     test_proj_data = proj_data[test_proj]
     logger.info("Getting template...")
     blank = load_workbook(SOURCE_DIR + 'bicc_template.xlsx')
-    ws_summary = blank['Summary']
-    ws_fb = blank['Finance & Benefits']
-    ws_res = blank['Resource']
-    ws_apm = blank['Approval & Project milestones']
-    ws_ap = blank['Assurance Planning']
-    ws_gmpp = blank['GMPP']
+    ws_summary = blank[config['TemplateSheets']['summary_sheet']]
+    ws_fb = blank[config['TemplateSheets']['fb_sheet']]
+    ws_res = blank[config['TemplateSheets']['resource_sheet']]
+    ws_apm = blank[config['TemplateSheets']['apm']]
+    ws_ap = blank[config['TemplateSheets']['ap']]
+    ws_gmpp = blank[config['TemplateSheets']['gmpp']]
 
     TARGET_LOCK_CELLS = [
         {ws_summary: 'B5'},
@@ -297,7 +298,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
 
     logger.info("Getting data from master.csv...")
     for item in datamap:
-        if item['sheet'] == 'Summary':
+        if item['sheet'] == config['TemplateSheets']['summary_sheet']:
             if 'Project/Programme Name' in item['cell_description']:
                 ws_summary[item['cell_coordinates']].value = test_proj
             try:
@@ -321,7 +322,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv.add(ws_summary[item['cell_coordinates']])
                 if isinstance(cleaned, datetime.date):
                     ws_summary[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == 'Finance & Benefits':
+        elif item['sheet'] == config['TemplateSheets']['fb_sheet']:
             if has_whiff_of_total(item['cell_description']):
                 pass
             else:
@@ -346,7 +347,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     dv.add(ws_fb[item['cell_coordinates']])
                     if isinstance(cleaned, datetime.date):
                         ws_fb[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == 'Resource':
+        elif item['sheet'] == config['TemplateSheets']['resource_sheet']:
             if has_whiff_of_total(item['cell_description']):
                 pass
             else:
@@ -371,7 +372,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     dv.add(ws_res[item['cell_coordinates']])
                     if isinstance(cleaned, datetime.date):
                         ws_res[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == 'Approval & Project milestones':
+        elif item['sheet'] == config['TemplateSheets']['apm']:
             if has_whiff_of_total(item['cell_description']):
                 pass
             else:
@@ -396,7 +397,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     dv.add(ws_apm[item['cell_coordinates']])
                     if isinstance(cleaned, datetime.date):
                         ws_apm[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == 'Assurance Planning':
+        elif item['sheet'] == config['TemplateSheets']['ap']:
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
                 cleaned = c.clean()
@@ -418,7 +419,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv.add(ws_ap[item['cell_coordinates']])
                 if isinstance(cleaned, datetime.date):
                     ws_ap[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == 'GMPP':
+        elif item['sheet'] == config['TemplateSheets']['gmpp']:
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
                 cleaned = c.clean()

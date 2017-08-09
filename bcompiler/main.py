@@ -47,7 +47,14 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
 
-CURRENT_QUARTER = "Q1 Apr - Jun 2017"
+CURRENT_QUARTER = "Q2 Apr - Jun 2017"
+
+DOCS = os.path.join(os.path.expanduser('~'), 'Documents')
+BCOMPILER_WORKING_D = 'bcompiler_test'
+ROOT_PATH = os.path.join(DOCS, BCOMPILER_WORKING_D)
+
+CONFIG_FILE = os.path.join(DOCS, BCOMPILER_WORKING_D, 'config.ini')
+
 
 def get_parser():
     parser = argparse.ArgumentParser(
@@ -495,29 +502,25 @@ def create_working_directory():
 
     # Check if there is already a configurtion file
 
-    docs = os.path.join(os.path.expanduser('~'), 'Documents')
-    bcomp_working_d = 'bcompiler'
-    root_path = os.path.join(docs, bcomp_working_d)
     folders = ['source', 'output']
-    if not os.path.exists(root_path):
-        os.mkdir(root_path)
+    if not os.path.exists(ROOT_PATH):
+        os.mkdir(ROOT_PATH)
         for folder in folders:
-            os.mkdir(os.path.join(root_path, folder))
+            os.mkdir(os.path.join(ROOT_PATH, folder))
         config = configparser.ConfigParser()
-        CONFIG_FILE = os.path.join(docs, bcomp_working_d, 'config.ini')
 
         if not os.path.isfile(CONFIG_FILE):
-            CONFIG_FILE = open(CONFIG_FILE, 'w')
+            cf = open(CONFIG_FILE, 'w')
             config.add_section('TemplateSheets')
             config.set('TemplateSheets', 'summary_sheet', 'Summary')
             config.set('TemplateSheets', 'fb_sheet', 'Finance & Benefits')
             config.set('TemplateSheets', 'resource_sheet', 'Resource')
             config.set('TemplateSheets', 'apm', 'Approval & Project milestones')
             config.set('TemplateSheets', 'ap', 'Assurance Planning')
-            config.write(CONFIG_FILE)
-            CONFIG_FILE.close()
+            config.write(cf)
+            cf.close()
 
-        print("Clean working directory created at {}".format(root_path))
+        print("Clean working directory created at {}".format(ROOT_PATH))
     else:
         print("Working directory exists. You can either run the program"
               "like this and files will be overwritten, or you should do"

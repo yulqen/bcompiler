@@ -13,6 +13,7 @@ from bcompiler.process import Cleanser
 from bcompiler.process.cellformat import CellFormatState
 from bcompiler.process.simple_comparitor import FileComparitor, ParsedMaster
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
+from bcompiler.utils import runtime_config as config
 from .process.cleansers import DATE_REGEX_TIME
 
 CELL_REGEX = re.compile('[A-Z]+[0-9]+')
@@ -29,7 +30,7 @@ def get_current_quarter(source_file):
     DOCSTRING HERE
     """
     wb = load_workbook(RETURNS_DIR + source_file, read_only=True)
-    ws = wb['Summary']
+    ws = wb[config['TemplateSheets']['summary_sheet']]
     q = ws['G3'].value
     logger.info('Getting current Quarter as {}'.format(q))
     return q

@@ -5,6 +5,8 @@ import os
 from datetime import date, datetime
 from math import isclose
 
+import configparser
+
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import PatternFill
 from openpyxl.utils import quote_sheetname
@@ -14,6 +16,20 @@ from bcompiler.datamap import DatamapGMPP
 logger = logging.getLogger('bcompiler.utils')
 
 rdel_cdel_merge = ''
+
+CURRENT_QUARTER = "Q2 Jul - Sep 2017"
+
+DOCS = os.path.join(os.path.expanduser('~'), 'Documents')
+BCOMPILER_WORKING_D = 'bcompiler'
+ROOT_PATH = os.path.join(DOCS, BCOMPILER_WORKING_D)
+
+CONFIG_FILE = os.path.join(DOCS, BCOMPILER_WORKING_D, 'config.ini')
+
+
+runtime_config = configparser.ConfigParser()
+runtime_config.read(CONFIG_FILE)
+
+SHEETS = [i for i in dict((runtime_config.items('TemplateSheets'))).values()]
 
 
 def quick_typechecker(*args):
@@ -243,7 +259,7 @@ def index_returns_directory():
     for f in target_files:
         if fnmatch.fnmatch(f, '*.xlsx'):
             wb = load_workbook(os.path.join(RETURNS_DIR, f))
-            ws = wb['Summary']
+            ws = wb[runtime_config['TemplateSheets']['summary_sheet']]
             pnames_in_returns_dir.append(ws['B5'].value)
     return pnames_in_returns_dir
 
@@ -388,10 +404,6 @@ VALIDATION_REFERENCES = {
     "{0}!$AR2:$AR$5".format(quote_sheetname(sheet_name)),
 }
 
-SHEETS = [
-    'Summary', 'Finance & Benefits', 'Resources',
-    'Approval & Project milestones', 'Assurance planning'
-]
 
 
 def row_accessor(row: tuple):

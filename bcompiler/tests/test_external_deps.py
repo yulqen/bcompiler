@@ -40,26 +40,26 @@ def test_generated_template(blank_template):
     assert sheet_r['A12'].value == config['ResourceData']['A12']
     assert sheet_apm['E7'].value == config['ApprovalProjectMilestones']['E7']
     assert sheet_ap['B32'].value == config['AssurancePlanning']['B32']
-    assert sheet_ap['C31'].value == None  # can't put None value in config file
+    assert sheet_ap['C31'].value is None  # can't put None value in config file
 
 
 def test_incorrect_template_cells(blank_template):
     wb = load_workbook(blank_template)
     sheet_apm = wb['Approval & Project milestones']
-    assert sheet_apm['A43'].value == None
-    assert sheet_apm['A430'].value == None
+    assert sheet_apm['A43'].value is None
+    assert sheet_apm['A430'].value is None
 
 
 # the test data is just the field name uppercased
 # check the fixture code if you don't believe me
 def test_populated_template(populated_template):
     wb = load_workbook(populated_template)
-    sheet_summary = wb['Summary']
-    sheet_fb = wb['Finance & Benefits']
-    sheet_r = wb['Resource']
-    sheet_apm = wb['Approval & Project milestones']
-    sheet_ap = wb['Assurance Planning']
-    assert sheet_summary['B5'].value == "PROJECT/PROGRAMME NAME 9" #  always 9 as it's the last one generated
+    sheet_summary = wb[config['TemplateTestData']['summary_sheet']]
+    sheet_fb = wb[config['TemplateTestData']['fb_sheet']]
+    sheet_r = wb[config['TemplateTestData']['resource']]
+    sheet_apm = wb[config['TemplateTestData']['apm']]
+    sheet_ap = wb[config['TemplateTestData']['ap']]
+    assert sheet_summary['B5'].value == "PROJECT/PROGRAMME NAME 9"  # always 9 as it's the last one generated
     assert sheet_summary['B10'].value == "AGENCY OR DELIVERY PARTNER (GMPP - DELIVERY ORGANISATION PRIMARY) 9"
     assert sheet_summary['H10'].value == "WORKING CONTACT EMAIL 9"
     assert sheet_fb['C18'].value == "REAL OR NOMINAL - BASELINE 9"

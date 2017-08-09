@@ -42,13 +42,11 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              create_master_dict_transposed, gmpp_project_names,
                              open_openpyxl_template, parse_csv_to_file,
                              populate_blank_gmpp_form, project_data_line,
-                             working_directory)
+                             working_directory, SHEETS, CURRENT_QUARTER)
+from bcompiler.utils import runtime_config as config
 
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
-
-CURRENT_QUARTER = "Q1 Apr - Jun 2017"
-
 
 def get_parser():
     parser = argparse.ArgumentParser(
@@ -176,11 +174,7 @@ def get_datamap():
     for line in data:
         # split on , allowing us to access useful data from data map file
         data_map_line = line.split(',')
-        if data_map_line[1] in [
-                'Summary', 'Finance & Benefits', 'Resource',
-                'Approval & Project milestones', 'Assurance Planning',
-                'GMPP'
-        ]:
+        if data_map_line[1] in SHEETS:
             # the end item in the list is a newline - get rid of that
             del data_map_line[-1]
         if cell_regex.search(data_map_line[-1]):
@@ -267,12 +261,12 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     test_proj_data = proj_data[test_proj]
     logger.info("Getting template...")
     blank = load_workbook(SOURCE_DIR + 'bicc_template.xlsx')
-    ws_summary = blank['Summary']
-    ws_fb = blank['Finance & Benefits']
-    ws_res = blank['Resource']
-    ws_apm = blank['Approval & Project milestones']
-    ws_ap = blank['Assurance Planning']
-    ws_gmpp = blank['GMPP']
+    ws_summary = blank[config['TemplateSheets']['summary_sheet']]
+    ws_fb = blank[config['TemplateSheets']['fb_sheet']]
+    ws_res = blank[config['TemplateSheets']['resource_sheet']]
+    ws_apm = blank[config['TemplateSheets']['apm']]
+    ws_ap = blank[config['TemplateSheets']['ap']]
+    ws_gmpp = blank[config['TemplateSheets']['gmpp']]
 
     TARGET_LOCK_CELLS = [
         {ws_summary: 'B5'},
@@ -304,7 +298,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
 
     logger.info("Getting data from master.csv...")
     for item in datamap:
-        if item['sheet'] == 'Summary':
+        if item['sheet'] == config['TemplateSheets']['summary_sheet']:
             if 'Project/Programme Name' in item['cell_description']:
                 ws_summary[item['cell_coordinates']].value = test_proj
             try:
@@ -328,7 +322,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv.add(ws_summary[item['cell_coordinates']])
                 if isinstance(cleaned, datetime.date):
                     ws_summary[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == 'Finance & Benefits':
+        elif item['sheet'] == config['TemplateSheets']['fb_sheet']:
             if has_whiff_of_total(item['cell_description']):
                 pass
             else:
@@ -353,7 +347,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     dv.add(ws_fb[item['cell_coordinates']])
                     if isinstance(cleaned, datetime.date):
                         ws_fb[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == 'Resource':
+        elif item['sheet'] == config['TemplateSheets']['resource_sheet']:
             if has_whiff_of_total(item['cell_description']):
                 pass
             else:
@@ -378,7 +372,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     dv.add(ws_res[item['cell_coordinates']])
                     if isinstance(cleaned, datetime.date):
                         ws_res[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == 'Approval & Project milestones':
+        elif item['sheet'] == config['TemplateSheets']['apm']:
             if has_whiff_of_total(item['cell_description']):
                 pass
             else:
@@ -403,7 +397,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     dv.add(ws_apm[item['cell_coordinates']])
                     if isinstance(cleaned, datetime.date):
                         ws_apm[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == 'Assurance Planning':
+        elif item['sheet'] == config['TemplateSheets']['ap']:
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
                 cleaned = c.clean()
@@ -425,7 +419,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 dv.add(ws_ap[item['cell_coordinates']])
                 if isinstance(cleaned, datetime.date):
                     ws_ap[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == 'GMPP':
+        elif item['sheet'] == config['TemplateSheets']['gmpp']:
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
                 cleaned = c.clean()
@@ -492,15 +486,29 @@ def create_working_directory():
     We need a proper directory to work in.
     :return:
     """
-    docs = os.path.join(os.path.expanduser('~'), 'Documents')
-    bcomp_working_d = 'bcompiler'
-    root_path = os.path.join(docs, bcomp_working_d)
+
+
+    # Check if there is already a configurtion file
+
     folders = ['source', 'output']
-    if not os.path.exists(root_path):
-        os.mkdir(root_path)
+    if not os.path.exists(ROOT_PATH):
+        os.mkdir(ROOT_PATH)
         for folder in folders:
-            os.mkdir(os.path.join(root_path, folder))
-        print("Clean working directory created at {}".format(root_path))
+            os.mkdir(os.path.join(ROOT_PATH, folder))
+        config = configparser.ConfigParser()
+
+        if not os.path.isfile(CONFIG_FILE):
+            cf = open(CONFIG_FILE, 'w')
+            config.add_section('TemplateSheets')
+            config.set('TemplateSheets', 'summary_sheet', 'Summary')
+            config.set('TemplateSheets', 'fb_sheet', 'Finance & Benefits')
+            config.set('TemplateSheets', 'resource_sheet', 'Resource')
+            config.set('TemplateSheets', 'apm', 'Approval & Project milestones')
+            config.set('TemplateSheets', 'ap', 'Assurance Planning')
+            config.write(cf)
+            cf.close()
+
+        print("Clean working directory created at {}".format(ROOT_PATH))
     else:
         print("Working directory exists. You can either run the program"
               "like this and files will be overwritten, or you should do"

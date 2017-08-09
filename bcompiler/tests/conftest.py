@@ -197,14 +197,13 @@ def split_datamap_line(line: tuple):
 @pytest.fixture(scope='module')
 def master():
     wb = Workbook()
-    output_file = "/".join([OUTPUT_FOLDER, 'master_transposed.xlsx'])
+    output_file = "/".join([OUTPUT_FOLDER, 'master.xlsx'])
     ws = wb.active
     ws.title = "Master for Testing"
     for item in enumerate(datamap_data.split('\n')):
         if not item[0] == 0 and not item[1] == "":
             g = split_datamap_line(item)
             next(g)
-            print(item)
             ix = next(g).split(',')[0]
             ws[f"A{str(item[0])}"] = ix
             ws[f"B{str(item[0])}"] = " ".join([ix.upper(), "1"])

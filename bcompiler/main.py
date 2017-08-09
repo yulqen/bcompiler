@@ -19,33 +19,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE. """
 
 import argparse
-import colorlog
+import configparser
+import datetime
 import logging
 import os
 import re
 import shutil
 import sys
+from typing import Dict, List
 
-import datetime
-
-from typing import List, Dict
+import colorlog
+from openpyxl import load_workbook
+from openpyxl.styles import Protection
+from openpyxl.worksheet.datavalidation import DataValidation
 
 import bcompiler.compile as compile_returns
-
 from bcompiler import __version__
-from bcompiler.utils import VALIDATION_REFERENCES
-from bcompiler.utils import SOURCE_DIR, OUTPUT_DIR, DATAMAP_MASTER_TO_RETURN
-from bcompiler.utils import CLEANED_DATAMAP, GMPP_TEMPLATE
-from bcompiler.utils import working_directory, DATAMAP_RETURN_TO_MASTER
-from bcompiler.utils import project_data_line, populate_blank_gmpp_form
-from bcompiler.utils import open_openpyxl_template
-from bcompiler.utils import gmpp_project_names
-from bcompiler.utils import parse_csv_to_file
-from bcompiler.utils import create_master_dict_transposed
 from bcompiler.process import Cleanser
-from openpyxl import load_workbook
-from openpyxl.worksheet.datavalidation import DataValidation
-from openpyxl.styles import Protection
+from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
+                             DATAMAP_RETURN_TO_MASTER, GMPP_TEMPLATE,
+                             OUTPUT_DIR, SOURCE_DIR, VALIDATION_REFERENCES,
+                             create_master_dict_transposed, gmpp_project_names,
+                             open_openpyxl_template, parse_csv_to_file,
+                             populate_blank_gmpp_form, project_data_line,
+                             working_directory)
 
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
@@ -180,8 +177,8 @@ def get_datamap():
         # split on , allowing us to access useful data from data map file
         data_map_line = line.split(',')
         if data_map_line[1] in [
-                'Summary', 'Finance & Benefits', 'Resources',
-                'Approval & Project milestones', 'Assurance planning',
+                'Summary', 'Finance & Benefits', 'Resource',
+                'Approval & Project milestones', 'Assurance Planning',
                 'GMPP'
         ]:
             # the end item in the list is a newline - get rid of that
@@ -356,7 +353,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     dv.add(ws_fb[item['cell_coordinates']])
                     if isinstance(cleaned, datetime.date):
                         ws_fb[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == 'Resources':
+        elif item['sheet'] == 'Resource':
             if has_whiff_of_total(item['cell_description']):
                 pass
             else:
@@ -406,7 +403,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     dv.add(ws_apm[item['cell_coordinates']])
                     if isinstance(cleaned, datetime.date):
                         ws_apm[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == 'Assurance planning':
+        elif item['sheet'] == 'Assurance Planning':
             try:
                 c = Cleanser(test_proj_data[item['cell_description']])
                 cleaned = c.clean()

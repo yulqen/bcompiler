@@ -42,19 +42,10 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              create_master_dict_transposed, gmpp_project_names,
                              open_openpyxl_template, parse_csv_to_file,
                              populate_blank_gmpp_form, project_data_line,
-                             working_directory)
+                             working_directory, SHEETS, CURRENT_QUARTER)
 
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
-
-CURRENT_QUARTER = "Q2 Apr - Jun 2017"
-
-DOCS = os.path.join(os.path.expanduser('~'), 'Documents')
-BCOMPILER_WORKING_D = 'bcompiler_test'
-ROOT_PATH = os.path.join(DOCS, BCOMPILER_WORKING_D)
-
-CONFIG_FILE = os.path.join(DOCS, BCOMPILER_WORKING_D, 'config.ini')
-
 
 def get_parser():
     parser = argparse.ArgumentParser(
@@ -182,11 +173,7 @@ def get_datamap():
     for line in data:
         # split on , allowing us to access useful data from data map file
         data_map_line = line.split(',')
-        if data_map_line[1] in [
-                'Summary', 'Finance & Benefits', 'Resource',
-                'Approval & Project milestones', 'Assurance Planning',
-                'GMPP'
-        ]:
+        if data_map_line[1] in SHEETS:
             # the end item in the list is a newline - get rid of that
             del data_map_line[-1]
         if cell_regex.search(data_map_line[-1]):

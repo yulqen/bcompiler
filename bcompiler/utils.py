@@ -5,6 +5,8 @@ import os
 from datetime import date, datetime
 from math import isclose
 
+import configparser
+
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import PatternFill
 from openpyxl.utils import quote_sheetname
@@ -15,6 +17,19 @@ logger = logging.getLogger('bcompiler.utils')
 
 rdel_cdel_merge = ''
 
+CURRENT_QUARTER = "Q2 Jul - Sep 2017"
+
+DOCS = os.path.join(os.path.expanduser('~'), 'Documents')
+BCOMPILER_WORKING_D = 'bcompiler'
+ROOT_PATH = os.path.join(DOCS, BCOMPILER_WORKING_D)
+
+CONFIG_FILE = os.path.join(DOCS, BCOMPILER_WORKING_D, 'config.ini')
+
+
+config = configparser.ConfigParser()
+config.read(CONFIG_FILE)
+
+SHEETS = [i for i in dict((config.items('TemplateSheets'))).values()]
 
 def quick_typechecker(*args):
     """
@@ -388,10 +403,6 @@ VALIDATION_REFERENCES = {
     "{0}!$AR2:$AR$5".format(quote_sheetname(sheet_name)),
 }
 
-SHEETS = [
-    'Summary', 'Finance & Benefits', 'Resources',
-    'Approval & Project milestones', 'Assurance planning'
-]
 
 
 def row_accessor(row: tuple):

@@ -49,6 +49,10 @@ logger.setLevel(logging.DEBUG)
 
 CURRENT_QUARTER = "Q1 Apr - Jun 2017"
 
+config = configparser.ConfigParser()
+CONFIG_FILE = 'test_config.ini'
+config.read(CONFIG_FILE)
+
 
 def get_parser():
     parser = argparse.ArgumentParser(

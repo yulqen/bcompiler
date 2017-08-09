@@ -49,11 +49,6 @@ logger.setLevel(logging.DEBUG)
 
 CURRENT_QUARTER = "Q1 Apr - Jun 2017"
 
-config = configparser.ConfigParser()
-CONFIG_FILE = 'test_config.ini'
-config.read(CONFIG_FILE)
-
-
 def get_parser():
     parser = argparse.ArgumentParser(
         description='Compile BICC data or prepare Excel BICC return forms.')
@@ -496,6 +491,10 @@ def create_working_directory():
     We need a proper directory to work in.
     :return:
     """
+
+
+    # Check if there is already a configurtion file
+
     docs = os.path.join(os.path.expanduser('~'), 'Documents')
     bcomp_working_d = 'bcompiler'
     root_path = os.path.join(docs, bcomp_working_d)
@@ -504,6 +503,20 @@ def create_working_directory():
         os.mkdir(root_path)
         for folder in folders:
             os.mkdir(os.path.join(root_path, folder))
+        config = configparser.ConfigParser()
+        CONFIG_FILE = os.path.join(docs, bcomp_working_d, 'config.ini')
+
+        if not os.path.isfile(CONFIG_FILE):
+            CONFIG_FILE = open(CONFIG_FILE, 'w')
+            config.add_section('TemplateSheets')
+            config.set('TemplateSheets', 'summary_sheet', 'Summary')
+            config.set('TemplateSheets', 'fb_sheet', 'Finance & Benefits')
+            config.set('TemplateSheets', 'resource_sheet', 'Resource')
+            config.set('TemplateSheets', 'apm', 'Approval & Project milestones')
+            config.set('TemplateSheets', 'ap', 'Assurance Planning')
+            config.write(CONFIG_FILE)
+            CONFIG_FILE.close()
+
         print("Clean working directory created at {}".format(root_path))
     else:
         print("Working directory exists. You can either run the program"

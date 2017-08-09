@@ -1,8 +1,11 @@
 import bcompiler.compile as compile_module
 from ..compile import parse_source_cells as parse
 from ..compile import run
+from ..compile import transpose_master_xlsx
 
 from datetime import date
+
+from openpyxl import load_workbook
 
 
 def test_compile(populated_template, datamap):
@@ -22,4 +25,8 @@ def test_run(datamap):
 
 
 def test_master_xlsx_transpose(master):
-    assert True
+    tm = transpose_master_xlsx(master)
+    wb = load_workbook(tm)
+    ws = wb.active
+    assert ws['A1'].value == "Project/Programme Name"
+    assert ws['A2'].value == "PROJECT/PROGRAME NAME 1"

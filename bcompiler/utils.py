@@ -248,6 +248,19 @@ def index_returns_directory():
     return pnames_in_returns_dir
 
 
+def transpose_master_xlsx(source_file):
+    """
+    Transposes the xlsx master to a new master_transposed.csv file.
+    """
+    output = open(SOURCE_DIR + 'master_transposed.csv', 'w+')
+    wb = load_workbook(source_file)
+    ws = wb.active
+    pass
+
+def splat_rows(row):
+      yield [(c.value, c.row, c.column) for c in row]
+
+
 def parse_csv_to_file(source_file):
     """
     Transposes the master to a new master_transposed.csv file.

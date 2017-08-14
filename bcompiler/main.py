@@ -42,11 +42,13 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              create_master_dict_transposed, gmpp_project_names,
                              open_openpyxl_template, parse_csv_to_file,
                              populate_blank_gmpp_form, project_data_line,
-                             working_directory, SHEETS, CURRENT_QUARTER)
+                             working_directory, SHEETS, CURRENT_QUARTER,
+                             row_data_formatter)
 from bcompiler.utils import runtime_config as config
 
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
+
 
 def get_parser():
     parser = argparse.ArgumentParser(
@@ -62,6 +64,12 @@ def get_parser():
         '--version',
         action="store_true",
         help='displays the current version of bcompiler')
+    parser.add_argument(
+        '-r',
+        '--count-rows',
+        dest='count-rows',
+        action="store_true",
+        help='count rows in each sheet in each return file in output folder')
     parser.add_argument(
         '-p',
         '--parse',
@@ -644,6 +652,9 @@ def main():
         return
     if args['create-wd']:
         create_working_directory()
+        return
+    if args['count-rows']:
+        row_data_formatter()
         return
     if args['f-create-wd']:
         print("This will destroy your existing working directory prior to"

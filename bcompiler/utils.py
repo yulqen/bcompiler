@@ -32,6 +32,35 @@ runtime_config.read(CONFIG_FILE)
 SHEETS = [i for i in dict((runtime_config.items('TemplateSheets'))).values()]
 
 
+def row_check(excel_file: str):
+    wb = load_workbook(excel_file)
+    data = []
+    for sheet in wb.sheetnames:
+        ws = wb[sheet]
+        rows = ws.rows
+        data.append(dict(workbook=excel_file.split('/')[-1], sheet=sheet,
+                    row_count=len(list(rows))))
+    return data
+
+
+def row_data_formatter():
+    output_dir = os.path.join(ROOT_PATH, 'output')
+    tmpl_data = row_check(os.path.join(ROOT_PATH, 'source',
+                                       'bicc_template.xlsx'))
+    # Start with the bicc_template.xlsx BASE data
+    print("{0:<90}{1:<40}{2:<10}".format("Workbook", "Sheet", "Row Count"))
+    print("{:#<150}".format(""))
+    for line in tmpl_data:
+        print(f"{line['workbook']:<90}{line['sheet']:<40}{line['row_count']:<10}")
+    print("{:#<150}".format(""))
+    for f in os.listdir(output_dir):
+        if fnmatch.fnmatch(f, "*_Return.xlsx"):
+            d = row_check(os.path.join(output_dir, f))
+            for line in d:
+                print(f"{line['workbook']:<90}{line['sheet']:<40}{line['row_count']:<10}")
+            print("{:#<150}".format(""))
+
+
 def quick_typechecker(*args):
     """
     Very simple function to filter allowed types (int, float). Any other type

@@ -20,6 +20,7 @@ config.read(CONFIG_FILE)
 
 def test_existence(datamap):
     with open(datamap, 'r', newline='') as f:
+        next(f)  # skip head line
         assert next(f).startswith('Project/Programme Name')
         reader = csv.reader(f)
         assert next(reader)[2] == 'B49'

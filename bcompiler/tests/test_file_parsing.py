@@ -27,5 +27,5 @@ def test_run(datamap):
 def test_datamap_class(datamap):
     dm = Datamap()
     dm.cell_map_from_csv(datamap)
-    assert dm.cell_map[1] == 1
+    assert dm.cell_map[1].cell_reference == 'B49'
 

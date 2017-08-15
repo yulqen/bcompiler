@@ -8,7 +8,7 @@ from typing import Dict, List
 
 from openpyxl import load_workbook, Workbook
 
-from bcompiler.datamap import Datamap
+from .process.datamap import Datamap
 from bcompiler.process import Cleanser
 from bcompiler.process.cellformat import CellFormatState
 from bcompiler.process.simple_comparitor import FileComparitor, ParsedMaster
@@ -43,29 +43,27 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
     """
     ls_of_dataline_dicts = []
     wb = load_workbook(source_file, read_only=True, data_only=True)
-    datamap_obj = Datamap(
-        datamap_type='returns-to-master',
-        source_file=datamap_source_file)
-    for item in datamap_obj.data:
-        # hack for importation (we have a new sheet!)
-        if item.sheet is not None and item.cellref is not None:
-            ws = wb[item.sheet.rstrip()]
+    datamap_obj = Datamap()
+    datamap_obj.cell_map_from_csv(datamap_source_file)
+    for item in datamap_obj.cell_map:
+        if item.template_sheet is not None and item.cell_reference is not None:
+            ws = wb[item.template_sheet]
             try:
-                v = ws[item.cellref.rstrip()].value
+                v = ws[item.cell_reference].value
             except IndexError:
                 logger.error(
                     "Datamap wants sheet: {}; cellref: {} but this is out"
                     "of range.\n\tFile: {}".format(
-                        item.sheet,
-                        item.cellref,
+                        item.template_sheet,
+                        item.cell_reference,
                         source_file))
                 v = ""
             else:
                 if v is None:
                     logger.debug(
                         "{} in {} is empty.".format(
-                            item.cellref,
-                            item.sheet))
+                            item.cell_reference,
+                            item.template_sheet))
                 elif type(v) == str:
                     v = v.rstrip()
                 elif type(v) == float:
@@ -74,8 +72,8 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
                 else:
                     logger.debug(
                         "{} in {} is {}".format(
-                            item.cellref,
-                            item.sheet,
+                            item.cell_reference,
+                            item.template_sheet,
                             v))
                 try:
                     c = Cleanser(v)
@@ -83,12 +81,12 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
                     logger.error(
                         ("Trying to clean an empty cell {} at sheet {} in {}. "
                          "Ignoring.").format(
-                            item.cellref, item.sheet, source_file))
+                            item.cell_reference, item.template_sheet, source_file))
                 except TypeError:
                     pass
                 else:
                     v = c.clean()
-            destination_kv = dict(gmpp_key=item.cellname, gmpp_key_value=v)
+            destination_kv = dict(gmpp_key=item.cell_key, gmpp_key_value=v)
             ls_of_dataline_dicts.append(destination_kv)
     return ls_of_dataline_dicts
 

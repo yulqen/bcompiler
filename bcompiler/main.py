@@ -43,7 +43,7 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              open_openpyxl_template, parse_csv_to_file,
                              populate_blank_gmpp_form, project_data_line,
                              working_directory, SHEETS, CURRENT_QUARTER,
-                             row_data_formatter)
+                             row_data_formatter, ROOT_PATH, CONFIG_FILE)
 from bcompiler.utils import runtime_config as config
 
 logger = colorlog.getLogger('bcompiler')
@@ -116,6 +116,7 @@ def get_parser():
     parser.add_argument(
         '--compare',
         nargs=1,
+        metavar="PATH_TO_FILE TO COMPARE",
         help=('to be used with compile action; file path to master file '
               'to compare to compiled data'))
     parser.add_argument(
@@ -520,13 +521,13 @@ def create_working_directory():
             config.write(cf)
             cf.close()
 
-        print("Clean working directory created at {}".format(ROOT_PATH))
+        logger.info("Clean working directory created at {}".format(ROOT_PATH))
     else:
-        print("Working directory exists. You can either run the program"
-              "like this and files will be overwritten, or you should do"
-              "--force-create-wd to remove the working directory and create "
-              "a new one.\n\nWARNING: this will remove any datamap and "
-              "master.csv files persent.")
+        logger.warning("WORKING DIRECTORY EXISTS. You can either run the program"
+                       " like this and files will be overwritten, or you should do"
+                       " --force-create-wd to remove the working directory and create "
+                       "a new one. THIS WILL REMOVE ANY DATAMAP AND "
+                       "MASTER.CSV FILES PERSENT.")
 
 
 def delete_working_directory():

@@ -75,6 +75,10 @@ def get_parser():
         action="store_true",
         help='if used with -r, will output to csv file in output directory')
     parser.add_argument(
+        '--quiet',
+        action="store_true",
+        help='if used with -r, will only report differences in row count if they occur.')
+    parser.add_argument(
         '-t',
         '--transpose',
         dest='transpose',
@@ -659,8 +663,13 @@ def main():
         create_working_directory()
         return
     if args['count-rows']:
+        if args['csv'] and args['quiet']:
+            logger.critical("-r option can only use --csv or --quiet, not both")
+            return
         if args['csv']:
-            row_data_formatter(True)
+            row_data_formatter(csv_output=True)
+        elif args['quiet']:
+            row_data_formatter(quiet=True)
         else:
             row_data_formatter()
         return

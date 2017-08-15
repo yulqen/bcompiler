@@ -43,12 +43,18 @@ def row_check(excel_file: str):
     return data
 
 
-def row_data_formatter(csv_output=False) -> None:
+def row_data_formatter(csv_output=False, quiet=False) -> None:
     """
     Prints counts of rows in each sheet in each return spreadsheet.
     :param: csv_output - provide True to write output to csv file in output
     directory.
+    :param: quiet - output differing row counts only. Cannot be used with
+    csv_output argument.
     """
+    if csv_output and quiet:
+        logger.critical("Cannot use --csv and --quiet option. Choose one"
+                        " or the other.")
+        return
     try:
         output_dir = os.path.join(ROOT_PATH, 'output')
     except FileNotFoundError:
@@ -63,7 +69,9 @@ def row_data_formatter(csv_output=False) -> None:
         csv_output_path = os.path.join(output_dir, 'row_count.csv')
         csv_output_file = open(csv_output_path, 'w', newline='')
         csv_writer = csv.writer(csv_output_file)
-        print("Writing output to csv file...")
+        logger.info("Writing output to csv file...")
+    elif quiet:
+        logger.info("Looking for anomolies in row counts in each sheet...")
     else:
         print("{0:<90}{1:<40}{2:<10}".format("Workbook", "Sheet", "Row Count"))
         print("{:#<150}".format(""))
@@ -72,6 +80,8 @@ def row_data_formatter(csv_output=False) -> None:
     for line in tmpl_data:
         if csv_output:
             csv_writer.writerow([line['workbook'], line['sheet'], line['row_count']])
+        elif quiet:
+            pass
         else:
             print(f"{line['workbook']:<90}{line['sheet']:<40}{line['row_count']:<10}")
     print("{:#<150}".format(""))
@@ -85,6 +95,8 @@ def row_data_formatter(csv_output=False) -> None:
                 if not flag:
                     if csv_output:
                         csv_writer.writerow([line[1]['workbook'], line[1]['sheet'], line[1]['row_count']])
+                    elif quiet:
+                        pass
                     else:
                         print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10}")
                 else:
@@ -92,7 +104,10 @@ def row_data_formatter(csv_output=False) -> None:
                         csv_writer.writerow([line[1]['workbook'], line[1]['sheet'], line[1]['row_count'], "INCONSISTENT WITH bicc_template.xlsx"])
                     else:
                         print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10} *")
-            print("{:#<150}".format(""))
+            if not quiet:
+                print("{:#<150}".format(""))
+            else:
+                print(".")
     if csv_output:
         print(f"csv output file available at {csv_output_path}")
         csv_output_file.close()

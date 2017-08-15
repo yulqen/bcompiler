@@ -43,7 +43,7 @@ def row_check(excel_file: str):
     return data
 
 
-def row_data_formatter():
+def row_data_formatter(csv_output=False):
     try:
         output_dir = os.path.join(ROOT_PATH, 'output')
     except FileNotFoundError:
@@ -54,12 +54,21 @@ def row_data_formatter():
                                            'bicc_template.xlsx'))
     except FileNotFoundError:
         logger.warning("bicc_template.xlsx not found")
+    if csv_output:
+        csv_output_path = os.path.join(output_dir, 'row_count.csv')
+        csv_output_file = open(csv_output_path, 'w', newline='')
+        csv_writer = csv.writer(csv_output_file)
+        print("Writing output to csv file...")
+    else:
+        print("{0:<90}{1:<40}{2:<10}".format("Workbook", "Sheet", "Row Count"))
+        print("{:#<150}".format(""))
 
     # Start with the bicc_template.xlsx BASE data
-    print("{0:<90}{1:<40}{2:<10}".format("Workbook", "Sheet", "Row Count"))
-    print("{:#<150}".format(""))
     for line in tmpl_data:
-        print(f"{line['workbook']:<90}{line['sheet']:<40}{line['row_count']:<10}")
+        if csv_output:
+            csv_writer.writerow([line['workbook'], line['sheet'], line['row_count']])
+        else:
+            print(f"{line['workbook']:<90}{line['sheet']:<40}{line['row_count']:<10}")
     print("{:#<150}".format(""))
     for f in os.listdir(output_dir):
         if fnmatch.fnmatch(f, "*_Return.xlsx"):
@@ -67,13 +76,21 @@ def row_data_formatter():
             zipped_data = zip(tmpl_data, d)
             for line in zipped_data:
                 counts = [i['row_count'] for i in line]
-                flag = counts[0] == counts[-1]
+                flag = counts[0] != counts[-1]
                 if not flag:
-                    print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10} *")
+                    if csv_output:
+                        csv_writer.writerow([line[1]['workbook'], line[1]['sheet'], line[1]['row_count']])
+                    else:
+                        print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10}")
                 else:
-                    print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10}")
-
+                    if csv_output:
+                        csv_writer.writerow([line[1]['workbook'], line[1]['sheet'], line[1]['row_count'], "INCORRECT"])
+                    else:
+                        print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10} *")
             print("{:#<150}".format(""))
+    if csv_output:
+        print(f"csv output file available at {csv_output_path}")
+        csv_output_file.close()
 
 
 def quick_typechecker(*args):

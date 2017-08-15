@@ -95,11 +95,7 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
 
 def write_excel(source_file, count, workbook, compare_master=None) -> None:
     """
-    count is used to count number of times function is run so that multiple
-    returns can be added
-    and not overwrite the GMPP key column
-    let's create an Excel file in memory
-    it will have one worksheet - let's get it
+    Writes all return data to a single master Excel sheet.
     """
     ws = workbook.active
 

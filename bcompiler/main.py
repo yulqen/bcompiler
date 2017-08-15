@@ -103,7 +103,11 @@ def get_parser():
         action="store_true",
         dest='populate-all-gmpp',
         help='populate blank gmpp forms from master for all projects')
-    parser.add_argument('-a', '--all', action="store_true")
+    parser.add_argument(
+        '-a',
+        '--all',
+        action="store_true",
+        help='populate blank templates with data from master')
     parser.add_argument(
         '-d',
         '--create-wd',
@@ -654,7 +658,7 @@ def main():
             populate_blank_gmpp_form(template_opyxl, project)
         return
     if args['all']:
-        master = '{}master.csv'.format(working_directory('source'))
+        master = os.path.join(working_directory('source'), 'master.csv')
         parse_csv_to_file(master)
         clean_datamap(DATAMAP_RETURN_TO_MASTER)
         pop_all()

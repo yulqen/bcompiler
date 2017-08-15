@@ -350,6 +350,11 @@ def parse_csv_to_file(source_file):
     :return:
     """
     output = open(SOURCE_DIR + 'master_transposed.csv', 'w+')
+    try:
+        source = open(source_file, 'r')
+    except FileNotFoundError:
+        logger.critical(f"There is no file {source_file} present.")
+        return
     with open(source_file, 'r') as source_f:
         lis = [x.split(',') for x in source_f]
         for i in lis:

@@ -277,16 +277,16 @@ def open_openpyxl_template(template_file):
 
 def working_directory(dir_type=None):
     """
-    Returns the working direct for source files
+    Returns the working directory for source files
     :return: path to the working directory intended for the source files
     """
     docs = os.path.join(os.path.expanduser('~'), 'Documents')
+    bcomp_working_d = 'bcompiler'
     try:
-        bcomp_working_d = 'bcompiler'
+        root_path = os.path.join(docs, bcomp_working_d)
     except FileNotFoundError:
         print("You need to run with --create-wd to",
               "create the working directory")
-    root_path = os.path.join(docs, bcomp_working_d)
     if dir_type == 'source':
         return root_path + "/source/"
     elif dir_type == 'output':

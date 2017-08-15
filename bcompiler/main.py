@@ -108,7 +108,11 @@ def get_parser():
         action="store_true",
         dest='f-create-wd',
         help='remove existing working directory and create a new one')
-    parser.add_argument('compile', help='compile BICC returns to master')
+    parser.add_argument(
+        'compile',
+        help='compile BICC returns to master',
+        default='compile',
+        nargs='?')
     parser.add_argument(
         '--compare',
         nargs=1,

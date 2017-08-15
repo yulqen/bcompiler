@@ -249,7 +249,16 @@ def run(compare_master=None):
         # we just want a straight master with no change indication
         workbook = Workbook()
         count = 1
-        for file in os.listdir(RETURNS_DIR):
+        try:
+            d = os.listdir(RETURNS_DIR)
+        except FileNotFoundError:
+            logger.critical("There is no 'returns' directory and therefore "
+                            "therefore no"
+                            " returns to compile. Ensure you have the path "
+                            "'bcompiler/source/returns' and dump your returns "
+                            " files in there. bcompiler -d may help.")
+            return
+        for file in d:
             if fnmatch.fnmatch(file, '*.xlsx'):
                 logger.info("Processing {}".format(file))
                 write_excel(

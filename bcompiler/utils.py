@@ -248,6 +248,14 @@ def populate_blank_gmpp_form(openpyxl_template, project):
     blank.save(fn)
 
 
+def project_data_from_master(master_file: str):
+    wb = load_workbook(master_file)
+    ws = wb.active
+    pass
+
+
+
+
 def project_data_line():
     p_dict = {}
     with open(SOURCE_DIR + 'master_transposed.csv', 'r') as f:

@@ -38,6 +38,8 @@ config.read(CONFIG_FILE)
 
 BICC_TEMPLATE_FOR_TESTS = config['Template']['ActualTemplatePath']
 
+datamap_header = "cell_key,template_sheet,cell_reference,verification"
+
 datamap_data = """
 Project/Programme Name,Summary,B5,
 SRO Sign-Off,Summary,B49,
@@ -160,10 +162,11 @@ def blank_template():
 def datamap():
     name = 'datamap.csv'
     s = io.StringIO()
+    s.write(datamap_header)
     s.write(datamap_data)
     s.seek(0)
     s_string = s.readlines()
-    del s_string[0]
+#   del s_string[0]
     with open('/'.join([TEMPDIR, name]), 'w') as csv_file:
         for x in s_string:
             csv_file.write(x)
@@ -179,9 +182,9 @@ def populated_template():
     output_file = "/".join([RETURNS_FOLDER, 'populated_test_template.xlsx'])
     for fl in range(10):
         with open(dm, 'r', newline='') as f:
-            reader = csv.reader(f)
+            reader = csv.DictReader(f)
             for line in reader:
-                wb[line[1]][line[2]].value = " ".join([line[0].upper(), str(fl)])
+                wb[line['template_sheet']][line['cell_reference']].value = " ".join([line['cell_key'].upper(), str(fl)])
             output_file = "/".join([RETURNS_FOLDER, 'populated_test_template{}.xlsx'
                                     .format(fl)])
             wb.save(output_file)

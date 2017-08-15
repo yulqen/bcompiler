@@ -1,6 +1,7 @@
 import bcompiler.compile as compile_module
 from ..compile import parse_source_cells as parse
 from ..compile import run
+from ..process.datamap import Datamap
 
 from datetime import date
 
@@ -21,4 +22,10 @@ def test_run(datamap):
     setattr(compile_module, 'TODAY', date.today().isoformat())
     setattr(compile_module, 'DATAMAP_RETURN_TO_MASTER', datamap)
     run()
+
+
+def test_datamap_class(datamap):
+    dm = Datamap()
+    dm.cell_map_from_csv(datamap)
+    assert dm.cell_map[1] == 1
 

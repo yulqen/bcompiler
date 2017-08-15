@@ -43,7 +43,12 @@ def row_check(excel_file: str):
     return data
 
 
-def row_data_formatter(csv_output=False):
+def row_data_formatter(csv_output=False) -> None:
+    """
+    Prints counts of rows in each sheet in each return spreadsheet.
+    :param: csv_output - provide True to write output to csv file in output
+    directory.
+    """
     try:
         output_dir = os.path.join(ROOT_PATH, 'output')
     except FileNotFoundError:

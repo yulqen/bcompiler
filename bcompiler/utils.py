@@ -44,9 +44,17 @@ def row_check(excel_file: str):
 
 
 def row_data_formatter():
-    output_dir = os.path.join(ROOT_PATH, 'output')
-    tmpl_data = row_check(os.path.join(ROOT_PATH, 'source',
-                                       'bicc_template.xlsx'))
+    try:
+        output_dir = os.path.join(ROOT_PATH, 'output')
+    except FileNotFoundError:
+        logger.warning("There is no output directory. Run bcompiler -d to "
+                       "set up working directories")
+    try:
+        tmpl_data = row_check(os.path.join(ROOT_PATH, 'source',
+                                           'bicc_template.xlsx'))
+    except FileNotFoundError:
+        logger.warning("bicc_template.xlsx not found")
+
     # Start with the bicc_template.xlsx BASE data
     print("{0:<90}{1:<40}{2:<10}".format("Workbook", "Sheet", "Row Count"))
     print("{:#<150}".format(""))
@@ -56,8 +64,15 @@ def row_data_formatter():
     for f in os.listdir(output_dir):
         if fnmatch.fnmatch(f, "*_Return.xlsx"):
             d = row_check(os.path.join(output_dir, f))
-            for line in d:
-                print(f"{line['workbook']:<90}{line['sheet']:<40}{line['row_count']:<10}")
+            zipped_data = zip(tmpl_data, d)
+            for line in zipped_data:
+                counts = [i['row_count'] for i in line]
+                flag = counts[0] == counts[-1]
+                if not flag:
+                    print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10} *")
+                else:
+                    print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10}")
+
             print("{:#<150}".format(""))
 
 

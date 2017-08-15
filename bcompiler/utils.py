@@ -11,8 +11,6 @@ from openpyxl import load_workbook, Workbook
 from openpyxl.styles import PatternFill
 from openpyxl.utils import quote_sheetname
 
-from bcompiler.datamap import DatamapGMPP
-
 logger = logging.getLogger('bcompiler.utils')
 
 rdel_cdel_merge = ''
@@ -188,72 +186,10 @@ def get_relevant_names(project_name, project_data):
     return (sro_d, pd_d)
 
 
-def populate_blank_gmpp_form(openpyxl_template, project):
-    blank = openpyxl_template
-    dm = DatamapGMPP(
-        '/home/lemon/Documents/bcompiler/source/datamap-master-to-gmpp')
-    logger.info("Grabbing GMPP datamap {}".format(dm.source_file))
-    target_ws = blank['GMPP Return']
-    project_data = project_data_line()
-
-    relevant_names = get_relevant_names(project, project_data)
-    if relevant_names[0] and relevant_names[1]:
-        relevant_names = get_relevant_names(project, project_data)
-    else:
-        relevant_names = [({
-            'first_name': '',
-            'last_name': ''
-        }), ({
-            'first_name': '',
-            'last_name': ''
-        })]
-
-    for line in dm.data:
-
-        if 'Project/Programme Name' in line.cellname:
-            d_to_migrate = project
-            target_ws[line.cellref].value = d_to_migrate
-
-        elif line.cellref is not None:
-            if line.cellname == 'SRO First Name':
-                d_to_migrate = relevant_names[0]['first_name']
-                target_ws[line.cellref].value = d_to_migrate
-            if line.cellname == 'SRO Last Name':
-                d_to_migrate = relevant_names[0]['last_name']
-                target_ws[line.cellref].value = d_to_migrate
-            if line.cellname == 'PD First Name':
-                d_to_migrate = relevant_names[1]['first_name']
-                target_ws[line.cellref].value = d_to_migrate
-            if line.cellname == 'PD Last Name':
-                d_to_migrate = relevant_names[1]['last_name']
-                target_ws[line.cellref].value = d_to_migrate
-
-            try:
-                # pull the data if we can
-                d_to_migrate = project_data[project][line.cellname]
-            except KeyError:
-                logger.warning(("Unable to find {} in master intended for {}"
-                                " in template").format(line.cellname,
-                                                       line.cellref))
-            else:
-                target_ws[line.cellref].value = d_to_migrate
-                logger.debug("Migrating {} from {} to blank template".format(
-                    d_to_migrate, line.cellref))
-    # inject additonal data
-    additional_data = dm.add_additional_data()
-    for line in additional_data:
-        target_ws[line.cellref].value = line.added_data_field
-    fn = OUTPUT_DIR + project + ' Q1_GMPP.xlsx'
-    logger.info("Writing {}".format(fn))
-    blank.save(fn)
-
-
 def project_data_from_master(master_file: str):
     wb = load_workbook(master_file)
     ws = wb.active
     pass
-
-
 
 
 def project_data_line():
@@ -268,25 +204,6 @@ def project_data_line():
             logger.debug(
                 "Adding {} to project_data_line dictionary".format(key))
     return p_dict
-
-
-def gmpp_project_data():
-    data = project_data_line()
-    gmpp_project_data_list = []
-    for project in data:
-        if data[project]['GMPP (GMPP - formally joined GMPP)']:
-            gmpp_project_data_list.append(data[project])
-    return gmpp_project_data_list
-
-
-def gmpp_project_names():
-    data = project_data_line()
-    return [
-        project for project in data
-        if data[project]['GMPP (GMPP - formally joined GMPP)'] != "No" and
-        data[project]['GMPP (GMPP - formally joined GMPP)'] != "NA" and data[
-            project]['GMPP (GMPP - formally joined GMPP)'] != ""
-    ]
 
 
 def open_openpyxl_template(template_file):

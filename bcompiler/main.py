@@ -37,11 +37,11 @@ import bcompiler.compile as compile_returns
 from bcompiler import __version__
 from bcompiler.process import Cleanser
 from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
-                             DATAMAP_RETURN_TO_MASTER, GMPP_TEMPLATE,
+                             DATAMAP_RETURN_TO_MASTER,
                              OUTPUT_DIR, SOURCE_DIR, VALIDATION_REFERENCES,
-                             create_master_dict_transposed, gmpp_project_names,
+                             create_master_dict_transposed,
                              open_openpyxl_template, parse_csv_to_file,
-                             populate_blank_gmpp_form, project_data_line,
+                             project_data_line,
                              working_directory, SHEETS, CURRENT_QUARTER,
                              row_data_formatter, ROOT_PATH, CONFIG_FILE)
 from bcompiler.utils import runtime_config as config
@@ -91,18 +91,6 @@ def get_parser():
         dest='populate',
         metavar='PROJECT_INTEGER',
         help='populate blank bicc forms from master for project N')
-    parser.add_argument(
-        '-g',
-        '--populate-gmpp-form',
-        dest='populate-gmpp',
-        metavar='PROJECT_TITLE',
-        help='populate blank gmpp forms from master for project N')
-    parser.add_argument(
-        '-j',
-        '--populate-all-gmpp',
-        action="store_true",
-        dest='populate-all-gmpp',
-        help='populate blank gmpp forms from master for all projects')
     parser.add_argument(
         '-a',
         '--all',
@@ -642,20 +630,6 @@ def main():
         clean_datamap(DATAMAP_MASTER_TO_RETURN)
         parse_csv_to_file(master)
         populate_blank_bicc_form(master, args['populate'])
-        return
-    if args['populate-gmpp']:
-        master = '{}master.csv'.format(working_directory('source'))
-        parse_csv_to_file(master)
-        template_opyxl = open_openpyxl_template(GMPP_TEMPLATE)
-        populate_blank_gmpp_form(template_opyxl, args['populate-gmpp'])
-        return
-    if args['populate-all-gmpp']:
-        master = '{}master.csv'.format(working_directory('source'))
-        parse_csv_to_file(master)
-        template_opyxl = open_openpyxl_template(GMPP_TEMPLATE)
-        gmpp_projects = gmpp_project_names()
-        for project in gmpp_projects:
-            populate_blank_gmpp_form(template_opyxl, project)
         return
     if args['all']:
         master = os.path.join(working_directory('source'), 'master.csv')

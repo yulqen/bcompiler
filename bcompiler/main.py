@@ -71,23 +71,27 @@ def get_parser():
         action="store_true",
         help='count rows in each sheet in each return file in output folder')
     parser.add_argument(
+        '--csv',
+        action="store_true",
+        help='if used with -r, will output to csv file in output directory')
+    parser.add_argument(
         '-p',
         '--parse',
         dest='parse',
-        metavar='source file',
+        metavar='SOURCE_FILE',
         nargs=1,
         help='parse master.csv and flip to correct orientation')
     parser.add_argument(
         '-b',
         '--populate-bicc-form',
         dest='populate',
-        metavar='project integer',
+        metavar='PROJECT_INTEGER',
         help='populate blank bicc forms from master for project N')
     parser.add_argument(
         '-g',
         '--populate-gmpp-form',
         dest='populate-gmpp',
-        metavar='project title',
+        metavar='PROJECT_TITLE',
         help='populate blank gmpp forms from master for project N')
     parser.add_argument(
         '-j',
@@ -659,7 +663,10 @@ def main():
         create_working_directory()
         return
     if args['count-rows']:
-        row_data_formatter()
+        if args['csv']:
+            row_data_formatter(True)
+        else:
+            row_data_formatter()
         return
     if args['f-create-wd']:
         print("This will destroy your existing working directory prior to"

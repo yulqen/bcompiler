@@ -89,7 +89,7 @@ def row_data_formatter(csv_output=False) -> None:
                         print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10}")
                 else:
                     if csv_output:
-                        csv_writer.writerow([line[1]['workbook'], line[1]['sheet'], line[1]['row_count'], "INCORRECT"])
+                        csv_writer.writerow([line[1]['workbook'], line[1]['sheet'], line[1]['row_count'], "INCONSISTENT WITH bicc_template.xlsx"])
                     else:
                         print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10} *")
             print("{:#<150}".format(""))

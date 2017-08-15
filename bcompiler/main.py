@@ -75,12 +75,12 @@ def get_parser():
         action="store_true",
         help='if used with -r, will output to csv file in output directory')
     parser.add_argument(
-        '-p',
-        '--parse',
-        dest='parse',
+        '-t',
+        '--transpose',
+        dest='transpose',
         metavar='SOURCE_FILE',
         nargs=1,
-        help='parse master.csv and flip to correct orientation')
+        help='tranpose master.csv and flip to opposite orientation')
     parser.add_argument(
         '-b',
         '--populate-bicc-form',
@@ -623,15 +623,11 @@ def main():
         print("{}".format(__version__))
         return
     if args['clean-datamap']:
-        # THIS NEEDS TO BE SORTED OUT. We need to be able to clean based
-        # on the task (RETURN -> MASTER; MASTER -> RETURN)
-        # DO WE NEED THIS FUNCTION AT ALL?
         clean_datamap(DATAMAP_RETURN_TO_MASTER)
-        # clean_datamap(DATAMAP_MASTER_TO_RETURN)
         print("datamap cleaned")
         return
-    if args['parse']:
-        parse_csv_to_file(args['parse'][0])
+    if args['transpose']:
+        parse_csv_to_file(args['transpose'][0])
         return
     if args['populate']:
         master = '{}master.csv'.format(working_directory('source'))

@@ -55,7 +55,7 @@ def row_data_formatter(csv_output=False, quiet=False) -> None:
                         " or the other.")
         return
     try:
-        output_dir = os.path.join(ROOT_PATH, 'output')
+        returns_dir = os.path.join(ROOT_PATH, 'source', 'returns')
     except FileNotFoundError:
         logger.warning("There is no output directory. Run bcompiler -d to "
                        "set up working directories")
@@ -65,7 +65,7 @@ def row_data_formatter(csv_output=False, quiet=False) -> None:
     except FileNotFoundError:
         logger.warning("bicc_template.xlsm not found")
     if csv_output:
-        csv_output_path = os.path.join(output_dir, 'row_count.csv')
+        csv_output_path = os.path.join(returns_dir, 'row_count.csv')
         csv_output_file = open(csv_output_path, 'w', newline='')
         csv_writer = csv.writer(csv_output_file)
         logger.info("Writing output to csv file...")
@@ -84,9 +84,9 @@ def row_data_formatter(csv_output=False, quiet=False) -> None:
         else:
             print(f"{line['workbook']:<90}{line['sheet']:<40}{line['row_count']:<10}")
     print("{:#<150}".format(""))
-    for f in os.listdir(output_dir):
-        if fnmatch.fnmatch(f, "*_Return.xlsm"):
-            d = row_check(os.path.join(output_dir, f))
+    for f in os.listdir(returns_dir):
+        if fnmatch.fnmatch(f, "*.xlsm"):
+            d = row_check(os.path.join(returns_dir, f))
             zipped_data = zip(tmpl_data, d)
             for line in zipped_data:
                 counts = [i['row_count'] for i in line]

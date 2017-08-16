@@ -264,7 +264,7 @@ def index_returns_directory():
 
     pnames_in_returns_dir = []
     for f in target_files:
-        if fnmatch.fnmatch(f, '*.xlsx'):
+        if fnmatch.fnmatch(f, '*.xlsm'):
             wb = load_workbook(os.path.join(RETURNS_DIR, f))
             ws = wb[runtime_config['TemplateSheets']['summary_sheet']]
             pnames_in_returns_dir.append(ws['B5'].value)

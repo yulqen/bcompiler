@@ -565,7 +565,7 @@ def get_dropdown_data(header=None):
 
 
 def get_dropdown_headers():
-    wb = load_workbook(SOURCE_DIR + BLANK_TEMPLATE_FN, data_only=True)
+    wb = load_workbook(SOURCE_DIR + BLANK_TEMPLATE_FN)
     ws = wb['Dropdown']
     rows = ws.rows
     a_row = next(rows)

@@ -85,7 +85,7 @@ def row_data_formatter(csv_output=False, quiet=False) -> None:
             print(f"{line['workbook']:<90}{line['sheet']:<40}{line['row_count']:<10}")
     print("{:#<150}".format(""))
     for f in os.listdir(output_dir):
-        if fnmatch.fnmatch(f, "*_Return.xlsx"):
+        if fnmatch.fnmatch(f, "*_Return.xlsm"):
             d = row_check(os.path.join(output_dir, f))
             zipped_data = zip(tmpl_data, d)
             for line in zipped_data:

@@ -8,7 +8,6 @@ in this file are fixed - their contents may change with template changes.
 """
 import configparser
 import csv
-from datetime import date
 
 from openpyxl import load_workbook
 

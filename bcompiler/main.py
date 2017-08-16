@@ -43,7 +43,9 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              open_openpyxl_template, parse_csv_to_file,
                              project_data_line,
                              working_directory, SHEETS, CURRENT_QUARTER,
-                             row_data_formatter, ROOT_PATH, CONFIG_FILE)
+                             row_data_formatter, ROOT_PATH, CONFIG_FILE,
+                             BLANK_TEMPLATE_FN)
+
 from bcompiler.utils import runtime_config as config
 
 logger = colorlog.getLogger('bcompiler')
@@ -273,7 +275,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     logger.info("Processing project {}.".format(test_proj))
     test_proj_data = proj_data[test_proj]
     logger.info("Getting template...")
-    blank = load_workbook(SOURCE_DIR + 'bicc_template.xlsx')
+    blank = load_workbook(SOURCE_DIR + BLANK_TEMPLATE_FN, keep_vba=True)
     ws_summary = blank[config['TemplateSheets']['summary_sheet']]
     ws_fb = blank[config['TemplateSheets']['fb_sheet']]
     ws_res = blank[config['TemplateSheets']['resource_sheet']]
@@ -464,7 +466,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
         ws_fb], TARGET_LOCK_CELLS)
 
     logger.info("Writing {}".format(test_proj))
-    blank.save(OUTPUT_DIR + '{}_Q1_Return.xlsx'.format(test_proj))
+    blank.save(OUTPUT_DIR + '{}_Q1_Return.xlsm'.format(test_proj))
 
 
 def pop_all():
@@ -548,7 +550,7 @@ def get_dropdown_data(header=None):
     to be dynamic.
     :return tuple of column values from sheet, with header value at list[0]:
     """
-    wb = load_workbook(SOURCE_DIR + 'bicc_template.xlsx', data_only=True)
+    wb = load_workbook(SOURCE_DIR + BLANK_TEMPLATE_FN, data_only=True)
     ws = wb['Dropdown List']
     columns = ws.columns
     col_lis = [col for col in columns]
@@ -563,7 +565,7 @@ def get_dropdown_data(header=None):
 
 
 def get_dropdown_headers():
-    wb = load_workbook(SOURCE_DIR + 'bicc_template.xlsx', data_only=True)
+    wb = load_workbook(SOURCE_DIR + BLANK_TEMPLATE_FN, data_only=True)
     ws = wb['Dropdown']
     rows = ws.rows
     a_row = next(rows)

@@ -28,6 +28,7 @@ runtime_config = configparser.ConfigParser()
 runtime_config.read(CONFIG_FILE)
 
 SHEETS = [i for i in dict((runtime_config.items('TemplateSheets'))).values()]
+BLANK_TEMPLATE_FN = runtime_config['BlankTemplate']['name']
 
 
 def row_check(excel_file: str):
@@ -60,9 +61,9 @@ def row_data_formatter(csv_output=False, quiet=False) -> None:
                        "set up working directories")
     try:
         tmpl_data = row_check(os.path.join(ROOT_PATH, 'source',
-                                           'bicc_template.xlsx'))
+                                           BLANK_TEMPLATE_FN))
     except FileNotFoundError:
-        logger.warning("bicc_template.xlsx not found")
+        logger.warning("bicc_template.xlsm not found")
     if csv_output:
         csv_output_path = os.path.join(output_dir, 'row_count.csv')
         csv_output_file = open(csv_output_path, 'w', newline='')
@@ -74,7 +75,7 @@ def row_data_formatter(csv_output=False, quiet=False) -> None:
         print("{0:<90}{1:<40}{2:<10}".format("Workbook", "Sheet", "Row Count"))
         print("{:#<150}".format(""))
 
-    # Start with the bicc_template.xlsx BASE data
+    # Start with the bicc_template.xlsm BASE data
     for line in tmpl_data:
         if csv_output:
             csv_writer.writerow([line['workbook'], line['sheet'], line['row_count']])
@@ -99,7 +100,7 @@ def row_data_formatter(csv_output=False, quiet=False) -> None:
                         print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10}")
                 else:
                     if csv_output:
-                        csv_writer.writerow([line[1]['workbook'], line[1]['sheet'], line[1]['row_count'], "INCONSISTENT WITH bicc_template.xlsx"])
+                        csv_writer.writerow([line[1]['workbook'], line[1]['sheet'], line[1]['row_count'], "INCONSISTENT WITH bicc_template.xlsm"])
                     else:
                         print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10} *")
             if not quiet:
@@ -245,7 +246,7 @@ DATAMAP_MASTER_TO_RETURN = SOURCE_DIR + 'datamap.csv'
 DATAMAP_MASTER_TO_GMPP = SOURCE_DIR + 'archive/datamap-master-to-gmpp'
 CLEANED_DATAMAP = SOURCE_DIR + 'cleaned_datamap.csv'
 MASTER = SOURCE_DIR + 'master.csv'
-TEMPLATE = SOURCE_DIR + 'bicc_template.xlsx'
+TEMPLATE = SOURCE_DIR + BLANK_TEMPLATE_FN
 GMPP_TEMPLATE = SOURCE_DIR + 'archive/gmpp_template.xlsx'
 
 
@@ -460,10 +461,10 @@ def get_sheets_in_workbook(real_template: str) -> list:
 
 def generate_test_template_from_real(real_template: str, save_path: str) -> None:
     """
-    Given the bicc_template.xlsx file, this function strips it of
+    Given the bicc_template.xlsm file, this function strips it of
     everything but cell data.
-    :param real_template: str path of location of bicc_template.xlsx
-    :param save_path: str path of output directory; file will be named 'gen_bicc_template.xlsx',
+    :param real_template: str path of location of bicc_template.xlsm
+    :param save_path: str path of output directory; file will be named 'gen_bicc_template.xlsm',
     of the form "~/Documents"
     :return:
     """
@@ -480,6 +481,6 @@ def generate_test_template_from_real(real_template: str, save_path: str) -> None
         sheet_order += 1
     if save_path.endswith('/'):
         save_path = save_path[:-1]
-    blank.save(''.join([save_path, '/gen_bicc_template.xlsx']))
+    blank.save(''.join([save_path, '/gen_bicc_template.xlsm']))
 
 

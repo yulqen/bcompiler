@@ -152,7 +152,7 @@ Analysis - future,Resource,J33,Capability RAG,
 @pytest.fixture(scope='module')
 def blank_template():
     gen_template(BICC_TEMPLATE_FOR_TESTS, TEMPDIR)
-    output_file = '/'.join([TEMPDIR, 'gen_bicc_template.xlsx'])
+    output_file = '/'.join([TEMPDIR, 'gen_bicc_template.xlsm'])
 #   yield output_file
     return output_file
 #   os.remove(output_file)
@@ -178,7 +178,7 @@ def populated_template():
     gen_template(BICC_TEMPLATE_FOR_TESTS, TEMPDIR)
     datamap()
     dm = "/".join([TEMPDIR, 'datamap.csv'])
-    wb = load_workbook("/".join([TEMPDIR, 'gen_bicc_template.xlsx']))
+    wb = load_workbook("/".join([TEMPDIR, 'gen_bicc_template.xlsm']))
     output_file = "/".join([RETURNS_FOLDER, 'populated_test_template.xlsx'])
     for fl in range(10):
         with open(dm, 'r', newline='') as f:

@@ -466,7 +466,9 @@ def populate_blank_bicc_form(source_master_file, proj_num):
         ws_fb], TARGET_LOCK_CELLS)
 
     logger.info("Writing {}".format(test_proj))
-    blank.save(OUTPUT_DIR + '{}_Q1_Return.xlsm'.format(test_proj))
+    # Need not to hard code this quarter
+    blank.save(OUTPUT_DIR + '{}_{}_Return.xlsm'.format(
+        test_proj, config['QuarterData']['CurrentQuarter']))
 
 
 def pop_all():

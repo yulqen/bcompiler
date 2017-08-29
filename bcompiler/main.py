@@ -35,6 +35,7 @@ from openpyxl.worksheet.datavalidation import DataValidation
 
 import bcompiler.compile as compile_returns
 from bcompiler import __version__
+from bcompiler.process.datamap import Datamap
 from bcompiler.process import Cleanser
 from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              DATAMAP_RETURN_TO_MASTER,
@@ -44,7 +45,7 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              project_data_line,
                              working_directory, SHEETS, CURRENT_QUARTER,
                              row_data_formatter, ROOT_PATH, CONFIG_FILE,
-                             BLANK_TEMPLATE_FN)
+                             BLANK_TEMPLATE_FN, project_data_from_master)
 
 from bcompiler.utils import runtime_config as config
 
@@ -171,9 +172,14 @@ def get_list_projects(source_master_file):
     """
     Returns a list of Project/Programme Names.
     """
-    reader = create_master_dict_transposed(source_master_file)
-    pl = [row['Project/Programme Name'] for row in reader]
-    return pl
+    try:
+        wb = load_workbook(source_master_file)
+    except FileNotFoundError:
+        logger.critical("Have you copied the compiled master xlsx file into"
+                        " the source directory and named it correctly in config.ini?")
+        return
+    ws = wb.active
+    return [item.value for item in ws[1][1:]]
 
 
 def get_datamap():
@@ -267,8 +273,9 @@ def lock_cells(sheets: list, target_cells: List[Dict]) -> None:
 
 def populate_blank_bicc_form(source_master_file, proj_num):
     logger.info("Reading datamap...")
-    datamap = get_datamap()
-    proj_data = project_data_line()
+    datamap = Datamap()
+    datamap.cell_map_from_csv(os.path.join(SOURCE_DIR, config['Datamap']['name']))
+    proj_data = project_data_from_master(source_master_file)
     logger.info("Getting list of projects...")
     ls = get_list_projects(source_master_file)
     test_proj = ls[int(proj_num)]
@@ -311,151 +318,113 @@ def populate_blank_bicc_form(source_master_file, proj_num):
         {ws_ap: 'A15'}
     ]
 
-    logger.info("Getting data from master.csv...")
-    for item in datamap:
-        if item['sheet'] == config['TemplateSheets']['summary_sheet']:
-            if 'Project/Programme Name' in item['cell_description']:
-                ws_summary[item['cell_coordinates']].value = test_proj
-            try:
-                c = Cleanser(test_proj_data[item['cell_description']])
-                cleaned = c.clean()
-                logger.debug(
-                    "Changed {} to {} for cell_description: {}".format(
-                        test_proj_data[item['cell_description']],
-                        cleaned,
-                        item['cell_description'], ))
-                ws_summary[item['cell_coordinates']].value = cleaned
-                if isinstance(cleaned, datetime.date):
-                    ws_summary[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-            except KeyError:
-                logger.error("Cannot find {} in master.csv".format(item[
-                    'cell_description']))
-                pass
-            if item['validation_header']:
-                dv = create_validation(item['validation_header'])
-                ws_summary.add_data_validation(dv)
-                dv.add(ws_summary[item['cell_coordinates']])
-                if isinstance(cleaned, datetime.date):
-                    ws_summary[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == config['TemplateSheets']['fb_sheet']:
-            if has_whiff_of_total(item['cell_description']):
+    logger.info("Getting data from {}...".format(source_master_file))
+    for item in datamap.cell_map:
+        if item.template_sheet == config['TemplateSheets']['summary_sheet']:
+            if 'Project/Programme Name' in item.cell_key:
+                ws_summary[item.cell_reference].value = test_proj
+                continue
+            if isinstance(test_proj_data[item.cell_key], datetime.datetime):
+                ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
+                continue
+            c = Cleanser(test_proj_data[item.cell_key])
+            cleaned = c.clean()
+            ws_summary[item.cell_reference].value = cleaned
+        elif item.template_sheet == config['TemplateSheets']['fb_sheet']:
+            if has_whiff_of_total(item.cell_key):
                 pass
             else:
                 try:
-                    c = Cleanser(test_proj_data[item['cell_description']])
+                    c = Cleanser(test_proj_data[item.cell_key])
                     cleaned = c.clean()
                     logger.debug(
-                        "Changed {} to {} for cell_description: {}".format(
-                            test_proj_data[item['cell_description']],
+                        "Changed {} to {} for cell_key: {}".format(
+                            test_proj_data[item.cell_key],
                             cleaned,
-                            item['cell_description'], ))
-                    ws_fb[item['cell_coordinates']].value = cleaned
+                            item.cell_key, ))
+                    ws_fb[item.cell_reference].value = cleaned
                     if isinstance(cleaned, datetime.date):
-                        ws_fb[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
+                        ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
                 except KeyError:
-                    logger.error("Cannot find {} in master.csv".format(item[
-                        'cell_description']))
+                    logger.error("Cannot find {} in master.csv".format(item.cell_key))
                     pass
-                if item['validation_header']:
-                    dv = create_validation(item['validation_header'])
-                    ws_fb.add_data_validation(dv)
-                    dv.add(ws_fb[item['cell_coordinates']])
-                    if isinstance(cleaned, datetime.date):
-                        ws_fb[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == config['TemplateSheets']['resource_sheet']:
-            if has_whiff_of_total(item['cell_description']):
+                if isinstance(cleaned, datetime.date):
+                    ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
+        elif item.template_sheet == config['TemplateSheets']['resource_sheet']:
+            if has_whiff_of_total(item.cell_key):
                 pass
             else:
                 try:
-                    c = Cleanser(test_proj_data[item['cell_description']])
+                    c = Cleanser(test_proj_data[item.cell_key])
                     cleaned = c.clean()
                     logger.debug(
-                        "Changed {} to {} for cell_description: {}".format(
-                            test_proj_data[item['cell_description']],
+                        "Changed {} to {} for cell_key: {}".format(
+                            test_proj_data[item.cell_key],
                             cleaned,
-                            item['cell_description'], ))
-                    ws_res[item['cell_coordinates']].value = cleaned
+                            item.cell_key, ))
+                    ws_res[item.cell_reference].value = cleaned
                     if isinstance(cleaned, datetime.date):
-                        ws_res[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
+                        ws_res[item.cell_reference].number_format = 'dd/mm/yyyy'
                 except KeyError:
                     logger.error("Cannot find {} in master.csv".format(item[
-                        'cell_description']))
+                        'cell_key']))
                     pass
-                if item['validation_header']:
-                    dv = create_validation(item['validation_header'])
-                    ws_res.add_data_validation(dv)
-                    dv.add(ws_res[item['cell_coordinates']])
-                    if isinstance(cleaned, datetime.date):
-                        ws_res[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == config['TemplateSheets']['apm']:
-            if has_whiff_of_total(item['cell_description']):
+                if isinstance(cleaned, datetime.date):
+                    ws_res[item.cell_reference].number_format = 'dd/mm/yyyy'
+        elif item.template_sheet == config['TemplateSheets']['apm']:
+            if has_whiff_of_total(item.cell_key):
                 pass
             else:
                 try:
-                    c = Cleanser(test_proj_data[item['cell_description']])
+                    c = Cleanser(test_proj_data[item.cell_key])
                     cleaned = c.clean()
                     logger.debug(
-                        "Changed {} to {} for cell_description: {}".format(
-                            test_proj_data[item['cell_description']],
+                        "Changed {} to {} for cell_key: {}".format(
+                            test_proj_data[item.cell_key],
                             cleaned,
-                            item['cell_description'], ))
-                    ws_apm[item['cell_coordinates']].value = cleaned
+                            item.cell_key, ))
+                    ws_apm[item.cell_reference].value = cleaned
                     if isinstance(cleaned, datetime.date):
-                        ws_apm[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
+                        ws_apm[item.cell_reference].number_format = 'dd/mm/yyyy'
                 except KeyError:
-                    logger.error("Cannot find {} in master.csv".format(item[
-                        'cell_description']))
+                    logger.error("Cannot find {} in master.csv".format(item.cell_key))
                     pass
-                if item['validation_header']:
-                    dv = create_validation(item['validation_header'])
-                    ws_apm.add_data_validation(dv)
-                    dv.add(ws_apm[item['cell_coordinates']])
-                    if isinstance(cleaned, datetime.date):
-                        ws_apm[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == config['TemplateSheets']['ap']:
+                if isinstance(cleaned, datetime.date):
+                    ws_apm[item.cell_reference].number_format = 'dd/mm/yyyy'
+        elif item.template_sheet == config['TemplateSheets']['ap']:
             try:
-                c = Cleanser(test_proj_data[item['cell_description']])
+                c = Cleanser(test_proj_data[item.cell_key])
                 cleaned = c.clean()
                 logger.debug(
-                    "Changed {} to {} for cell_description: {}".format(
-                        test_proj_data[item['cell_description']],
+                    "Changed {} to {} for cell_key: {}".format(
+                        test_proj_data[item.cell_key],
                         cleaned,
-                        item['cell_description'], ))
-                ws_ap[item['cell_coordinates']].value = cleaned
+                        item.cell_key, ))
+                ws_ap[item.cell_reference].value = cleaned
                 if isinstance(cleaned, datetime.date):
-                    ws_ap[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
+                    ws_ap[item.cell_reference].number_format = 'dd/mm/yyyy'
             except KeyError:
-                logger.error("Cannot find {} in master.csv".format(item[
-                    'cell_description']))
+                logger.error("Cannot find {} in master.csv".format(item.cell_key))
                 pass
-            if item['validation_header']:
-                dv = create_validation(item['validation_header'])
-                ws_ap.add_data_validation(dv)
-                dv.add(ws_ap[item['cell_coordinates']])
-                if isinstance(cleaned, datetime.date):
-                    ws_ap[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
-        elif item['sheet'] == config['TemplateSheets']['gmpp']:
+            if isinstance(cleaned, datetime.date):
+                ws_ap[item.cell_reference].number_format = 'dd/mm/yyyy'
+        elif item.template_sheet == config['TemplateSheets']['gmpp']:
             try:
-                c = Cleanser(test_proj_data[item['cell_description']])
+                c = Cleanser(test_proj_data[item.cell_key])
                 cleaned = c.clean()
                 logger.debug(
-                    "Changed {} to {} for cell_description: {}".format(
-                        test_proj_data[item['cell_description']],
+                    "Changed {} to {} for cell_key: {}".format(
+                        test_proj_data[item.cell_key],
                         cleaned,
-                        item['cell_description'], ))
-                ws_gmpp[item['cell_coordinates']].value = cleaned
+                        item.cell_key, ))
+                ws_gmpp[item.cell_reference].value = cleaned
                 if isinstance(cleaned, datetime.date):
-                    ws_gmpp[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
+                    ws_gmpp[item.cell_reference].number_format = 'dd/mm/yyyy'
             except KeyError:
-                logger.error("Cannot find {} in master.csv".format(item[
-                    'cell_description']))
+                logger.error("Cannot find {} in master.csv".format(item.cell_key))
                 pass
-            if item['validation_header']:
-                dv = create_validation(item['validation_header'])
-                ws_gmpp.add_data_validation(dv)
-                dv.add(ws_gmpp[item['cell_coordinates']])
-                if isinstance(cleaned, datetime.date):
-                    ws_gmpp[item['cell_coordinates']].number_format = 'dd/mm/yyyy'
+            if isinstance(cleaned, datetime.date):
+                ws_gmpp[item.cell_reference].number_format = 'dd/mm/yyyy'
 
     imprint_current_quarter(ws_summary)
     lock_cells([
@@ -468,7 +437,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     logger.info("Writing {}".format(test_proj))
     # Need not to hard code this quarter
     blank.save(OUTPUT_DIR + '{}_{}_Return.xlsm'.format(
-        test_proj, config['QuarterData']['CurrentQuarter']))
+        test_proj.replace('/', '_'), config['QuarterData']['CurrentQuarter']))
 
 
 def pop_all():
@@ -476,11 +445,11 @@ def pop_all():
     Populates the blank bicc_template file with data from the master, one
     form for each project dataset.
     """
-    number_of_projects = len(get_list_projects(SOURCE_DIR + 'master.csv'))
+    number_of_projects = len(get_list_projects(os.path.join(SOURCE_DIR, config['Master']['name'])))
     # we need to iterate through the master based on indexes so we use a range
     # based on the number of projects
     for p in range(number_of_projects):
-        populate_blank_bicc_form(SOURCE_DIR + 'master.csv', p)
+        populate_blank_bicc_form(os.path.join(SOURCE_DIR, config['Master']['name']), p)
 
 
 def check_for_correct_source_files():

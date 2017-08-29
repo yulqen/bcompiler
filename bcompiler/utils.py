@@ -2,6 +2,8 @@ import csv
 import fnmatch
 import logging
 import os
+
+from collections import OrderedDict
 from datetime import date, datetime
 from math import isclose
 
@@ -190,7 +192,17 @@ def get_relevant_names(project_name, project_data):
 def project_data_from_master(master_file: str):
     wb = load_workbook(master_file)
     ws = wb.active
-    pass
+    p_dict = {}
+    for col in ws.iter_cols(min_col=2):
+        project_name = ""
+        o = OrderedDict()
+        for cell in col:
+            if cell.row == 1:
+                project_name = cell.value
+                p_dict[project_name] = o
+            else:
+                p_dict[project_name][ws.cell(row=cell.row, column=1).value] = cell.value
+    return p_dict
 
 
 def project_data_line():

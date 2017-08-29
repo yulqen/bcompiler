@@ -39,7 +39,8 @@ def get_current_quarter(source_file):
 def parse_source_cells(source_file: str, datamap_source_file: str) -> \
         List[Dict[str, str]]:
     """
-    Doc string in here.
+    Takes an Excel source file (populated template), and a datamap and extracts
+    the data from the source file according to datamap mappings.
     """
     ls_of_dataline_dicts = []
     wb = load_workbook(source_file, read_only=True, data_only=True)

@@ -151,8 +151,8 @@ Analysis - future,Resource,J33,Capability RAG,
 
 @pytest.fixture(scope='module')
 def blank_template():
-    gen_template(BICC_TEMPLATE_FOR_TESTS, TEMPDIR)
-    output_file = '/'.join([TEMPDIR, 'gen_bicc_template.xlsm'])
+    gen_template(BICC_TEMPLATE_FOR_TESTS, RETURNS_FOLDER)
+    output_file = '/'.join([RETURNS_FOLDER, 'gen_bicc_template.xlsm'])
 #   yield output_file
     return output_file
 #   os.remove(output_file)
@@ -167,10 +167,10 @@ def datamap():
     s.seek(0)
     s_string = s.readlines()
 #   del s_string[0]
-    with open('/'.join([TEMPDIR, name]), 'w') as csv_file:
+    with open('/'.join([RETURNS_FOLDER, name]), 'w') as csv_file:
         for x in s_string:
             csv_file.write(x)
-    return '/'.join([TEMPDIR, name])
+    return '/'.join([RETURNS_FOLDER, name])
 
 
 @pytest.fixture(scope='module')

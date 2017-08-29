@@ -318,27 +318,18 @@ def populate_blank_bicc_form(source_master_file, proj_num):
         {ws_ap: 'A15'}
     ]
 
-    logger.info("Getting data from master.csv...")
+    logger.info("Getting data from {}...".format(source_master_file))
     for item in datamap.cell_map:
         if item.template_sheet == config['TemplateSheets']['summary_sheet']:
             if 'Project/Programme Name' in item.cell_key:
                 ws_summary[item.cell_reference].value = test_proj
-            try:
-                c = Cleanser(test_proj_data[item.cell_key])
-                cleaned = c.clean()
-                logger.debug(
-                    "Changed {} to {} for cell_key: {}".format(
-                        test_proj_data[item.cell_key],
-                        cleaned,
-                        item.cell_key, ))
-                ws_summary[item.cell_reference].value = cleaned
-                if isinstance(cleaned, datetime.date):
-                    ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except KeyError:
-                logger.error("Cannot find {} in master.csv".format(item.cell_key))
-                pass
-            if isinstance(cleaned, datetime.date):
+                continue
+            if isinstance(test_proj_data[item.cell_key], datetime.datetime):
                 ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
+                continue
+            c = Cleanser(test_proj_data[item.cell_key])
+            cleaned = c.clean()
+            ws_summary[item.cell_reference].value = cleaned
         elif item.template_sheet == config['TemplateSheets']['fb_sheet']:
             if has_whiff_of_total(item.cell_key):
                 pass
@@ -454,7 +445,7 @@ def pop_all():
     Populates the blank bicc_template file with data from the master, one
     form for each project dataset.
     """
-    number_of_projects = len(get_list_projects(SOURCE_DIR + 'compiled_master_Q1_DEFINITIVE.xlsx'))
+    number_of_projects = len(get_list_projects(os.path.join(SOURCE_DIR, config['Master']['name'])))
     # we need to iterate through the master based on indexes so we use a range
     # based on the number of projects
     for p in range(number_of_projects):

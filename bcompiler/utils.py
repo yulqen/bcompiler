@@ -188,9 +188,13 @@ def get_relevant_names(project_name, project_data):
 
 
 def project_data_from_master(master_file: str):
+    import pudb; pudb.set_trace()  # XXX BREAKPOINT
     wb = load_workbook(master_file)
     ws = wb.active
-    pass
+    data = {}
+    for col in ws.iter_cols(min_col=2):
+        for cell in col:
+            data['tits'] = cell.value
 
 
 def project_data_line():

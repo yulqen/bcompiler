@@ -172,9 +172,9 @@ def get_list_projects(source_master_file):
     """
     Returns a list of Project/Programme Names.
     """
-    reader = create_master_dict_transposed(source_master_file)
-    pl = [row['Project/Programme Name'] for row in reader]
-    return pl
+    wb = load_workbook(source_master_file)
+    ws = wb.active
+    return [item.value for item in ws[1][1:]]
 
 
 def get_datamap():
@@ -267,6 +267,7 @@ def lock_cells(sheets: list, target_cells: List[Dict]) -> None:
 
 
 def populate_blank_bicc_form(source_master_file, proj_num):
+    import pudb; pudb.set_trace()  # XXX BREAKPOINT
     logger.info("Reading datamap...")
     datamap = Datamap()
     datamap.cell_map_from_csv(os.path.join(SOURCE_DIR, config['Datamap']['name']))

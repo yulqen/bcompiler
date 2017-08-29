@@ -45,7 +45,7 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              project_data_line,
                              working_directory, SHEETS, CURRENT_QUARTER,
                              row_data_formatter, ROOT_PATH, CONFIG_FILE,
-                             BLANK_TEMPLATE_FN)
+                             BLANK_TEMPLATE_FN, project_data_from_master)
 
 from bcompiler.utils import runtime_config as config
 
@@ -172,7 +172,12 @@ def get_list_projects(source_master_file):
     """
     Returns a list of Project/Programme Names.
     """
-    wb = load_workbook(source_master_file)
+    try:
+        wb = load_workbook(source_master_file)
+    except FileNotFoundError:
+        logger.critical("Have you copied the compiled master xlsx file into"
+                        " the source directory and named it correctly in config.ini?")
+        return
     ws = wb.active
     return [item.value for item in ws[1][1:]]
 
@@ -267,11 +272,10 @@ def lock_cells(sheets: list, target_cells: List[Dict]) -> None:
 
 
 def populate_blank_bicc_form(source_master_file, proj_num):
-    import pudb; pudb.set_trace()  # XXX BREAKPOINT
     logger.info("Reading datamap...")
     datamap = Datamap()
     datamap.cell_map_from_csv(os.path.join(SOURCE_DIR, config['Datamap']['name']))
-    proj_data = project_data_line()
+    proj_data = project_data_from_master(source_master_file)
     logger.info("Getting list of projects...")
     ls = get_list_projects(source_master_file)
     test_proj = ls[int(proj_num)]
@@ -450,11 +454,11 @@ def pop_all():
     Populates the blank bicc_template file with data from the master, one
     form for each project dataset.
     """
-    number_of_projects = len(get_list_projects(SOURCE_DIR + 'master.csv'))
+    number_of_projects = len(get_list_projects(SOURCE_DIR + 'compiled_master_Q1_DEFINITIVE.xlsx'))
     # we need to iterate through the master based on indexes so we use a range
     # based on the number of projects
     for p in range(number_of_projects):
-        populate_blank_bicc_form(SOURCE_DIR + 'master.csv', p)
+        populate_blank_bicc_form(os.path.join(SOURCE_DIR, config['Master']['name']), p)
 
 
 def check_for_correct_source_files():

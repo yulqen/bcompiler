@@ -15,7 +15,9 @@ def test_get_list_projects_main_xlsx(master):
 
 def test_pull_data_from_xlsx_master(master):
     data = project_data_from_master(master)
-    assert data['PROJECT/PROGRAMME NAME 1'][1] == 'NOT TRUE'
+    assert data['PROJECT/PROGRAMME NAME 1']['SRO Sign-Off'] == 'SRO SIGN-OFF 1'
+    assert data['PROJECT/PROGRAMME NAME 1'][
+        'Reporting period (GMPP - Snapshot Date)'] == 'REPORTING PERIOD (GMPP - SNAPSHOT DATE) 1'
 
 
 def test_populate_single_template(master, blank_template):

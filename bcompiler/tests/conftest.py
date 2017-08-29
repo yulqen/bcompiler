@@ -151,8 +151,8 @@ Analysis - future,Resource,J33,Capability RAG,
 
 @pytest.fixture(scope='module')
 def blank_template():
-    gen_template(BICC_TEMPLATE_FOR_TESTS, TEMPDIR)
-    output_file = '/'.join([TEMPDIR, 'gen_bicc_template.xlsm'])
+    gen_template(BICC_TEMPLATE_FOR_TESTS, RETURNS_FOLDER)
+    output_file = '/'.join([RETURNS_FOLDER, 'gen_bicc_template.xlsm'])
 #   yield output_file
     return output_file
 #   os.remove(output_file)

@@ -25,7 +25,7 @@ def test_populate_single_template(master, blank_template):
     OUTPUT_DIR = '/tmp/bcompiler-test-output/'
     setattr(main_module, 'OUTPUT_DIR', OUTPUT_DIR)
     setattr(main_module, 'SOURCE_DIR', SOURCE_DIR)
-    setattr(main_module, 'BLANK_TEMPLATE_FN', blank_template)
+    setattr(main_module, 'BLANK_TEMPLATE_FN', ''.join(['/', blank_template.split('/')[-1]]))
     populate(master, 1)
     wb = load_workbook(os.path.join(OUTPUT_DIR, 'A303_Q1_2013_Return.xlsm'))
     ws = wb['Summary']

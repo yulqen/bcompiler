@@ -27,8 +27,6 @@ def test_populate_single_template(master, blank_template):
     setattr(main_module, 'SOURCE_DIR', SOURCE_DIR)
     setattr(main_module, 'BLANK_TEMPLATE_FN', ''.join(['/', blank_template.split('/')[-1]]))
     populate(master, 1)
-    wb = load_workbook(os.path.join(OUTPUT_DIR, 'A303_Q1_2013_Return.xlsm'))
+    wb = load_workbook(os.path.join(OUTPUT_DIR, 'PROJECT_PROGRAMME NAME 2_Q2 Jul - Oct 2017_Return.xlsm'))
     ws = wb['Summary']
-    assert ws['A5'] == 'Chumpers'
-
-
+    assert ws['B5'].value == 'PROJECT/PROGRAMME NAME 2'

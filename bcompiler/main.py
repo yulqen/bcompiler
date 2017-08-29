@@ -437,7 +437,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     logger.info("Writing {}".format(test_proj))
     # Need not to hard code this quarter
     blank.save(OUTPUT_DIR + '{}_{}_Return.xlsm'.format(
-        test_proj, config['QuarterData']['CurrentQuarter']))
+        test_proj.replace('/', '_'), config['QuarterData']['CurrentQuarter']))
 
 
 def pop_all():

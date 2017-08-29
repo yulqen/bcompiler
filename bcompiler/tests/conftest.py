@@ -167,10 +167,10 @@ def datamap():
     s.seek(0)
     s_string = s.readlines()
 #   del s_string[0]
-    with open('/'.join([TEMPDIR, name]), 'w') as csv_file:
+    with open('/'.join([RETURNS_FOLDER, name]), 'w') as csv_file:
         for x in s_string:
             csv_file.write(x)
-    return '/'.join([TEMPDIR, name])
+    return '/'.join([RETURNS_FOLDER, name])
 
 
 @pytest.fixture(scope='module')

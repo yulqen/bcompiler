@@ -272,16 +272,13 @@ def lock_cells(sheets: list, target_cells: List[Dict]) -> None:
 
 
 def populate_blank_bicc_form(source_master_file, proj_num):
-    logger.info("Reading datamap...")
     datamap = Datamap()
     datamap.cell_map_from_csv(os.path.join(SOURCE_DIR, config['Datamap']['name']))
     proj_data = project_data_from_master(source_master_file)
-    logger.info("Getting list of projects...")
     ls = get_list_projects(source_master_file)
     test_proj = ls[int(proj_num)]
     logger.info("Processing project {}.".format(test_proj))
     test_proj_data = proj_data[test_proj]
-    logger.info("Getting template...")
     blank = load_workbook(SOURCE_DIR + BLANK_TEMPLATE_FN, keep_vba=True)
     ws_summary = blank[config['TemplateSheets']['summary_sheet']]
     ws_fb = blank[config['TemplateSheets']['fb_sheet']]
@@ -318,7 +315,6 @@ def populate_blank_bicc_form(source_master_file, proj_num):
         {ws_ap: 'A15'}
     ]
 
-    logger.info("Getting data from {}...".format(source_master_file))
     for item in datamap.cell_map:
         if item.template_sheet == config['TemplateSheets']['summary_sheet']:
             if 'Project/Programme Name' in item.cell_key:
@@ -334,99 +330,52 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             ws_summary[item.cell_reference].value = cleaned
         elif item.template_sheet == config['TemplateSheets']['fb_sheet']:
             if has_whiff_of_total(item.cell_key):
-                pass
-            else:
-                try:
-                    c = Cleanser(test_proj_data[item.cell_key])
-                    cleaned = c.clean()
-                    logger.debug(
-                        "Changed {} to {} for cell_key: {}".format(
-                            test_proj_data[item.cell_key],
-                            cleaned,
-                            item.cell_key, ))
-                    ws_fb[item.cell_reference].value = cleaned
-                    if isinstance(cleaned, datetime.date):
-                        ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
-                except KeyError:
-                    logger.error("Cannot find {} in master.csv".format(item.cell_key))
-                    pass
-                if isinstance(cleaned, datetime.date):
-                    ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
+                continue
+            if isinstance(cleaned, datetime.date):
+                ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
+                continue
+            if test_proj_data[item.cell_key] is None:
+                continue
+            c = Cleanser(str(test_proj_data[item.cell_key]))
+            cleaned = c.clean()
+            ws_fb[item.cell_reference].value = cleaned
         elif item.template_sheet == config['TemplateSheets']['resource_sheet']:
             if has_whiff_of_total(item.cell_key):
-                pass
-            else:
-                try:
-                    c = Cleanser(test_proj_data[item.cell_key])
-                    cleaned = c.clean()
-                    logger.debug(
-                        "Changed {} to {} for cell_key: {}".format(
-                            test_proj_data[item.cell_key],
-                            cleaned,
-                            item.cell_key, ))
-                    ws_res[item.cell_reference].value = cleaned
-                    if isinstance(cleaned, datetime.date):
-                        ws_res[item.cell_reference].number_format = 'dd/mm/yyyy'
-                except KeyError:
-                    logger.error("Cannot find {} in master.csv".format(item[
-                        'cell_key']))
-                    pass
-                if isinstance(cleaned, datetime.date):
-                    ws_res[item.cell_reference].number_format = 'dd/mm/yyyy'
+                continue
+            if isinstance(cleaned, datetime.date):
+                ws_res[item.cell_reference].number_format = 'dd/mm/yyyy'
+            if test_proj_data[item.cell_key] is None:
+                continue
+            c = Cleanser(str(test_proj_data[item.cell_key]))
+            cleaned = c.clean()
+            ws_res[item.cell_reference].value = cleaned
         elif item.template_sheet == config['TemplateSheets']['apm']:
             if has_whiff_of_total(item.cell_key):
-                pass
-            else:
-                try:
-                    c = Cleanser(test_proj_data[item.cell_key])
-                    cleaned = c.clean()
-                    logger.debug(
-                        "Changed {} to {} for cell_key: {}".format(
-                            test_proj_data[item.cell_key],
-                            cleaned,
-                            item.cell_key, ))
-                    ws_apm[item.cell_reference].value = cleaned
-                    if isinstance(cleaned, datetime.date):
-                        ws_apm[item.cell_reference].number_format = 'dd/mm/yyyy'
-                except KeyError:
-                    logger.error("Cannot find {} in master.csv".format(item.cell_key))
-                    pass
-                if isinstance(cleaned, datetime.date):
-                    ws_apm[item.cell_reference].number_format = 'dd/mm/yyyy'
+                continue
+            if isinstance(cleaned, datetime.date):
+                ws_apm[item.cell_reference].number_format = 'dd/mm/yyyy'
+            if test_proj_data[item.cell_key] is None:
+                continue
+            c = Cleanser(str(test_proj_data[item.cell_key]))
+            cleaned = c.clean()
+            ws_apm[item.cell_reference].value = cleaned
         elif item.template_sheet == config['TemplateSheets']['ap']:
-            try:
-                c = Cleanser(test_proj_data[item.cell_key])
-                cleaned = c.clean()
-                logger.debug(
-                    "Changed {} to {} for cell_key: {}".format(
-                        test_proj_data[item.cell_key],
-                        cleaned,
-                        item.cell_key, ))
-                ws_ap[item.cell_reference].value = cleaned
-                if isinstance(cleaned, datetime.date):
-                    ws_ap[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except KeyError:
-                logger.error("Cannot find {} in master.csv".format(item.cell_key))
-                pass
             if isinstance(cleaned, datetime.date):
                 ws_ap[item.cell_reference].number_format = 'dd/mm/yyyy'
+            if test_proj_data[item.cell_key] is None:
+                continue
+            c = Cleanser(str(test_proj_data[item.cell_key]))
+            cleaned = c.clean()
+            ws_ap[item.cell_reference].value = cleaned
         elif item.template_sheet == config['TemplateSheets']['gmpp']:
-            try:
-                c = Cleanser(test_proj_data[item.cell_key])
-                cleaned = c.clean()
-                logger.debug(
-                    "Changed {} to {} for cell_key: {}".format(
-                        test_proj_data[item.cell_key],
-                        cleaned,
-                        item.cell_key, ))
-                ws_gmpp[item.cell_reference].value = cleaned
-                if isinstance(cleaned, datetime.date):
-                    ws_gmpp[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except KeyError:
-                logger.error("Cannot find {} in master.csv".format(item.cell_key))
-                pass
             if isinstance(cleaned, datetime.date):
-                ws_gmpp[item.cell_reference].number_format = 'dd/mm/yyyy'
+                ws_ap[item.cell_reference].number_format = 'dd/mm/yyyy'
+                continue
+            if test_proj_data[item.cell_key] is None:
+                continue
+            c = Cleanser(str(test_proj_data[item.cell_key]))
+            cleaned = c.clean()
+            ws_gmpp[item.cell_reference].value = cleaned
 
     imprint_current_quarter(ws_summary)
     lock_cells([
@@ -436,7 +385,6 @@ def populate_blank_bicc_form(source_master_file, proj_num):
         ws_ap,
         ws_fb], TARGET_LOCK_CELLS)
 
-    logger.info("Writing {}".format(test_proj))
     # Need not to hard code this quarter
     blank.save(OUTPUT_DIR + '{}_{}_Return.xlsm'.format(
         test_proj.replace('/', '_'), config['QuarterData']['CurrentQuarter']))

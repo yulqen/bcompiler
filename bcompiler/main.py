@@ -327,7 +327,9 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             if isinstance(test_proj_data[item.cell_key], datetime.datetime):
                 ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
                 continue
-            c = Cleanser(test_proj_data[item.cell_key])
+            if test_proj_data[item.cell_key] is None:
+                continue
+            c = Cleanser(str(test_proj_data[item.cell_key]))
             cleaned = c.clean()
             ws_summary[item.cell_reference].value = cleaned
         elif item.template_sheet == config['TemplateSheets']['fb_sheet']:

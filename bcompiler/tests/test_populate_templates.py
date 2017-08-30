@@ -1,4 +1,5 @@
 import bcompiler.main as main_module
+import glob
 import os
 
 from openpyxl import load_workbook
@@ -26,7 +27,9 @@ def test_populate_single_template(master, blank_template):
     setattr(main_module, 'OUTPUT_DIR', OUTPUT_DIR)
     setattr(main_module, 'SOURCE_DIR', SOURCE_DIR)
     setattr(main_module, 'BLANK_TEMPLATE_FN', ''.join(['/', blank_template.split('/')[-1]]))
-    populate(master, 1)
-    wb = load_workbook(os.path.join(OUTPUT_DIR, 'PROJECT_PROGRAMME NAME 2_Q2 Jul - Oct 2017_Return.xlsm'))
+    populate(master, 0)
+    wb = load_workbook(os.path.join(OUTPUT_DIR, 'PROJECT_PROGRAMME NAME 1_Q2 Jul - Oct 2017_Return.xlsm'))
     ws = wb['Summary']
-    assert ws['B5'].value == 'PROJECT/PROGRAMME NAME 2'
+    assert ws['B5'].value == 'PROJECT/PROGRAMME NAME 1'
+    for f in glob.glob('/'.join([OUTPUT_DIR, '*_Return.xlsm'])):
+        os.remove(f)

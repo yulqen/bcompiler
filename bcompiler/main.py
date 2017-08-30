@@ -385,7 +385,6 @@ def populate_blank_bicc_form(source_master_file, proj_num):
         ws_ap,
         ws_fb], TARGET_LOCK_CELLS)
 
-    # Need not to hard code this quarter
     blank.save(OUTPUT_DIR + '{}_{}_Return.xlsm'.format(
         test_proj.replace('/', '_'), config['QuarterData']['CurrentQuarter']))
 

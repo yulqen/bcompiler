@@ -186,7 +186,10 @@ def populated_template():
         with open(dm, 'r', newline='') as f:
             reader = csv.DictReader(f)
             for line in reader:
-                wb[line['template_sheet']][line['cell_reference']].value = " ".join([line['cell_key'].upper(), str(fl)])
+                if line['cell_key'].startswith('Date'):  # we want to test date strings
+                    wb[line['template_sheet']][line['cell_reference']].value = "20/06/2017"
+                else:
+                    wb[line['template_sheet']][line['cell_reference']].value = " ".join([line['cell_key'].upper(), str(fl)])
             output_file = "/".join([RETURNS_FOLDER, 'populated_test_template{}.xlsx'
                                     .format(fl)])
             wb.save(output_file)

@@ -50,6 +50,6 @@ def test_populate_date_format(master, blank_template):
     populate(master, 0)
     wb = load_workbook(os.path.join(OUTPUT_DIR, 'PROJECT_PROGRAMME NAME 1_Q2 Jul - Oct 2017_Return.xlsm'))
     ws = wb[config['TemplateTestData']['fb_sheet']]
-    assert ws['E12'].value == '20/06/2017'
+    assert ws['E11'].value == '20/06/2017'
     for f in glob.glob('/'.join([OUTPUT_DIR, '*_Return.xlsm'])):
         os.remove(f)

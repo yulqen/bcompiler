@@ -322,6 +322,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 continue
             if isinstance(test_proj_data[item.cell_key], datetime.datetime):
                 ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
+                ws_summary[item.cell_reference].value = test_proj_data[item.cell_key]
                 continue
             if test_proj_data[item.cell_key] is None:
                 continue
@@ -331,8 +332,9 @@ def populate_blank_bicc_form(source_master_file, proj_num):
         elif item.template_sheet == config['TemplateSheets']['fb_sheet']:
             if has_whiff_of_total(item.cell_key):
                 continue
-            if isinstance(cleaned, datetime.date):
+            if isinstance(test_proj_data[item.cell_key], datetime.datetime):
                 ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
+                ws_fb[item.cell_reference].value = test_proj_data[item.cell_key]
                 continue
             if test_proj_data[item.cell_key] is None:
                 continue
@@ -342,8 +344,9 @@ def populate_blank_bicc_form(source_master_file, proj_num):
         elif item.template_sheet == config['TemplateSheets']['resource_sheet']:
             if has_whiff_of_total(item.cell_key):
                 continue
-            if isinstance(cleaned, datetime.date):
+            if isinstance(test_proj_data[item.cell_key], datetime.datetime):
                 ws_res[item.cell_reference].number_format = 'dd/mm/yyyy'
+                ws_res[item.cell_reference].value = test_proj_data[item.cell_key]
             if test_proj_data[item.cell_key] is None:
                 continue
             c = Cleanser(str(test_proj_data[item.cell_key]))
@@ -352,24 +355,27 @@ def populate_blank_bicc_form(source_master_file, proj_num):
         elif item.template_sheet == config['TemplateSheets']['apm']:
             if has_whiff_of_total(item.cell_key):
                 continue
-            if isinstance(cleaned, datetime.date):
+            if isinstance(test_proj_data[item.cell_key], datetime.datetime):
                 ws_apm[item.cell_reference].number_format = 'dd/mm/yyyy'
+                ws_apm[item.cell_reference].value = test_proj_data[item.cell_key]
             if test_proj_data[item.cell_key] is None:
                 continue
             c = Cleanser(str(test_proj_data[item.cell_key]))
             cleaned = c.clean()
             ws_apm[item.cell_reference].value = cleaned
         elif item.template_sheet == config['TemplateSheets']['ap']:
-            if isinstance(cleaned, datetime.date):
+            if isinstance(test_proj_data[item.cell_key], datetime.datetime):
                 ws_ap[item.cell_reference].number_format = 'dd/mm/yyyy'
+                ws_ap[item.cell_reference].value = test_proj_data[item.cell_key]
             if test_proj_data[item.cell_key] is None:
                 continue
             c = Cleanser(str(test_proj_data[item.cell_key]))
             cleaned = c.clean()
             ws_ap[item.cell_reference].value = cleaned
         elif item.template_sheet == config['TemplateSheets']['gmpp']:
-            if isinstance(cleaned, datetime.date):
-                ws_ap[item.cell_reference].number_format = 'dd/mm/yyyy'
+            if isinstance(test_proj_data[item.cell_key], datetime.datetime):
+                ws_gmpp[item.cell_reference].number_format = 'dd/mm/yyyy'
+                ws_gmpp[item.cell_reference].value = test_proj_data[item.cell_key]
                 continue
             if test_proj_data[item.cell_key] is None:
                 continue

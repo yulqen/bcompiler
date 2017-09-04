@@ -4,7 +4,7 @@ import io
 import os
 import tempfile
 
-from datetime import date
+from datetime import datetime
 
 import pytest
 from openpyxl import load_workbook, Workbook
@@ -215,9 +215,9 @@ def master():
             ix = next(g).split(',')[0]
             ws[f"A{str(item[0])}"] = ix
             if item[1].startswith('Date'):  # testing for date objects
-                ws[f"B{str(item[0])}"] = date(2017, 6, 20)
-                ws[f"C{str(item[0])}"] = date(2017, 6, 20)
-                ws[f"D{str(item[0])}"] = date(2017, 6, 20)
+                ws[f"B{str(item[0])}"] = datetime(2017, 6, 20)
+                ws[f"C{str(item[0])}"] = datetime(2017, 6, 20)
+                ws[f"D{str(item[0])}"] = datetime(2017, 6, 20)
             else:
                 ws[f"B{str(item[0])}"] = " ".join([ix.upper(), "1"])
                 ws[f"C{str(item[0])}"] = " ".join([ix.upper(), "2"])

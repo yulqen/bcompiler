@@ -321,8 +321,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 ws_summary[item.cell_reference].value = test_proj
                 continue
             if isinstance(test_proj_data[item.cell_key], datetime.datetime):
-                ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
                 ws_summary[item.cell_reference].value = test_proj_data[item.cell_key]
+                ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
                 continue
             if test_proj_data[item.cell_key] is None:
                 continue

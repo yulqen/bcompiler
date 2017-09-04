@@ -38,8 +38,8 @@ def test_populate_single_template(master, blank_template):
     wb = load_workbook(os.path.join(OUTPUT_DIR, 'PROJECT_PROGRAMME NAME 1_Q2 Jul - Oct 2017_Return.xlsm'))
     ws = wb[config['TemplateTestData']['summary_sheet']]
     assert ws['B5'].value == 'PROJECT/PROGRAMME NAME 1'
-    for f in glob.glob('/'.join([OUTPUT_DIR, '*_Return.xlsm'])):
-        os.remove(f)
+    # for f in glob.glob('/'.join([OUTPUT_DIR, '*_Return.xlsm'])):
+    #     os.remove(f)
 
 
 def test_populate_date_cell(master, blank_template):
@@ -53,5 +53,7 @@ def test_populate_date_cell(master, blank_template):
     ws = wb[config['TemplateTestData']['fb_sheet']]
     assert ws['E11'].value == datetime(2017, 6, 20)
     assert ws['C13'].value == datetime(2017, 6, 20)
-    for f in glob.glob('/'.join([OUTPUT_DIR, '*_Return.xlsm'])):
-        os.remove(f)
+    ws = wb[config['TemplateTestData']['summary_sheet']]
+    assert ws['C15'].value == datetime(2017, 8, 10)
+    # for f in glob.glob('/'.join([OUTPUT_DIR, '*_Return.xlsm'])):
+    #     os.remove(f)

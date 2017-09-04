@@ -55,6 +55,8 @@ DFT ID Number,Summary,B6,
 MPA ID Number,Summary,C6,
 Working Contact Name,Summary,H8,
 Working Contact Telephone,Summary,H9,
+SRO Tenure Start Date,Summary,C15,
+SRO Tenure End Date,Summary,C17,
 Working Contact Email,Summary,H10,
 DfT Group,Summary,B8,DfT Group,
 DfT Division,Summary,B9,DfT Division,
@@ -188,6 +190,8 @@ def populated_template():
             for line in reader:
                 if line['cell_key'].startswith('Date'):  # we want to test date strings
                     wb[line['template_sheet']][line['cell_reference']].value = "20/06/2017"
+                elif line['cell_key'].startswith('SRO Tenure'):  # we want to test date strings
+                    wb[line['template_sheet']][line['cell_reference']].value = "10/08/2017"
                 else:
                     wb[line['template_sheet']][line['cell_reference']].value = " ".join([line['cell_key'].upper(), str(fl)])
             output_file = "/".join([RETURNS_FOLDER, 'populated_test_template{}.xlsx'
@@ -218,6 +222,10 @@ def master():
                 ws[f"B{str(item[0])}"] = datetime(2017, 6, 20)
                 ws[f"C{str(item[0])}"] = datetime(2017, 6, 20)
                 ws[f"D{str(item[0])}"] = datetime(2017, 6, 20)
+            elif item[1].startswith('SRO Tenure'):  # testing for date objects
+                ws[f"B{str(item[0])}"] = datetime(2017, 8, 10)
+                ws[f"C{str(item[0])}"] = datetime(2017, 8, 10)
+                ws[f"D{str(item[0])}"] = datetime(2017, 8, 10)
             else:
                 ws[f"B{str(item[0])}"] = " ".join([ix.upper(), "1"])
                 ws[f"C{str(item[0])}"] = " ".join([ix.upper(), "2"])

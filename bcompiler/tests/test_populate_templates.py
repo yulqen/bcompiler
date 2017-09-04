@@ -1,4 +1,5 @@
 import bcompiler.main as main_module
+from datetime import datetime
 import configparser
 import glob
 import os
@@ -41,7 +42,7 @@ def test_populate_single_template(master, blank_template):
         os.remove(f)
 
 
-def test_populate_date_format(master, blank_template):
+def test_populate_date_cell(master, blank_template):
     SOURCE_DIR = '/tmp/bcompiler-test'
     OUTPUT_DIR = '/tmp/bcompiler-test-output/'
     setattr(main_module, 'OUTPUT_DIR', OUTPUT_DIR)
@@ -50,6 +51,7 @@ def test_populate_date_format(master, blank_template):
     populate(master, 0)
     wb = load_workbook(os.path.join(OUTPUT_DIR, 'PROJECT_PROGRAMME NAME 1_Q2 Jul - Oct 2017_Return.xlsm'))
     ws = wb[config['TemplateTestData']['fb_sheet']]
-    assert ws['E11'].value == '20/06/2017'
+    assert ws['E11'].value == datetime(2017, 6, 20)
+    assert ws['C13'].value == datetime(2017, 6, 20)
     for f in glob.glob('/'.join([OUTPUT_DIR, '*_Return.xlsm'])):
         os.remove(f)

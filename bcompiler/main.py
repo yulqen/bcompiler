@@ -333,8 +333,10 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             if has_whiff_of_total(item.cell_key):
                 continue
             if isinstance(test_proj_data[item.cell_key], datetime.datetime):
-                ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
+                c = Cleanser(str(test_proj_data[item.cell_key]))
+                cleaned = c.clean()
                 ws_fb[item.cell_reference].value = test_proj_data[item.cell_key]
+                ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
                 continue
             if test_proj_data[item.cell_key] is None:
                 continue
@@ -345,8 +347,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             if has_whiff_of_total(item.cell_key):
                 continue
             if isinstance(test_proj_data[item.cell_key], datetime.datetime):
-                ws_res[item.cell_reference].number_format = 'dd/mm/yyyy'
                 ws_res[item.cell_reference].value = test_proj_data[item.cell_key]
+                ws_res[item.cell_reference].number_format = 'dd/mm/yyyy'
             if test_proj_data[item.cell_key] is None:
                 continue
             c = Cleanser(str(test_proj_data[item.cell_key]))
@@ -356,8 +358,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             if has_whiff_of_total(item.cell_key):
                 continue
             if isinstance(test_proj_data[item.cell_key], datetime.datetime):
-                ws_apm[item.cell_reference].number_format = 'dd/mm/yyyy'
                 ws_apm[item.cell_reference].value = test_proj_data[item.cell_key]
+                ws_apm[item.cell_reference].number_format = 'dd/mm/yyyy'
             if test_proj_data[item.cell_key] is None:
                 continue
             c = Cleanser(str(test_proj_data[item.cell_key]))
@@ -365,8 +367,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             ws_apm[item.cell_reference].value = cleaned
         elif item.template_sheet == config['TemplateSheets']['ap']:
             if isinstance(test_proj_data[item.cell_key], datetime.datetime):
-                ws_ap[item.cell_reference].number_format = 'dd/mm/yyyy'
                 ws_ap[item.cell_reference].value = test_proj_data[item.cell_key]
+                ws_ap[item.cell_reference].number_format = 'dd/mm/yyyy'
             if test_proj_data[item.cell_key] is None:
                 continue
             c = Cleanser(str(test_proj_data[item.cell_key]))
@@ -374,8 +376,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             ws_ap[item.cell_reference].value = cleaned
         elif item.template_sheet == config['TemplateSheets']['gmpp']:
             if isinstance(test_proj_data[item.cell_key], datetime.datetime):
-                ws_gmpp[item.cell_reference].number_format = 'dd/mm/yyyy'
                 ws_gmpp[item.cell_reference].value = test_proj_data[item.cell_key]
+                ws_gmpp[item.cell_reference].number_format = 'dd/mm/yyyy'
                 continue
             if test_proj_data[item.cell_key] is None:
                 continue

@@ -179,7 +179,7 @@ def get_list_projects(source_master_file):
                         " the source directory and named it correctly in config.ini?")
         return
     ws = wb.active
-    return [item.value for item in ws[1][1:]]
+    return [item.value for item in ws[1][1:] if item.value is not None]
 
 
 def get_datamap():

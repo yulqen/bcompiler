@@ -22,8 +22,9 @@ CURRENT_QUARTER = "Q2 Jul - Sep 2017"
 DOCS = os.path.join(os.path.expanduser('~'), 'Documents')
 BCOMPILER_WORKING_D = 'bcompiler'
 ROOT_PATH = os.path.join(DOCS, BCOMPILER_WORKING_D)
+SOURCE_DIR = os.path.join(ROOT_PATH, 'source')
 
-CONFIG_FILE = os.path.join(DOCS, BCOMPILER_WORKING_D, 'config.ini')
+CONFIG_FILE = os.path.join(SOURCE_DIR, 'config.ini')
 
 
 runtime_config = configparser.ConfigParser()
@@ -67,7 +68,7 @@ def row_data_formatter(csv_output=False, quiet=False) -> None:
     except FileNotFoundError:
         logger.warning("bicc_template.xlsm not found")
     if csv_output:
-        csv_output_path = os.path.join(returns_dir, 'row_count.csv')
+        csv_output_path = os.path.join(OUTPUT_DIR, 'row_count.csv')
         csv_output_file = open(csv_output_path, 'w', newline='')
         csv_writer = csv.writer(csv_output_file)
         logger.info("Writing output to csv file...")

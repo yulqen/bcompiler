@@ -181,7 +181,7 @@ def datamap():
 def populated_template():
     gen_template(BICC_TEMPLATE_FOR_TESTS, TEMPDIR)
     datamap()
-    dm = "/".join([TEMPDIR, 'datamap.csv'])
+    dm = "/".join([RETURNS_FOLDER, 'datamap.csv'])
     wb = load_workbook("/".join([TEMPDIR, 'gen_bicc_template.xlsm']), keep_vba=True)
     output_file = "/".join([RETURNS_FOLDER, 'populated_test_template.xlsx'])
     for fl in range(10):

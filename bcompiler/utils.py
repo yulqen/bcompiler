@@ -110,6 +110,8 @@ def row_data_formatter(csv_output=False, quiet=False) -> None:
                 print("{:#<150}".format(""))
             else:
                 print(".")
+        else:
+            logger.critical(f"{f} does not have .xlsm file extension.")
     if csv_output:
         print(f"csv output file available at {csv_output_path}")
         csv_output_file.close()

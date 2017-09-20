@@ -329,7 +329,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     ws_summary[item.cell_reference].value = test_proj_data[item.cell_key]
                     ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
             except TypeError:
-                continue
+                pass
             if test_proj_data[item.cell_key] is None:
                 continue
             c = Cleanser(str(test_proj_data[item.cell_key]))
@@ -349,7 +349,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     ws_fb[item.cell_reference].value = test_proj_data[item.cell_key]
                     ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
             except TypeError:
-                continue
+                pass
             if test_proj_data[item.cell_key] is None:
                 continue
             c = Cleanser(str(test_proj_data[item.cell_key]))
@@ -368,7 +368,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     ws_res[item.cell_reference].value = test_proj_data[item.cell_key]
                     ws_res[item.cell_reference].number_format = 'dd/mm/yyyy'
             except TypeError:
-                continue
+                pass
             c = Cleanser(str(test_proj_data[item.cell_key]))
             cleaned = c.clean()
             ws_res[item.cell_reference].value = cleaned
@@ -385,7 +385,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     ws_apm[item.cell_reference].value = test_proj_data[item.cell_key]
                     ws_apm[item.cell_reference].number_format = 'dd/mm/yyyy'
             except TypeError:
-                continue
+                pass
             c = Cleanser(str(test_proj_data[item.cell_key]))
             cleaned = c.clean()
             ws_apm[item.cell_reference].value = cleaned
@@ -400,7 +400,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     ws_ap[item.cell_reference].value = test_proj_data[item.cell_key]
                     ws_ap[item.cell_reference].number_format = 'dd/mm/yyyy'
             except TypeError:
-                continue
+                pass
             c = Cleanser(str(test_proj_data[item.cell_key]))
             cleaned = c.clean()
             ws_ap[item.cell_reference].value = cleaned
@@ -414,7 +414,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                     ws_gmpp[item.cell_reference].value = test_proj_data[item.cell_key]
                     ws_gmpp[item.cell_reference].number_format = 'dd/mm/yyyy'
             except TypeError:
-                continue
+                pass
             if test_proj_data[item.cell_key] is None:
                 continue
             c = Cleanser(str(test_proj_data[item.cell_key]))

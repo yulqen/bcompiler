@@ -204,7 +204,12 @@ def project_data_from_master(master_file: str):
                 project_name = cell.value
                 p_dict[project_name] = o
             else:
-                p_dict[project_name][ws.cell(row=cell.row, column=1).value] = cell.value
+                val = ws.cell(row=cell.row, column=1).value
+                if type(cell.value) == datetime:
+                    d_value = date(cell.value.year, cell.value.month, cell.value.day)
+                    p_dict[project_name][val] = d_value
+                else:
+                    p_dict[project_name][val] = cell.value
     return p_dict
 
 

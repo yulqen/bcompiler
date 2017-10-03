@@ -58,7 +58,9 @@ Install git:
 
 Install bcompiler:
 
-* In command window, type ``pip install git+https://git@bitbucket.org/mrlemon/bcompiler.git``
+* In the command window, type ``pip uninstall bcompiler`` to uninstall any existing installation of
+  ``bcompiler``. 
+* In command window, type ``pip install git+https://git@bitbucket.org/mrlemon/bcompiler.git``, or if you choose not to remove ``bcompiler`` first (see point above), then type ``pip install -U git+https://git@bitbucket.org/mrlemon/bcompiler.git`` to upgrade to the latest version of ``bcompiler``.
 
 
 Initialising bcompiler:

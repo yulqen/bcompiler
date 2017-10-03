@@ -177,6 +177,7 @@ def get_list_projects(source_master_file):
     except FileNotFoundError:
         logger.critical("Have you copied the compiled master xlsx file into"
                         " the source directory and named it correctly in config.ini?")
+        sys.exit(1)
         return
     ws = wb.active
     return [item.value for item in ws[1][1:] if item.value is not None]
@@ -599,7 +600,6 @@ def main():
         return
     if args['all']:
         master = os.path.join(working_directory('source'), 'master.csv')
-        parse_csv_to_file(master)
         clean_datamap(DATAMAP_RETURN_TO_MASTER)
         pop_all()
         return

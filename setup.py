@@ -58,6 +58,7 @@ setup(
     packages=find_packages(),
     entry_points={'console_scripts': [
         'bcompiler = bcompiler.main:main',
+        'bcompiler-init = bcompiler.process.bootstrap:main',
     ]},
     install_requires=['openpyxl', 'python-dateutil', 'colorlog'],
     test_suite='bcompiler.tests')

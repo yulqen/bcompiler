@@ -267,5 +267,7 @@ def previous_quarter_master():
                 ws[f"D{str(item[0])}"] = " ".join([ix.upper(), "3"])
     # he're where we amend the three cells...
     ws['B11'].value = ' '.join([ws['B11'].value, 'AMENDED'])
+    ws['C11'].value = ' '.join([ws['B11'].value, 'AMENDED'])
+    ws['D11'].value = ' '.join([ws['B11'].value, 'AMENDED'])
     wb.save(output_file)
     return output_file

@@ -17,6 +17,10 @@ SOURCE_DIR = "/".join([AUX_DIR, 'source'])
 RETURNS_DIR = "/".join([SOURCE_DIR, 'returns'])
 OUTPUT_DIR = "/".join([AUX_DIR, 'output'])
 
+setattr(compile_module, 'RETURNS_DIR', RETURNS_DIR)
+setattr(compile_module, 'OUTPUT_DIR', OUTPUT_DIR)
+setattr(compile_module, 'TODAY', date.today().isoformat())
+
 
 def test_populate_single_template_from_master(populated_template, datamap):
     """
@@ -33,9 +37,6 @@ def test_compile_all_returns_to_master_no_comparison(populated_template, datamap
     """
     # print([item for item in dir(compile_module) if not item.startswith("__")])
     # patching module attributes to get it working
-    setattr(compile_module, 'RETURNS_DIR', RETURNS_DIR)
-    setattr(compile_module, 'OUTPUT_DIR', OUTPUT_DIR)
-    setattr(compile_module, 'TODAY', date.today().isoformat())
     setattr(compile_module, 'DATAMAP_RETURN_TO_MASTER', datamap)
     run()
     # for one of the templates that we have compiled (using 9 I think)...
@@ -58,9 +59,6 @@ def test_compile_all_returns_to_master_with_comparison(populated_template, datam
     :param previous_quarter_master:
     :return:
     """
-    setattr(compile_module, 'RETURNS_DIR', RETURNS_DIR)
-    setattr(compile_module, 'OUTPUT_DIR', OUTPUT_DIR)
-    setattr(compile_module, 'TODAY', date.today().isoformat())
     setattr(compile_module, 'DATAMAP_RETURN_TO_MASTER', datamap)
     run([previous_quarter_master])
     # now to test the cell styling to make sure it's changed
@@ -75,6 +73,9 @@ def test_compile_all_returns_to_master_with_comparison(populated_template, datam
     assert working_contact_row[8].fill.bgColor.rgb == '00FCF5AA'
     assert working_contact_row[10].value == "WORKING CONTACT NAME 3"
     assert working_contact_row[10].fill.bgColor.rgb == '00FCF5AA'
+    # testing default 000000 background
+    assert working_contact_row[9].fill.bgColor.rgb == '00000000'
+
 
 
 

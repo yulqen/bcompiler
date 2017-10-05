@@ -274,5 +274,9 @@ def previous_quarter_master():
     # this is for "SRO Tenure Start Date"
     ws['B13'].value = datetime(2017, 3, 1)
 
+    # now setting an later date for "SRO Tenure End Date"
+    # also now for PROJECT/PROGRAMME NAME 2
+    ws['C14'].value = datetime(2019, 6, 6)
+
     wb.save(output_file)
     return output_file

@@ -5,7 +5,6 @@ Partial implementation of a state machine. It doesn't need to return
 to its original state at the moment.
 """
 import decimal
-
 from datetime import datetime, date
 
 from openpyxl.styles import PatternFill
@@ -195,7 +194,7 @@ class IntegerCellFormat(CellFormatState):
         return (PatternFill(
             patternType='solid', fgColor=c_value, bgColor=c_value),
                 IntegerCellFormat.number_format)
-
+    # comparison code is at cellformat.py:241
     def export_rule(self):
         if self.compare_val > self.this_val:
             return self.set_style(IntegerCellFormat.rgb_this_lower)

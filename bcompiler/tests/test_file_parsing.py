@@ -89,11 +89,23 @@ def test_compile_all_returns_to_master_with_date_comparison(datamap, previous_qu
     wb = load_workbook(os.path.join(OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, "Q2")))
     ws = wb.active
     # we need to find reference for "SRO Tenure Start Date"
+
     # we know it's row 13, but what column? index of where "PROJECT/PROGRAMME NAME 1" in row 1
     project_title_row = [i.value for i in ws[1]]
+
+    # testing for a earlier (green) colour now
     target_index = [project_title_row.index(i) for i in project_title_row if i == 'PROJECT/PROGRAMME NAME 1'][0]
     target_cell = ws.cell(row=13, column=target_index + 1) # take into account zero indexing
+
+    # comparison code is at cellformat.py:135
     assert target_cell.fill.bgColor.rgb == '00ABFCA9' # LIGHT GREEN because THIS value is HIGHER/LATER than comp
+
+    # testing for a later (violet) colour now
+    target_index = [project_title_row.index(i) for i in project_title_row if i == 'PROJECT/PROGRAMME NAME 2'][0]
+    target_cell = ws.cell(row=14, column=target_index + 1) # take into account zero indexing
+
+    # comparison code is at cellformat.py:241
+    assert target_cell.fill.bgColor.rgb == '00A9AAFC' # LIGHT GREEN because THIS value is HIGHER/LATER than comp
 
 
 def test_datamap_class(datamap):

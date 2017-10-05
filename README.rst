@@ -10,14 +10,9 @@ Quick Start
 -----------
 
 * Ensure Python 3.6.2 is installed on your system.
-* ``pip install git+https://git@bitbucket.org/mrlemon/bcompiler.git``
+* ``pip install bcompiler``
+* ``bcompiler-init``
 * ``bcompiler --help``
-
-Alternatively:
-
-* Clone the project (or download the zip file)
-* pip install -r requirements.txt
-* Run ``python setup.py``
 
 
 Introduction
@@ -60,29 +55,20 @@ Install bcompiler:
 
 * In the command window, type ``pip uninstall bcompiler`` to uninstall any existing installation of
   ``bcompiler``. 
-* In command window, type ``pip install git+https://git@bitbucket.org/mrlemon/bcompiler.git``, or if you choose not to remove ``bcompiler`` first (see point above), then type ``pip install -U git+https://git@bitbucket.org/mrlemon/bcompiler.git`` to upgrade to the latest version of ``bcompiler``.
+* In command window, type ``pip install bcompiler``, or if you choose not to remove ``bcompiler`` first (see point above), then type ``pip install -U bcompiler`` to upgrade to the latest version of ``bcompiler``.
 
 
 Initialising bcompiler:
 
 bcompiler needs some auxiliary files to run, including a ``datamap.csv`` and ``config.ini`` files. These files are stored in a directory called ``bcompiler`` in your ``Documents`` directory. Before running ``bcompiler``, this directory structure needs to be set up. The auxiliary files also need to be downloaded from a [git repository on Github](https://github.com/departmentfortransport/bcompiler_datamap_files). ``bcompiler`` can do the necessary work to set this up.
 
-If you already have a  ``~/Documents/bcompiler`` (if using a Linux or Mac OSX
-machine) or ``MyDocuments\bcompiler`` (if using a Windows machine) directory,
-then you do not need to use the following command. If you DO have this
-directory in place already, running the following command will ask whether you
-want to delete this and refresh the auxiliary files from the remote repository.
+If you already have a  ``~/Documents/bcompiler`` (if using a Linux or Mac OSX machine) or ``MyDocuments\bcompiler`` (if using a Windows machine) directory, then you do not need to use the following command. If you DO have this directory in place already, running the following command will ask whether you want to delete this and refresh the auxiliary files from the remote repository.
 
 To initialise bcompiler:
 
 * In the command window, type ``bcompiler-init``.
 
-**PLEASE NOTE:** Due to a bug in current version of ``bcompiler``, if you try to
-run ``bcompiler`` and you do not have the necessary auxiliary files installed,
-``bcompiler`` will throw an error. Please ensure you run ``bcompiler-init`` first
-to set up the necessary files.
-
-
+**PLEASE NOTE:** Due to a bug in current version of ``bcompiler``, if you try to run ``bcompiler`` and you do not have the necessary auxiliary files installed, ``bcompiler`` will throw an error. Please ensure you run ``bcompiler-init`` first to set up the necessary files.
 
 Known bugs and issues
 --------------------

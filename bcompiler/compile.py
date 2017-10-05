@@ -8,13 +8,13 @@ from typing import Dict, List
 
 from openpyxl import load_workbook, Workbook
 
-from .process.datamap import Datamap
 from bcompiler.process import Cleanser
 from bcompiler.process.cellformat import CellFormatState
 from bcompiler.process.simple_comparitor import FileComparitor, ParsedMaster
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
 from bcompiler.utils import runtime_config as config
 from .process.cleansers import DATE_REGEX_TIME
+from .process.datamap import Datamap
 
 CELL_REGEX = re.compile('[A-Z]+[0-9]+')
 DROPDOWN_REGEX = re.compile('^\D*$')
@@ -237,8 +237,7 @@ def run(compare_master=None):
                     compare_master=compare_master
                 )
                 count += 1
-        OUTPUT_FILE = '{}compiled_master_{}_{}.xlsx'.format(
-            OUTPUT_DIR, TODAY, "Q2")
+        OUTPUT_FILE = '/'.join([OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, "Q2")])
         workbook.save(OUTPUT_FILE)
     else:
         # we just want a straight master with no change indication
@@ -262,6 +261,5 @@ def run(compare_master=None):
                     workbook=workbook,
                 )
                 count += 1
-        OUTPUT_FILE = '{}compiled_master_{}_{}.xlsx'.format(
-            OUTPUT_DIR, TODAY, "Q2")
+        OUTPUT_FILE = '/'.join([OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, "Q2")])
         workbook.save(OUTPUT_FILE)

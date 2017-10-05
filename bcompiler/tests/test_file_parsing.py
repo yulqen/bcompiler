@@ -1,12 +1,17 @@
+import tempfile
+from datetime import date
+
 import bcompiler.compile as compile_module
 from ..compile import parse_source_cells as parse
 from ..compile import run
 from ..process.datamap import Datamap
 
-from datetime import date
+TEMPDIR = tempfile.gettempdir()
 
-from openpyxl import load_workbook
-
+AUX_DIR = "/".join([TEMPDIR, 'bcompiler'])
+SOURCE_DIR = "/".join([AUX_DIR, 'source'])
+RETURNS_DIR = "/".join([SOURCE_DIR, 'returns'])
+OUTPUT_DIR = "/".join([AUX_DIR, 'output'])
 
 def test_compile(populated_template, datamap):
     """
@@ -23,8 +28,8 @@ def test_run(datamap):
     """
     # print([item for item in dir(compile_module) if not item.startswith("__")])
     # patching module attributes to get it working
-    setattr(compile_module, 'RETURNS_DIR', '/tmp/bcompiler-test/')
-    setattr(compile_module, 'OUTPUT_DIR', '/tmp/bcompiler-test-output/')
+    setattr(compile_module, 'RETURNS_DIR', RETURNS_DIR)
+    setattr(compile_module, 'OUTPUT_DIR', OUTPUT_DIR)
     setattr(compile_module, 'TODAY', date.today().isoformat())
     setattr(compile_module, 'DATAMAP_RETURN_TO_MASTER', datamap)
     run()

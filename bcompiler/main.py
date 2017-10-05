@@ -35,18 +35,15 @@ from openpyxl.worksheet.datavalidation import DataValidation
 
 import bcompiler.compile as compile_returns
 from bcompiler import __version__
-from bcompiler.process.datamap import Datamap
 from bcompiler.process import Cleanser
+from bcompiler.process.datamap import Datamap
 from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              DATAMAP_RETURN_TO_MASTER,
                              OUTPUT_DIR, SOURCE_DIR, VALIDATION_REFERENCES,
-                             create_master_dict_transposed,
-                             open_openpyxl_template, parse_csv_to_file,
-                             project_data_line,
+                             parse_csv_to_file,
                              working_directory, SHEETS, CURRENT_QUARTER,
                              row_data_formatter, ROOT_PATH, CONFIG_FILE,
                              BLANK_TEMPLATE_FN, project_data_from_master)
-
 from bcompiler.utils import runtime_config as config
 
 logger = colorlog.getLogger('bcompiler')
@@ -430,8 +427,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
         ws_ap,
         ws_fb], TARGET_LOCK_CELLS)
 
-    blank.save(OUTPUT_DIR + '{}_{}_Return.xlsm'.format(
-        test_proj.replace('/', '_'), config['QuarterData']['CurrentQuarter']))
+    blank.save('/'.join([OUTPUT_DIR, '{}_{}_Return.xlsm'.format(
+        test_proj.replace('/', '_'), config['QuarterData']['CurrentQuarter'])]))
 
 
 def pop_all():

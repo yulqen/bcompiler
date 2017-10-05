@@ -1,15 +1,21 @@
-import bcompiler.main as main_module
-from datetime import datetime
 import configparser
-import glob
 import os
+import tempfile
+from datetime import datetime
 
 from openpyxl import load_workbook
 
-from ..main import populate_blank_bicc_form as populate
+import bcompiler.main as main_module
 from ..main import get_list_projects
+from ..main import populate_blank_bicc_form as populate
 from ..utils import project_data_from_master
 
+TEMPDIR = tempfile.gettempdir()
+
+AUX_DIR = "/".join([TEMPDIR, 'bcompiler'])
+SOURCE_DIR = "/".join([AUX_DIR, 'source'])
+RETURNS_DIR = "/".join([SOURCE_DIR, 'returns'])
+OUTPUT_DIR = "/".join([AUX_DIR, 'output'])
 
 config = configparser.ConfigParser()
 CONFIG_FILE = 'test_config.ini'
@@ -29,8 +35,6 @@ def test_pull_data_from_xlsx_master(master):
 
 
 def test_populate_single_template(master, blank_template):
-    SOURCE_DIR = '/tmp/bcompiler-test'
-    OUTPUT_DIR = '/tmp/bcompiler-test-output/'
     setattr(main_module, 'OUTPUT_DIR', OUTPUT_DIR)
     setattr(main_module, 'SOURCE_DIR', SOURCE_DIR)
     setattr(main_module, 'BLANK_TEMPLATE_FN', ''.join(['/', blank_template.split('/')[-1]]))
@@ -43,8 +47,6 @@ def test_populate_single_template(master, blank_template):
 
 
 def test_populate_date_cell(master, blank_template):
-    SOURCE_DIR = '/tmp/bcompiler-test'
-    OUTPUT_DIR = '/tmp/bcompiler-test-output/'
     setattr(main_module, 'OUTPUT_DIR', OUTPUT_DIR)
     setattr(main_module, 'SOURCE_DIR', SOURCE_DIR)
     setattr(main_module, 'BLANK_TEMPLATE_FN', ''.join(['/', blank_template.split('/')[-1]]))

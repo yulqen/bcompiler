@@ -2,8 +2,8 @@ import configparser
 import csv
 import io
 import os
+import shutil
 import tempfile
-
 from datetime import datetime
 
 import pytest
@@ -13,26 +13,19 @@ from ..utils import generate_test_template_from_real as gen_template
 
 TEMPDIR = tempfile.gettempdir()
 
+AUX_DIR = "/".join([TEMPDIR, 'bcompiler'])
+SOURCE_DIR = "/".join([AUX_DIR, 'source'])
+RETURNS_DIR = "/".join([SOURCE_DIR, 'returns'])
+OUTPUT_DIR = "/".join([AUX_DIR, 'output'])
+
 try:
-    returns_folder = "/".join([TEMPDIR, 'bcompiler-test'])
-    output_folder = "/".join([TEMPDIR, 'bcompiler-test-output'])
-    os.mkdir(returns_folder)
-    RETURNS_FOLDER = returns_folder
-    OUTPUT_FOLDER = output_folder
-except FileExistsError:
-    for the_file in os.listdir(returns_folder):
-        file_path = os.path.join(returns_folder, the_file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        except Exception as e:
-            print(e)
-    RETURNS_FOLDER = returns_folder
-    OUTPUT_FOLDER = output_folder
-try:
-    os.mkdir(output_folder)
-except FileExistsError:
-    pass
+    os.mkdir(AUX_DIR)
+except (FileExistsError, IsADirectoryError):
+    shutil.rmtree(AUX_DIR)
+    os.mkdir(AUX_DIR)
+    os.mkdir(OUTPUT_DIR)
+    os.mkdir(SOURCE_DIR)
+    os.mkdir(RETURNS_DIR)
 
 config = configparser.ConfigParser()
 CONFIG_FILE = 'test_config.ini'
@@ -155,8 +148,8 @@ Analysis - future,Resource,J33,Capability RAG,
 
 @pytest.fixture(scope='module')
 def blank_template():
-    gen_template(BICC_TEMPLATE_FOR_TESTS, RETURNS_FOLDER)
-    output_file = '/'.join([RETURNS_FOLDER, 'gen_bicc_template.xlsm'])
+    gen_template(BICC_TEMPLATE_FOR_TESTS, SOURCE_DIR)
+    output_file = '/'.join([SOURCE_DIR, 'gen_bicc_template.xlsm'])
 #   yield output_file
     return output_file
 #   os.remove(output_file)
@@ -171,19 +164,19 @@ def datamap():
     s.seek(0)
     s_string = s.readlines()
 #   del s_string[0]
-    with open('/'.join([RETURNS_FOLDER, name]), 'w') as csv_file:
+    with open('/'.join([SOURCE_DIR, name]), 'w') as csv_file:
         for x in s_string:
             csv_file.write(x)
-    return '/'.join([RETURNS_FOLDER, name])
+    return '/'.join([SOURCE_DIR, name])
 
 
 @pytest.fixture(scope='module')
 def populated_template():
-    gen_template(BICC_TEMPLATE_FOR_TESTS, TEMPDIR)
+    gen_template(BICC_TEMPLATE_FOR_TESTS, SOURCE_DIR)
     datamap()
-    dm = "/".join([RETURNS_FOLDER, 'datamap.csv'])
-    wb = load_workbook("/".join([TEMPDIR, 'gen_bicc_template.xlsm']), keep_vba=True)
-    output_file = "/".join([RETURNS_FOLDER, 'populated_test_template.xlsx'])
+    dm = "/".join([SOURCE_DIR, 'datamap.csv'])
+    wb = load_workbook("/".join([SOURCE_DIR, 'gen_bicc_template.xlsm']), keep_vba=True)
+    output_file = "/".join([RETURNS_DIR, 'populated_test_template.xlsx'])
     for fl in range(10):
         with open(dm, 'r', newline='') as f:
             reader = csv.DictReader(f)
@@ -194,7 +187,7 @@ def populated_template():
                     wb[line['template_sheet']][line['cell_reference']].value = "10/08/2017"
                 else:
                     wb[line['template_sheet']][line['cell_reference']].value = " ".join([line['cell_key'].upper(), str(fl)])
-            output_file = "/".join([RETURNS_FOLDER, 'populated_test_template{}.xlsx'
+            output_file = "/".join([RETURNS_DIR, 'populated_test_template{}.xlsx'
                                     .format(fl)])
             wb.save(output_file)
     # we save 10 of them but only return the first for testing
@@ -209,7 +202,7 @@ def split_datamap_line(line: tuple):
 @pytest.fixture(scope='module')
 def master():
     wb = Workbook()
-    output_file = "/".join([OUTPUT_FOLDER, 'master.xlsx'])
+    output_file = "/".join([OUTPUT_DIR, 'master.xlsx'])
     ws = wb.active
     ws.title = "Master for Testing"
     for item in enumerate(datamap_data.split('\n')):

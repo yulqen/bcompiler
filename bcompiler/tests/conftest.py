@@ -176,7 +176,7 @@ def populated_template():
     datamap()
     dm = "/".join([SOURCE_DIR, 'datamap.csv'])
     wb = load_workbook("/".join([SOURCE_DIR, 'gen_bicc_template.xlsm']), keep_vba=True)
-    output_file = "/".join([RETURNS_DIR, 'populated_test_template.xlsx'])
+    output_file = "/".join([RETURNS_DIR, 'populated_test_template.xlsm'])
     for fl in range(10):
         with open(dm, 'r', newline='') as f:
             reader = csv.DictReader(f)
@@ -187,7 +187,7 @@ def populated_template():
                     wb[line['template_sheet']][line['cell_reference']].value = "10/08/2017"
                 else:
                     wb[line['template_sheet']][line['cell_reference']].value = " ".join([line['cell_key'].upper(), str(fl)])
-            output_file = "/".join([RETURNS_DIR, 'populated_test_template{}.xlsx'
+            output_file = "/".join([RETURNS_DIR, 'populated_test_template{}.xlsm'
                                     .format(fl)])
             wb.save(output_file)
     # we save 10 of them but only return the first for testing

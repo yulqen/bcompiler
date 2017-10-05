@@ -256,7 +256,7 @@ def run(compare_master=None):
             if fnmatch.fnmatch(file, '*.xlsm'):
                 logger.info("Processing {}".format(file))
                 write_excel(
-                    (RETURNS_DIR + file),
+                    (os.path.join(RETURNS_DIR, file)),
                     count=count,
                     workbook=workbook,
                 )

@@ -265,9 +265,14 @@ def previous_quarter_master():
                 ws[f"B{str(item[0])}"] = " ".join([ix.upper(), "1"])
                 ws[f"C{str(item[0])}"] = " ".join([ix.upper(), "2"])
                 ws[f"D{str(item[0])}"] = " ".join([ix.upper(), "3"])
-    # he're where we amend the three cells...
+    # here we amend the three string cells...
     ws['B11'].value = ' '.join([ws['B11'].value, 'AMENDED'])
     ws['C11'].value = ' '.join([ws['B11'].value, 'AMENDED'])
     ws['D11'].value = ' '.join([ws['B11'].value, 'AMENDED'])
+
+    # here we amend a single date cells...
+    # this is for "SRO Tenure Start Date"
+    ws['B13'].value = datetime(2017, 3, 1)
+
     wb.save(output_file)
     return output_file

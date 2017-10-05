@@ -51,7 +51,7 @@ def test_compile_all_returns_to_master_no_comparison(populated_template, datamap
     assert project_title in project_title_row
 
 
-def test_compile_all_returns_to_master_with_comparison(populated_template, datamap, previous_quarter_master):
+def test_compile_all_returns_to_master_with_string_comparison(datamap, previous_quarter_master):
     """
     This tests 'bcompiler compile --compare' or 'bcompiler --compare' option.
     :param populated_template:
@@ -76,7 +76,24 @@ def test_compile_all_returns_to_master_with_comparison(populated_template, datam
     # testing default 000000 background
     assert working_contact_row[9].fill.bgColor.rgb == '00000000'
 
-
+def test_compile_all_returns_to_master_with_date_comparison(datamap, previous_quarter_master):
+    """
+    This depends upon the fixture setting an earlier date in the previous_quarter_master.
+    :param datamap:
+    :param previous_quarter_master:
+    :return:
+    """
+    setattr(compile_module, 'DATAMAP_RETURN_TO_MASTER', datamap)
+    run([previous_quarter_master])
+    # now to test the cell styling to make sure it's changed
+    wb = load_workbook(os.path.join(OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, "Q2")))
+    ws = wb.active
+    # we need to find reference for "SRO Tenure Start Date"
+    # we know it's row 13, but what column? index of where "PROJECT/PROGRAMME NAME 1" in row 1
+    project_title_row = [i.value for i in ws[1]]
+    target_index = [project_title_row.index(i) for i in project_title_row if i == 'PROJECT/PROGRAMME NAME 1'][0]
+    target_cell = ws.cell(row=13, column=target_index + 1) # take into account zero indexing
+    assert target_cell.fill.bgColor.rgb == '00ABFCA9' # LIGHT GREEN because THIS value is HIGHER/LATER than comp
 
 
 def test_datamap_class(datamap):

@@ -50,6 +50,19 @@ def test_compile_all_returns_to_master_no_comparison(populated_template, datamap
     assert project_title in project_title_row
 
 
+def test_compile_all_returns_to_master_with_comparison(populated_template, datamap, previous_quarter_master):
+    """
+    This tests 'bcompiler compile --compare' or 'bcompiler --compare' option.
+    :param populated_template:
+    :param datamap:
+    :param previous_quarter_master:
+    :return:
+    """
+    setattr(compile_module, 'RETURNS_DIR', RETURNS_DIR)
+    setattr(compile_module, 'OUTPUT_DIR', OUTPUT_DIR)
+    setattr(compile_module, 'TODAY', date.today().isoformat())
+    setattr(compile_module, 'DATAMAP_RETURN_TO_MASTER', datamap)
+    run([previous_quarter_master])
 
 
 def test_datamap_class(datamap):

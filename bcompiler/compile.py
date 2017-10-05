@@ -231,7 +231,7 @@ def run(compare_master=None):
                     fnmatch.fnmatch(file, '*.XLSX'):
                 logger.info("Processing {}".format(file))
                 write_excel(
-                    (RETURNS_DIR + file),
+                    (os.path.join(RETURNS_DIR, file)),
                     count=count,
                     workbook=workbook,
                     compare_master=compare_master

@@ -201,6 +201,13 @@ def split_datamap_line(line: tuple):
 
 @pytest.fixture(scope='module')
 def master():
+    """
+    This is master file created for the purpose of using a base for bcompiler -a, which
+    populates all the returns. It simply takes the field name from the datamap and
+    puts it in upper case and appends a digit (1, 2 or 3 because we're only simulating
+    a master with 3 projects here.
+    :return: output_file
+    """
     wb = Workbook()
     output_file = "/".join([OUTPUT_DIR, 'master.xlsx'])
     ws = wb.active
@@ -223,5 +230,42 @@ def master():
                 ws[f"B{str(item[0])}"] = " ".join([ix.upper(), "1"])
                 ws[f"C{str(item[0])}"] = " ".join([ix.upper(), "2"])
                 ws[f"D{str(item[0])}"] = " ".join([ix.upper(), "3"])
+    wb.save(output_file)
+    return output_file
+
+@pytest.fixture(scope='module')
+def previous_quarter_master():
+    """
+    This is a replica of the master() fixture above, but we're changing some
+    values to simulate an earlier master than needs to be compared against.
+
+    The values we're amending are the three values for "Working Contact Name",
+    which appear in cells B11, C11, D11.
+    :return: output_file
+    """
+    wb = Workbook()
+    output_file = "/".join([OUTPUT_DIR, 'early_master.xlsx'])
+    ws = wb.active
+    ws.title = "Previous quarter master for testing"
+    for item in enumerate(datamap_data.split('\n')):
+        if not item[0] == 0 and not item[1] == "":
+            g = split_datamap_line(item)
+            next(g)
+            ix = next(g).split(',')[0]
+            ws[f"A{str(item[0])}"] = ix
+            if item[1].startswith('Date'):  # testing for date objects
+                ws[f"B{str(item[0])}"] = datetime(2017, 6, 20)
+                ws[f"C{str(item[0])}"] = datetime(2017, 6, 20)
+                ws[f"D{str(item[0])}"] = datetime(2017, 6, 20)
+            elif item[1].startswith('SRO Tenure'):  # testing for date objects
+                ws[f"B{str(item[0])}"] = datetime(2017, 8, 10)
+                ws[f"C{str(item[0])}"] = datetime(2017, 8, 10)
+                ws[f"D{str(item[0])}"] = datetime(2017, 8, 10)
+            else:
+                ws[f"B{str(item[0])}"] = " ".join([ix.upper(), "1"])
+                ws[f"C{str(item[0])}"] = " ".join([ix.upper(), "2"])
+                ws[f"D{str(item[0])}"] = " ".join([ix.upper(), "3"])
+    # he're where we amend the three cells...
+    ws['B11'].value = ' '.join([ws['B11'].value, 'AMENDED'])
     wb.save(output_file)
     return output_file

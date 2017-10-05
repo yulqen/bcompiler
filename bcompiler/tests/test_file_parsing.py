@@ -63,6 +63,19 @@ def test_compile_all_returns_to_master_with_comparison(populated_template, datam
     setattr(compile_module, 'TODAY', date.today().isoformat())
     setattr(compile_module, 'DATAMAP_RETURN_TO_MASTER', datamap)
     run([previous_quarter_master])
+    # now to test the cell styling to make sure it's changed
+    wb = load_workbook(os.path.join(OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, "Q2")))
+    ws = wb.active
+    # We need to gather the cells from row 11, and compare WORKING CONTACT NAME 1, 2 and 3
+    working_contact_row = [i for i in ws[11]]
+    # checking for yellow background characteristic of a changed string
+    assert working_contact_row[6].value == "WORKING CONTACT NAME 2"
+    assert working_contact_row[6].fill.bgColor.rgb == '00FCF5AA'
+    assert working_contact_row[8].value == "WORKING CONTACT NAME 1"
+    assert working_contact_row[8].fill.bgColor.rgb == '00FCF5AA'
+    assert working_contact_row[10].value == "WORKING CONTACT NAME 3"
+    assert working_contact_row[10].fill.bgColor.rgb == '00FCF5AA'
+
 
 
 def test_datamap_class(datamap):

@@ -14,53 +14,81 @@ REPO_ZIP = 'https://bitbucket.org/mrlemon/bcompiler/get/master.zip'
 REPO_GIT = 'https://github.com/departmentfortransport/bcompiler_datamap_files.git'
 CONFIG_FILE = os.path.join(SOURCE_DIR, 'config.ini')
 
+GIT_COMMANDS = {
+    'untracked': 'git ls-files --others --exclude-standard',
+    'status': 'git status',
+}
 
-def _git_check_untracked():
-    os.chdir(SOURCE_DIR)
-    untracked = subprocess.run(['git', 'ls-files', '--others', '--exclude-standard'], encoding='utf-8',
-                              stdout=subprocess.PIPE).stdout
-    if untracked:
+
+def _git_command(opts: str) -> str:
+    """
+    Wraps a string git command with a subprocess.run() call, encoding
+    stdout.
+    :param opts: git command as a str
+    :return: str of stdout of command
+    """
+    return subprocess.run(opts.split(), encoding='utf-8',
+                          stdout=subprocess.PIPE).stdout
+
+
+def _git_check_untracked(dir: str) -> None:
+    """
+    Discover untracked files in local git repository.
+    :param dir: directory containing repository
+    :return:
+    """
+    print("Checking for untracked files...\n")
+    os.chdir(dir)
+    g_output = _git_command(GIT_COMMANDS['untracked']).split('\n')
+    if g_output:
         print("You have files in your auxiliary folder that have not been added to the repository.\n")
-        for f in untracked.split('\n'):
+        for f in g_output:
             print("\t{}".format(f))
-    for f in untracked.split('\n'):
+    for f in g_output:
         master_f = re.match(r'^.+(?P<master_file>(master|MASTER|Master).+xlsx)', f)
         if master_f:
-            print("It looks as though you have a master document in the directory: \n\n\t{}.\n\nPlease remove the master file.\n\n"
-                  "Master files should not be committed to the auxiliary files repository and "
-                  "if you we are going to wipe out the repository and start again, you will lose "
-                  "the master.\n\nPlease copy to a safe directory somewhere, such as your Desktop before "
-                  "proceeding.".format(master_f.group('master_file')))
+            print(
+                "It looks as though you have a master document in the directory: \n\n\t{}.\n\nPlease remove the master file.\n\n"
+                "Master files should not be committed to the auxiliary files repository and "
+                "if you we are going to wipe out the repository and start again, you will lose "
+                "the master.\n\nPlease copy to a safe directory somewhere, such as your Desktop before "
+                "proceeding.".format(master_f.group('master_file')))
 
 
-def _git_check_clean():
-    print("Checking status of your local auxiliary files repository...\n")
-    os.chdir(SOURCE_DIR)
-    g_output = subprocess.run(['git', 'status'], encoding='utf-8', stdout=subprocess.PIPE).stdout
-    for i in g_output.split('\n'):
+def _git_modified_files(dir: str) -> None:
+    """
+    Discover any modified files in local git repository.
+    :param dir: directory containing repository
+    :return:
+    """
+    print("Checking for modified files...\n")
+    os.chdir(dir)
+    g_output = _git_command(GIT_COMMANDS['status']).split('\n')
+    for i in g_output:
         mod = re.match(r'\tmodified:\s+(?P<file>.+$)', i)
         if mod:
             print("You have modified files and your repository is not clean.\n")
             print("File: {}".format(mod.group('file')))
-            # modified:   process/bootstrap.py
     print("You do not have modified files in the auxiliary directory.\n\n")
+
 
 def main():
     """
     Purpose of this is to bootstrap the system.
     """
     if os.path.exists(ROOT_PATH):
-        response = input("This will REMOVE any existing directories containing bcompiler " "auxiliary files (e.g. MyDocuments/bcompiler/source or ~/Documents/"
-                         "bcompiler/source, depending on your operating system.\n Do you "
-                         "wish to continue? (y/n) ")
+        response = input(
+            "This will REMOVE any existing directories containing bcompiler " "auxiliary files (e.g. MyDocuments/bcompiler/source or ~/Documents/"
+            "bcompiler/source, depending on your operating system.\n Do you "
+            "wish to continue? (y/n) ")
         if response in ['N', 'No', 'NO', 'n']:
             sys.exit()
         else:
             # print(f"Deleting {SOURCE_DIR} and all files within")
             # shutil.rmtree(ROOT_PATH)
             # print("Old auxiliary directory removed")
-            _git_check_clean()
-            _git_check_untracked()
+            _git_modified_files(SOURCE_DIR)
+            _git_check_untracked(SOURCE_DIR)
             sys.exit()
         print("There is no directory structure set up.")
         print("Creating it.")

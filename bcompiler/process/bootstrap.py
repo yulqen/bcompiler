@@ -1,32 +1,67 @@
 import os
 import sys
 import shutil
+import re
 import subprocess
 
+DOCS = os.path.join(os.path.expanduser('~'), 'Documents')
+BCOMPILER_WORKING_D = 'bcompiler'
+ROOT_PATH = os.path.join(DOCS, BCOMPILER_WORKING_D)
+SOURCE_DIR = os.path.join(ROOT_PATH, 'source')
+RETURNS_DIR = os.path.join(SOURCE_DIR, 'returns')
+OUTPUT_DIR = os.path.join(ROOT_PATH, 'output')
+REPO_ZIP = 'https://bitbucket.org/mrlemon/bcompiler/get/master.zip'
+REPO_GIT = 'https://github.com/departmentfortransport/bcompiler_datamap_files.git'
+CONFIG_FILE = os.path.join(SOURCE_DIR, 'config.ini')
+
+
+def _git_check_untracked():
+    os.chdir(SOURCE_DIR)
+    untracked = subprocess.run(['git', 'ls-files', '--others', '--exclude-standard'], encoding='utf-8',
+                              stdout=subprocess.PIPE).stdout
+    if untracked:
+        print("You have files in your auxiliary folder that have not been added to the repository.\n")
+        for f in untracked.split('\n'):
+            print("\t{}".format(f))
+    for f in untracked.split('\n'):
+        master_f = re.match(r'^.+(?P<master_file>(master|MASTER|Master).+xlsx)', f)
+        if master_f:
+            print("It looks as though you have a master document in the directory: \n\n\t{}.\n\nPlease remove the master file.\n\n"
+                  "Master files should not be committed to the auxiliary files repository and "
+                  "if you we are going to wipe out the repository and start again, you will lose "
+                  "the master.\n\nPlease copy to a safe directory somewhere, such as your Desktop before "
+                  "proceeding.".format(master_f.group('master_file')))
+
+
+def _git_check_clean():
+    print("Checking status of your local auxiliary files repository...\n")
+    os.chdir(SOURCE_DIR)
+    g_output = subprocess.run(['git', 'status'], encoding='utf-8', stdout=subprocess.PIPE).stdout
+    for i in g_output.split('\n'):
+        mod = re.match(r'\tmodified:\s+(?P<file>.+$)', i)
+        if mod:
+            print("You have modified files and your repository is not clean.\n")
+            print("File: {}".format(mod.group('file')))
+            # modified:   process/bootstrap.py
+    print("You do not have modified files in the auxiliary directory.\n\n")
 
 def main():
     """
     Purpose of this is to bootstrap the system.
     """
-    DOCS = os.path.join(os.path.expanduser('~'), 'Documents')
-    BCOMPILER_WORKING_D = 'bcompiler'
-    ROOT_PATH = os.path.join(DOCS, BCOMPILER_WORKING_D)
-    SOURCE_DIR = os.path.join(ROOT_PATH, 'source')
-    RETURNS_DIR = os.path.join(SOURCE_DIR, 'returns')
-    OUTPUT_DIR = os.path.join(ROOT_PATH, 'output')
-    REPO_ZIP = 'https://bitbucket.org/mrlemon/bcompiler/get/master.zip'
-    REPO_GIT = 'https://github.com/departmentfortransport/bcompiler_datamap_files.git'
-    CONFIG_FILE = os.path.join(SOURCE_DIR, 'config.ini')
     if os.path.exists(ROOT_PATH):
         response = input("This will REMOVE any existing directories containing bcompiler " "auxiliary files (e.g. MyDocuments/bcompiler/source or ~/Documents/"
                          "bcompiler/source, depending on your operating system.\n Do you "
-                         "wish to continue? (y/n) \n ")
+                         "wish to continue? (y/n) ")
         if response in ['N', 'No', 'NO', 'n']:
             sys.exit()
         else:
-            print(f"Deleting {SOURCE_DIR} and all files within")
-            shutil.rmtree(ROOT_PATH)
-            print("Old auxiliary directory removed")
+            # print(f"Deleting {SOURCE_DIR} and all files within")
+            # shutil.rmtree(ROOT_PATH)
+            # print("Old auxiliary directory removed")
+            _git_check_clean()
+            _git_check_untracked()
+            sys.exit()
         print("There is no directory structure set up.")
         print("Creating it.")
         os.mkdir(ROOT_PATH)

@@ -1,4 +1,5 @@
 import logging
+
 from openpyxl import load_workbook
 
 from bcompiler.utils import index_returns_directory
@@ -35,7 +36,7 @@ class ParsedMaster:
         self._projects = [cell.value for cell in self._ws[1][1:]]
 #       self._projects.sort()
         self._project_count = len(self.projects)
-        self._key_col = [cell.value for cell in self._ws['A']]
+        self._key_col = [cell.value.rstrip() for cell in self._ws['A']]
         self._index_projects()
 
     @property

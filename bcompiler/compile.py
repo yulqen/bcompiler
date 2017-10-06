@@ -151,7 +151,7 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
             c_format = CellFormatState()
 
             try:
-                compare_val = comparitor.compare(this_index, d['gmpp_key'])
+                compare_val = comparitor.compare(this_index, d['gmpp_key'].rstrip())
                 if isinstance(compare_val, str) and compare_val is not None and re.match(DATE_REGEX_TIME, compare_val):
                     ds = compare_val.split(' ')
                     comps = [int(x) for x in ds[0].split('-')]

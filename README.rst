@@ -9,7 +9,8 @@ bcompiler
 Quick Start
 -----------
 
-* Ensure Python 3.6.2 is installed on your system.
+* Ensure Python 3.6.2 or later is installed on your system.
+* Ensure git is installed on your system.
 * ``pip install bcompiler``
 * ``bcompiler-init``
 * ``bcompiler --help``

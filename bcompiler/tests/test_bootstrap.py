@@ -28,17 +28,20 @@ class TestAuxReportBase(object):
     def test_base_AuxReport(self):
         assert AuxReport.modified_files == []
         assert AuxReport.untracked_files == []
-        assert AuxReport.master_files == []
 
 
     def test_add_attribute_value_Auxreport(self):
         AuxReport.modified_files.append('test')
         assert AuxReport.modified_files[0] == 'test'
 
+    @pytest.mark.skip("Only partial functionality implemented")
+    def test_function_to_find_master_file(self):
+        pass
+
 
     def test_add_AuxReport_instance(self):
         r = AuxReport()
-        assert str(r) == "Report(['modified', 'untracked', 'master'])"
+        assert str(r) == "Report(['untracked', 'modified', 'log'])"
 
 
     def test_change_instance_expect_attribute_change(self):

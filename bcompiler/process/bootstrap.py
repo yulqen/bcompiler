@@ -71,11 +71,10 @@ class AuxReportBlock:
 
 class AuxReport:
 
-    _check_components = [
-        'modified',
-        'untracked',
-        'master',
-    ]
+    _block_data = [i for i in sys.modules[__name__].__dict__.values()
+                   if isinstance(i, Block_data)]
+
+    _check_components = [bd.component for bd in _block_data]
 
     def __repr__(self):
         return f"Report({AuxReport._check_components})"

@@ -23,6 +23,13 @@ GIT_COMMANDS = {
 }
 
 
+class AuxReportBlock:
+
+    def __init__(self, check: str):
+        self.check = check
+        self.output = []
+
+
 class AuxReport:
 
     _check_components = [
@@ -38,7 +45,7 @@ class AuxReport:
     def add_check_component(cls, component: str):
         if isinstance(component, str):
             AuxReport._check_components.append(component)
-            setattr(cls, component, [])
+            setattr(cls, "_".join([component, 'files']), [])
         else:
             raise TypeError("component must be a string")
             return
@@ -50,7 +57,7 @@ class AuxReport:
 
 # dynamically set class attributes based on check_components
 for comp in AuxReport._check_components:
-    setattr(AuxReport, comp, [])
+    setattr(AuxReport, "_".join([comp, 'files']), [])
 
 
 def _git_command(opts: str) -> str:

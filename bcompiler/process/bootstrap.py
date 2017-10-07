@@ -20,15 +20,33 @@ CONFIG_FILE = os.path.join(SOURCE_DIR, 'config.ini')
 GIT_COMMANDS = {
     'untracked': 'git ls-files --others --exclude-standard',
     'modified': 'git ls-files -m',
+    'log': 'git log'
 }
+
+
+def add_git_command(key, command):
+    """
+    Add a git command and ensure it's key appears as a module attribute.
+    """
+    GIT_COMMANDS[key] = command
+    set_module_checks()
 
 
 Block_data = collections.namedtuple('Block_data', 'component command header')
 thismodule = sys.modules[__name__]
 
-for k, v in GIT_COMMANDS.items():
-    setattr(thismodule, k.upper(), Block_data(component=k, command=v, header="{:*^30}".format(
-        ' '.join([k.upper(), "FILES"]))))
+
+def set_module_checks():
+    """
+    Use GIT_COMMANDS to populate module attributes with namedtuples that contain
+    initial data needed for a AuxReportBlock.
+    """
+    for k, v in GIT_COMMANDS.items():
+        setattr(thismodule, k.upper(), Block_data(component=k, command=v, header="{:*^30}".format(
+            ' '.join([k.upper(), "FILES"]))))
+
+
+set_module_checks()
 
 
 class AuxReportBlock:

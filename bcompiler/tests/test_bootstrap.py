@@ -1,6 +1,6 @@
 import pytest
 
-from ..process.bootstrap import AuxReport, AuxReportBlock
+from ..process.bootstrap import AuxReport, AuxReportBlock, add_git_command
 
 
 class TestAuxReportBlock(object):
@@ -12,6 +12,15 @@ class TestAuxReportBlock(object):
     def test_base_AuxReportBlock_untracked(self):
         rb = AuxReportBlock('untracked')
         assert rb.output[0] == "*******UNTRACKED FILES********"
+
+    def test_base_AuxReportBlock_log(self):
+        rb = AuxReportBlock('log')
+        assert rb.output[0] == "{:*^30}".format("LOG FILES")
+
+    def test_manually_add_git_command(self):
+        add_git_command('status', 'git status')
+        rb = AuxReportBlock('status')
+        assert rb.output[0] == "{:*^30}".format("STATUS FILES")
 
 
 class TestAuxReportBase(object):

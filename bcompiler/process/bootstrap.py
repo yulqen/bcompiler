@@ -19,7 +19,25 @@ CONFIG_FILE = os.path.join(SOURCE_DIR, 'config.ini')
 GIT_COMMANDS = {
     'untracked': 'git ls-files --others --exclude-standard',
     'status': 'git status',
+    'modified': 'git ls-files -m',
 }
+
+
+class AuxReport:
+
+    check_components = [
+        'modified',
+        'untracked',
+        'master',
+    ]
+
+    def __repr__(self):
+        return f"Report({AuxReport.check_components})"
+
+
+# dynamically set class attributes based on check_components
+for comp in AuxReport.check_components:
+    setattr(AuxReport, comp, [])
 
 
 def _git_command(opts: str) -> str:
@@ -75,13 +93,15 @@ def _git_check_modified_files(dir: str) -> None:
     """
     print("Checking for modified files...\n")
     os.chdir(dir)
-    g_output = _git_command(GIT_COMMANDS['status']).split('\n')
-    for i in g_output:
-        mod = re.match(r'\tmodified:\s+(?P<file>.+$)', i)
-        if mod:
-            print("You have modified files and your repository is not clean.\n")
-            print("File: {}".format(mod.group('file')))
-    print("You do not have modified files in the auxiliary directory.\n\n")
+    import pdb; pdb.set_trace()  # XXX BREAKPOINT
+    g_output = _git_command(GIT_COMMANDS['modified']).split('\n')
+    if len(g_output) > 1:
+        for i in g_output:
+            mod = re.match(r'(?P<file>.+)$', i)
+            if mod:
+                print("You have modified files and your repository is not clean.\n")
+                print("File: {}".format(mod.group('file')))
+        print("You do not have modified files in the auxiliary directory.\n\n")
 
 
 def main():

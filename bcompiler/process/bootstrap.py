@@ -113,7 +113,6 @@ def _git_check_modified_files(dir: str) -> None:
     """
     print("Checking for modified files...\n")
     os.chdir(dir)
-    import pdb; pdb.set_trace()  # XXX BREAKPOINT
     g_output = _git_command(GIT_COMMANDS['modified']).split('\n')
     if len(g_output) > 1:
         for i in g_output:

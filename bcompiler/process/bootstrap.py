@@ -1,5 +1,6 @@
 from typing import List
 
+import collections
 import os
 import sys
 import shutil
@@ -18,16 +19,36 @@ CONFIG_FILE = os.path.join(SOURCE_DIR, 'config.ini')
 
 GIT_COMMANDS = {
     'untracked': 'git ls-files --others --exclude-standard',
-    'status': 'git status',
     'modified': 'git ls-files -m',
 }
 
 
+Block_data = collections.namedtuple('Block_data', 'component command header')
+thismodule = sys.modules[__name__]
+
+for k, v in GIT_COMMANDS.items():
+    setattr(thismodule, k.upper(), Block_data(component=k, command=v, header="{:*^30}".format(
+        ' '.join([k.upper(), "FILES"]))))
+
+
 class AuxReportBlock:
+
 
     def __init__(self, check: str):
         self.check = check
-        self.output = []
+        self.output: list = None
+        self._git_command(GIT_COMMANDS[check])
+
+    def _git_command(self, opts: str) -> list:
+        """
+        Wraps a string git command with a subprocess.run() call, encoding
+        stdout.
+        :param opts: git command as a str
+        :return: str of stdout of command
+        """
+        self.output = subprocess.run(opts.split(), encoding='utf-8',
+                                     stdout=subprocess.PIPE).stdout.split('\n')
+        self.output[0] = getattr(sys.modules[__name__], self.check.upper()).header
 
 
 class AuxReport:

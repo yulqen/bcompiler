@@ -5,11 +5,13 @@ from ..process.bootstrap import AuxReport, AuxReportBlock
 
 class TestAuxReportBlock(object):
 
-    def test_base_AuxReportBlock(self):
+    def test_base_AuxReportBlock_modified(self):
         rb = AuxReportBlock('modified')
-        assert rb.output[0] == """
-        *******MODIFIED FILES********
-        """
+        assert rb.output[0] == """********MODIFIED FILES********"""
+
+    def test_base_AuxReportBlock_untracked(self):
+        rb = AuxReportBlock('untracked')
+        assert rb.output[0] == "*******UNTRACKED FILES********"
 
 
 class TestAuxReportBase(object):

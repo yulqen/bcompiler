@@ -26,4 +26,12 @@ class TestAuxReportBase(object):
         assert hasattr(r, 'modified')
         assert r.modified[0] == 'test'
 
+    def test_for_non_existing_attribute(self):
+        assert not hasattr(AuxReport, 'non-existant-attr')
+
+
+    def test_dynamically_adding_attribute(self):
+        AuxReport.add_check_component('log')
+        r = AuxReport()
+        assert r.log == []
 

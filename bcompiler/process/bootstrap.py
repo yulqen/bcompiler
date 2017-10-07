@@ -25,18 +25,26 @@ GIT_COMMANDS = {
 
 class AuxReport:
 
-    check_components = [
+    _check_components = [
         'modified',
         'untracked',
         'master',
     ]
 
     def __repr__(self):
-        return f"Report({AuxReport.check_components})"
+        return f"Report({AuxReport._check_components})"
+
+    @classmethod
+    def add_check_component(cls, component: str):
+        if isinstance(component, str):
+            AuxReport._check_components.append(component)
+            setattr(cls, component, [])
+        else:
+            raise ValueError
 
 
 # dynamically set class attributes based on check_components
-for comp in AuxReport.check_components:
+for comp in AuxReport._check_components:
     setattr(AuxReport, comp, [])
 
 

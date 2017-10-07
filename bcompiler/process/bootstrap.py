@@ -1,3 +1,5 @@
+from typing import List
+
 import os
 import sys
 import shutil
@@ -44,6 +46,16 @@ def _git_check_untracked(dir: str) -> None:
         print("You have files in your auxiliary folder that have not been added to the repository.\n")
         for f in g_output:
             print("\t{}".format(f))
+    _discover_master_file(g_output)
+
+
+def _discover_master_file(g_output: List[str]) -> None:
+    """
+    Simple test of a string for something that looks like a master xlsx file. We don't want them in the repo,
+     particularly if we're about to raze the directory structure.
+    :param g_output:
+    :return:
+    """
     for f in g_output:
         master_f = re.match(r'^.+(?P<master_file>(master|MASTER|Master).+xlsx)', f)
         if master_f:
@@ -55,7 +67,7 @@ def _git_check_untracked(dir: str) -> None:
                 "proceeding.".format(master_f.group('master_file')))
 
 
-def _git_modified_files(dir: str) -> None:
+def _git_check_modified_files(dir: str) -> None:
     """
     Discover any modified files in local git repository.
     :param dir: directory containing repository
@@ -87,13 +99,9 @@ def main():
             # print(f"Deleting {SOURCE_DIR} and all files within")
             # shutil.rmtree(ROOT_PATH)
             # print("Old auxiliary directory removed")
-            _git_modified_files(SOURCE_DIR)
+            _git_check_modified_files(SOURCE_DIR)
             _git_check_untracked(SOURCE_DIR)
             sys.exit()
-        print("There is no directory structure set up.")
-        print("Creating it.")
-        os.mkdir(ROOT_PATH)
-        print(f"Created {SOURCE_DIR}")
     else:
         print("There is no directory structure set up.")
         print("Creating it.")

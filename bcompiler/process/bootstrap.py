@@ -40,7 +40,12 @@ class AuxReport:
             AuxReport._check_components.append(component)
             setattr(cls, component, [])
         else:
-            raise ValueError
+            raise TypeError("component must be a string")
+            return
+
+    @property
+    def check_components(self):
+        return self._check_components
 
 
 # dynamically set class attributes based on check_components

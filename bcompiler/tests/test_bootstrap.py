@@ -1,3 +1,5 @@
+import pytest
+
 from ..process.bootstrap import AuxReport
 
 
@@ -35,3 +37,14 @@ class TestAuxReportBase(object):
         r = AuxReport()
         assert r.log == []
 
+
+    def test_wrong_component_type_added(self):
+        with pytest.raises(TypeError) as excinfo:
+            AuxReport.add_check_component(1)
+        assert excinfo.value.args[0] == "component must be a string"
+
+
+    def test_get_list_of_check_components_from_instance(self):
+        r = AuxReport()
+        r.add_check_component('log')
+        assert r.check_components[-1] == 'log'

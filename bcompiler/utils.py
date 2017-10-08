@@ -1,6 +1,7 @@
 import csv
 import fnmatch
 import logging
+import sys
 import os
 
 from collections import OrderedDict
@@ -30,8 +31,12 @@ CONFIG_FILE = os.path.join(SOURCE_DIR, 'config.ini')
 runtime_config = configparser.ConfigParser()
 runtime_config.read(CONFIG_FILE)
 
-SHEETS = [i for i in dict((runtime_config.items('TemplateSheets'))).values()]
-BLANK_TEMPLATE_FN = runtime_config['BlankTemplate']['name']
+try:
+    SHEETS = [i for i in dict((runtime_config.items('TemplateSheets'))).values()]
+    BLANK_TEMPLATE_FN = runtime_config['BlankTemplate']['name']
+except configparser.NoSectionError:
+    print("There is no config file present. Please run bcompiler-init to initialise bcompiler")
+    sys.exit()
 
 
 def row_check(excel_file: str):

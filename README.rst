@@ -2,7 +2,7 @@ bcompiler
 =========
 
 .. contents::
-    :depth: 2
+    :depth: 3
     :backlinks: top
     :local:
 

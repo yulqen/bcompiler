@@ -70,7 +70,7 @@ Install bcompiler
 Initialise bcompiler
 ++++++++++++++++++++++
 
-``bcompiler`` needs auxiliary files to run, including a ``datamap.csv`` and ``config.ini`` files. These files are stored in a directory called ``bcompiler`` in your ``Documents`` directory. Before running ``bcompiler``, this directory structure needs to be set up. The auxiliary files also need to be downloaded from a [git repository on Github](https://github.com/departmentfortransport/bcompiler_datamap_files). ``bcompiler`` can do the necessary work to set this up.
+``bcompiler`` needs auxiliary files to run, including a ``datamap.csv`` and ``config.ini`` files. These files are stored in a directory called ``bcompiler`` in your ``Documents`` directory. Before running ``bcompiler``, this directory structure needs to be set up. The auxiliary files also need to be downloaded from a `git repository on Github <https://github.com/departmentfortransport/bcompiler_datamap_files>_. ``bcompiler`` can do the necessary work to set this up.
 
 * In the command window, type ``bcompiler-init``.
 
@@ -93,7 +93,7 @@ config.ini
 This is a text file in ``Documents/bcompiler/source`` that allows allows the
 user to set basic configuration options.
 
-`INI <https://en.wikipedia.org/wiki/INI_file>`_ files are an informal standard for configuration files. The basic element contained in an INI file is the *key* or *property*. Every key has a *name and *value*, delimted by an equals sign (=). The name appears to the left of the equals sign.
+`INI <https://en.wikipedia.org/wiki/INI_file>`_ files are an informal standard for configuration files. The basic element contained in an INI file is the *key* or *property*. Every key has a *name* and *value*, delimted by an equals sign (=). The name appears to the left of the equals sign.
 
 Keys may be grouped into sections (this is the case for ``bcompiler``). The
 section name appears on a line by itself in square brackets ([ and  ]). All
@@ -115,14 +115,14 @@ The options available to set for ``bcompiler`` are:
 +----------------------------+--------------------------------------------------------------------------------+
 |TemplateSheets              |The names of each relevant sheet in the template must be set here               |
 +----------------------------+--------------------------------------------------------------------------------+
-|BlankTemplate               |Set the name of the template kept in the Documents/bcompiler/source directory   |
+|BlankTemplate               |Set the name of the template kept in the `Documents/bcompiler/source directory`   |
 +----------------------------+--------------------------------------------------------------------------------+
-|Datamap                     |Set the name of the datamap kept in the Documents/bcompiler/source directory    |
+|Datamap                     |Set the name of the datamap kept in the `Documents/bcompiler/source directory`    |
 +----------------------------+--------------------------------------------------------------------------------+
-|Master                      |Set the name of the master file kept in the Documents/bcompiler/source directory|
+|Master                      |Set the name of the master file kept in the `Documents/bcompiler/source directory`|
 +----------------------------+--------------------------------------------------------------------------------+
 
-Note that sensible value are set by default. The option you will most likely
+Note that sensible values are set by default. The option you will most likely
 need to change is ``Master`` as this is most often renamed by the user ourside
 of ``bcompiler`` use.
 
@@ -146,7 +146,6 @@ a CSV file with the following headers:
 |verification_list      |**LEGACY** Not currently implemented                                    |
 +-----------------------+------------------------------------------------------------------------+
 
-
 bicc_template.xlsm
 ===================
 
@@ -156,13 +155,61 @@ Contains macros to handle cell verification so must be saved in ``.xlsm``
 format.
 
 
-
 Creating a master spreadsheet from populated templates
-++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-- 
+- Ensure all populated returns are copied to the
+  ``Documents/bcompiler/source/returns`` directory. Ensure no other files are
+  present in this directory.
+- In a command window, run ``bcompiler`` (no arguments are required).
+- The resulting master file will be created in ``Documents/bcompiler/output``
+  directory.
+- To compare values from a previous master, run ``bcompiler --compare
+  <PATH-TO-MASTER-TO-COMPARE>
 
+
+Populating templates based on a master spreadsheet
++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+- Ensure the master spreadsheet is in the ``Documents/bcompiler/source``
+  directory.
+- Ensure the filename of the master spreadsheet is included in the ``[Master]``
+  section in ``config.ini``.
+- In a command window, run ``bcompiler -a``.
+- The resulting files will be created in ``Documents/bcompiler/output``.
+
+Check integrity of populated template files
++++++++++++++++++++++++++++++++++++++++++++
+
+The template used to collect data should not be changed by the user; allowing
+the user to add rows or columns will cause a world of problems for
+``bcompiler``. To ensure the integrity of the template, sheets in
+``bicc_template.xlsm`` are locked to prevent rows being added or deleted.
+
+However, ``bcompiler`` is able to check the validity of all returned templates
+if required, by comparing the number of rows in each sheet with what it expects
+from ``bicc_template.xlsm``.
+
+- Ensure all populated returns are copied to
+  ``Documents/bcompiler/source/returns``.
+- In a command window, run ``bcompiler -r``
+
+This will print the count of rows in each sheet in each template file. Any row
+count that differs from the equivalent sheet in ``bicc_template.xlsm`` will be
+marked with a `*`.
+
+- To output this data to the ``Documents/bcompiler/output`` directory, run
+  ``bcompiler -r --csv``.
+- To only show differences between the file and ``bicc_template.xlsm``, run
+  ``bcompiler -r --quiet``.
+
+Other options
++++++++++++++_
+
+- In a command window, run ``bcompiler --help`` to see other options. **Please
+  note**: some of these are legacy options and will be changed or removed in
+  future versions of ``bcompiler``.
 
 Known bugs and issues
---------------------
+---------------------
 * See above

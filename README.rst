@@ -165,7 +165,7 @@ Creating a master spreadsheet from populated templates
 - The resulting master file will be created in ``Documents/bcompiler/output``
   directory.
 - To compare values from a previous master, run ``bcompiler --compare
-  <PATH-TO-MASTER-TO-COMPARE>
+  <PATH-TO-MASTER-TO-COMPARE>``
 
 
 Populating templates based on a master spreadsheet

@@ -1,8 +1,5 @@
-bcompiler
-=========
-
 .. contents::
-    :depth: 3
+    :depth: 2
     :backlinks: top
     :local:
 
@@ -150,7 +147,7 @@ format.
 
 
 Creating a master spreadsheet from populated templates
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------------------------
 
 - Ensure all populated returns are copied to the ``Documents/bcompiler/source/returns`` directory. Ensure no other files are present in this directory.
 - In a command window, run ``bcompiler`` (no arguments are required).
@@ -159,8 +156,7 @@ Creating a master spreadsheet from populated templates
 
 
 Populating templates based on a master spreadsheet
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+--------------------------------------------------
 
 - Ensure the master spreadsheet is in the ``Documents/bcompiler/source`` directory.
 - Ensure the filename of the master spreadsheet is included in the ``[Master]`` section in ``config.ini``.
@@ -168,7 +164,7 @@ Populating templates based on a master spreadsheet
 - The resulting files will be created in ``Documents/bcompiler/output``.
 
 Check integrity of populated template files
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------------
 
 The template used to collect data should not be changed by the user; allowing
 the user to add rows or columns will cause a world of problems for
@@ -193,12 +189,12 @@ marked with a `*`.
   ``bcompiler -r --quiet``.
 
 Other options
-^^^^^^^^^^^^^^
+--------------
 
 - In a command window, run ``bcompiler --help`` to see other options. **Please
   note**: some of these are legacy options and will be changed or removed in
   future versions of ``bcompiler``.
 
 Known bugs and issues
-^^^^^^^^^^^^^^
+---------------------
 * See above

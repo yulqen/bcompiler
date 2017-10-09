@@ -67,7 +67,7 @@ Install bcompiler
 Initialise bcompiler
 ++++++++++++++++++++++
 
-``bcompiler`` needs auxiliary files to run, including a ``datamap.csv`` and ``config.ini`` files. These files are stored in a directory called ``bcompiler`` in your ``Documents`` directory. Before running ``bcompiler``, this directory structure needs to be set up. The auxiliary files also need to be downloaded from a `git repository on Github <https://github.com/departmentfortransport/bcompiler_datamap_files>_. ``bcompiler`` can do the necessary work to set this up.
+``bcompiler`` needs auxiliary files to run, including a ``datamap.csv`` and ``config.ini`` files. These files are stored in a directory called ``bcompiler`` in your ``Documents`` directory. Before running ``bcompiler``, this directory structure needs to be set up. The auxiliary files also need to be downloaded from a `git repository on Github <https://github.com/departmentfortransport/bcompiler_datamap_files`>_. ``bcompiler`` can do the necessary work to set this up.
 
 * In the command window, type ``bcompiler-init``.
 

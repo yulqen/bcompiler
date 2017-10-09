@@ -145,6 +145,13 @@ Contains macros to handle cell verification so must be saved in ``.xlsm``
 format.
 
 
+Other options
+++++++++++++++
+
+- In a command window, run ``bcompiler --help`` to see other options. **Please
+  note**: some of these are legacy options and will be changed or removed in
+  future versions of ``bcompiler``.
+
 
 Creating a master spreadsheet from populated templates
 -------------------------------------------------------
@@ -192,13 +199,6 @@ marked with a `*`.
   ``bcompiler -r --quiet``.
 
 
-
-Other options
---------------
-
-- In a command window, run ``bcompiler --help`` to see other options. **Please
-  note**: some of these are legacy options and will be changed or removed in
-  future versions of ``bcompiler``.
 
 
 

@@ -204,7 +204,7 @@ marked with a `*`.
   ``bcompiler -r --quiet``.
 
 Other options
-+++++++++++++_
+++++++++++++++
 
 - In a command window, run ``bcompiler --help`` to see other options. **Please
   note**: some of these are legacy options and will be changed or removed in

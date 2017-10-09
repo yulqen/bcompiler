@@ -85,7 +85,7 @@ created during ``bcompiler-init``:
 - ``bicc_template.xlsm``
 
 config.ini
-==============
+~~~~~~~~~~
 
 This is a text file in ``Documents/bcompiler/source`` that allows allows the
 user to set basic configuration options.
@@ -125,7 +125,7 @@ of ``bcompiler`` use.
 
 
 datamap.csv
-==============
+~~~~~~~~~~~~
 
 In order for ``bcompiler`` to retrieve data from cells in an Excel spreadsheet,
 it requires a mapping between the master to the template. This is achieved in
@@ -138,12 +138,12 @@ a CSV file with the following headers:
 
 
 bicc_template.xlsm
-====================
-
+~~~~~~~~~~~~~~~~~~~
 The Excel file that is populated by ``bcompiler`` and sent to project teams and
 subsquently queried by ``bcompiler`` when populating the master spreadsheet.
 Contains macros to handle cell verification so must be saved in ``.xlsm``
 format.
+
 
 
 Creating a master spreadsheet from populated templates
@@ -155,6 +155,7 @@ Creating a master spreadsheet from populated templates
 - To compare values from a previous master, run ``bcompiler --compare <PATH-TO-MASTER-TO-COMPARE>``
 
 
+
 Populating templates based on a master spreadsheet
 --------------------------------------------------
 
@@ -162,6 +163,8 @@ Populating templates based on a master spreadsheet
 - Ensure the filename of the master spreadsheet is included in the ``[Master]`` section in ``config.ini``.
 - In a command window, run ``bcompiler -a``.
 - The resulting files will be created in ``Documents/bcompiler/output``.
+
+
 
 Check integrity of populated template files
 -------------------------------------------
@@ -188,12 +191,16 @@ marked with a `*`.
 - To only show differences between the file and ``bicc_template.xlsm``, run
   ``bcompiler -r --quiet``.
 
+
+
 Other options
 --------------
 
 - In a command window, run ``bcompiler --help`` to see other options. **Please
   note**: some of these are legacy options and will be changed or removed in
   future versions of ``bcompiler``.
+
+
 
 Known bugs and issues
 ---------------------

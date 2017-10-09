@@ -134,20 +134,14 @@ In order for ``bcompiler`` to retrieve data from cells in an Excel spreadsheet,
 it requires a mapping between the master to the template. This is achieved in
 a CSV file with the following headers:
 
-+-----------------------+------------------------------------------------------------------------+
-|Header                 |Purpose                                                                 |
-+=======================+========================================================================+
-|cell_key               |The name of the value as it appears in Column A of the master           |
-+-----------------------+------------------------------------------------------------------------+
-|template_sheet         |The name of the sheet in the template                                   |
-+-----------------------+------------------------------------------------------------------------+
-|cell_reference         |The cell reference of the cell where data lives in the template         |
-+-----------------------+------------------------------------------------------------------------+
-|verification_list      |**LEGACY** Not currently implemented                                    |
-+-----------------------+------------------------------------------------------------------------+
+- **cell_key**: The name of the value as it appears in Column A of the master
+- **template_sheet**: The name of the sheet in the template
+- **cell_reference**: The cell reference of the cell where data lives in the template
+- **verification_list**: **LEGACY** Not currently implemented
+
 
 bicc_template.xlsm
-===================
+====================
 
 The Excel file that is populated by ``bcompiler`` and sent to project teams and
 subsquently queried by ``bcompiler`` when populating the master spreadsheet.

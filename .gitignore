@@ -2,3 +2,4 @@
 DfT_GMPP_Return.xlsx
 db.json
 .mypy_cache/
+dist/*

@@ -132,7 +132,7 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
             this_index = [
                 v for k, v in hd_indices.items() if k == project_name][0]
         except IndexError:
-            logger.critical(
+            logger.warning(
                 ("Cannot find project title '{}' in previous master. Will "
                  "compile data but not compare until return form and master "
                  "match. Alternatively, this could be a new file.").format(

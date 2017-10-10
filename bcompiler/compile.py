@@ -36,6 +36,13 @@ def get_current_quarter(source_file):
     return q
 
 
+def encode_win(s: str):
+    """
+    Will take cp1252 encoded, covert to bytes and re-encode in utf-8
+    """
+    return s.encode('utf-8').decode('utf-8')
+
+
 def parse_source_cells(source_file: str, datamap_source_file: str) -> \
         List[Dict[str, str]]:
     """
@@ -48,6 +55,7 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
     datamap_obj.cell_map_from_csv(datamap_source_file)
     for item in datamap_obj.cell_map:
         if item.template_sheet is not None and item.cell_reference is not None:
+            item.cell_key = encode_win(item.cell_key)
             ws = wb[item.template_sheet]
             try:
                 v = ws[item.cell_reference].value

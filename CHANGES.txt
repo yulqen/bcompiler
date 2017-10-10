@@ -1,0 +1,3 @@
+* Handling cp1252 encoding coming through from Windows
+* Added CHANGES.txt
+* Minor bugfixes

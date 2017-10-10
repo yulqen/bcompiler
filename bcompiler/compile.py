@@ -40,7 +40,7 @@ def encode_win(s: str):
     """
     Will take cp1252 encoded, covert to bytes and re-encode in utf-8
     """
-    return s.encode('utf-8').decode('utf-8')
+    return s.encode('cp1252').decode('utf-8')
 
 
 def parse_source_cells(source_file: str, datamap_source_file: str) -> \

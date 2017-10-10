@@ -261,5 +261,6 @@ def run(compare_master=None):
                     workbook=workbook,
                 )
                 count += 1
-        OUTPUT_FILE = '/'.join([OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, "Q2")])
+        q_string = config['QuarterData']['CurrentQuarter'].split()[0]
+        OUTPUT_FILE = '/'.join([OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, q_string)])
         workbook.save(OUTPUT_FILE)

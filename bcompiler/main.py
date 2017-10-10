@@ -43,6 +43,7 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              row_data_formatter,
                              BLANK_TEMPLATE_FN, project_data_from_master)
 from bcompiler.utils import runtime_config as config
+from bcompiler.utils import directory_has_returns_check
 
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
@@ -536,11 +537,17 @@ def main():
             row_data_formatter()
         return
     if args['compile'] and not args['compare']:
-        clean_datamap(DATAMAP_RETURN_TO_MASTER)
-        compile_returns.run()
+        if directory_has_returns_check(os.path.join(SOURCE_DIR, 'returns')):
+            clean_datamap(DATAMAP_RETURN_TO_MASTER)
+            compile_returns.run()
+        else:
+            sys.exit(1)
     if args['compare']:
-        clean_datamap(DATAMAP_RETURN_TO_MASTER)
-        compile_returns.run(args['compare'])
+        if directory_has_returns_check(os.path.join(SOURCE_DIR, 'returns')):
+            clean_datamap(DATAMAP_RETURN_TO_MASTER)
+            compile_returns.run(args['compare'])
+        else:
+            sys.exit(1)
 
 
 if __name__ == '__main__':

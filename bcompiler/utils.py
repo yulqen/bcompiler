@@ -39,6 +39,14 @@ except configparser.NoSectionError:
     sys.exit()
 
 
+def directory_has_returns_check(dir: str):
+    if os.listdir(dir) == []:
+        logger.critical("Please copy populated return files to returns directory.")
+        return False
+    else:
+        return True
+
+
 def row_check(excel_file: str):
     wb = load_workbook(excel_file)
     data = []

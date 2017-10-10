@@ -19,12 +19,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE. """
 
 import argparse
-import configparser
 import datetime
 import logging
 import os
 import re
-import shutil
 import sys
 from typing import Dict, List
 
@@ -42,7 +40,7 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              OUTPUT_DIR, SOURCE_DIR, VALIDATION_REFERENCES,
                              parse_csv_to_file,
                              working_directory, SHEETS, CURRENT_QUARTER,
-                             row_data_formatter, ROOT_PATH, CONFIG_FILE,
+                             row_data_formatter,
                              BLANK_TEMPLATE_FN, project_data_from_master)
 from bcompiler.utils import runtime_config as config
 
@@ -58,66 +56,55 @@ def get_parser():
         '--clean-datamap',
         action="store_true",
         dest="clean-datamap",
-        help='clean datamap file whose path is given as string')
+        help=("Remove trailing spaces from datamap and ensure ready for running. "
+              "Should be no requirement to run manually."))
     parser.add_argument(
         '-v',
         '--version',
         action="store_true",
-        help='displays the current version of bcompiler')
+        help='Displays the current version of bcompiler')
     parser.add_argument(
         '-r',
         '--count-rows',
         dest='count-rows',
         action="store_true",
-        help='count rows in each sheet in each return file in output folder')
+        help='Count rows in each sheet in each return file in output folder')
     parser.add_argument(
         '--csv',
         action="store_true",
-        help='if used with -r, will output to csv file in output directory')
+        help='If used with -r, will output to csv file in output directory')
     parser.add_argument(
         '--quiet',
         action="store_true",
-        help='if used with -r, will only report differences in row count if they occur.')
+        help='If used with -r, will only report differences in row count if they occur.')
     parser.add_argument(
         '-t',
         '--transpose',
         dest='transpose',
         metavar='SOURCE_FILE',
         nargs=1,
-        help='tranpose master.csv and flip to opposite orientation')
+        help='Tranpose master.csv and flip to opposite orientation')
     parser.add_argument(
         '-b',
         '--populate-bicc-form',
         dest='populate',
         metavar='PROJECT_INTEGER',
-        help='populate blank bicc forms from master for project N')
+        help='Populate blank bicc forms from master for project N')
     parser.add_argument(
         '-a',
         '--all',
         action="store_true",
-        help='populate blank templates with data from master')
-    parser.add_argument(
-        '-d',
-        '--create-wd',
-        action="store_true",
-        dest='create-wd',
-        help='create working directory at $HOME/Documents/bcompiler')
-    parser.add_argument(
-        '-f',
-        '--force-create-wd',
-        action="store_true",
-        dest='f-create-wd',
-        help='remove existing working directory and create a new one')
+        help='Populate blank templates with data from master')
     parser.add_argument(
         'compile',
-        help='compile BICC returns to master',
+        help='Compile BICC returns to master',
         default='compile',
         nargs='?')
     parser.add_argument(
         '--compare',
         nargs=1,
         metavar="PATH_TO_FILE TO COMPARE",
-        help=('to be used with compile action; file path to master file '
+        help=('To be used with compile action; file path to master file '
               'to compare to compiled data'))
     parser.add_argument(
         '-ll',
@@ -443,68 +430,6 @@ def pop_all():
         populate_blank_bicc_form(os.path.join(SOURCE_DIR, config['Master']['name']), p)
 
 
-def check_for_correct_source_files():
-    docs = os.path.join(os.path.expanduser('~'), 'Documents')
-    bcomp_working_d = 'bcompiler'
-    if not os.path.exists(os.path.join(docs, bcomp_working_d)):
-        print("No working directory set up. Creating working directory.")
-        create_working_directory()
-        print("Please ensure the correct source files are installed:\n"
-              "\t\tsource/bicc_template.xlsx\n"
-              "\t\tsource/master.csv\n"
-              "\t\tsource/datamap-master-to-returns\n")
-        sys.exit()
-    else:
-        return
-
-
-def create_working_directory():
-    """
-    We need a proper directory to work in.
-    :return:
-    """
-
-
-    # Check if there is already a configurtion file
-
-    folders = ['source', 'output']
-    if not os.path.exists(ROOT_PATH):
-        os.mkdir(ROOT_PATH)
-        for folder in folders:
-            os.mkdir(os.path.join(ROOT_PATH, folder))
-        config = configparser.ConfigParser()
-
-        if not os.path.isfile(CONFIG_FILE):
-            cf = open(CONFIG_FILE, 'w')
-            config.add_section('TemplateSheets')
-            config.set('TemplateSheets', 'summary_sheet', 'Summary')
-            config.set('TemplateSheets', 'fb_sheet', 'Finance & Benefits')
-            config.set('TemplateSheets', 'resource_sheet', 'Resource')
-            config.set('TemplateSheets', 'apm', 'Approval & Project milestones')
-            config.set('TemplateSheets', 'ap', 'Assurance Planning')
-            config.write(cf)
-            cf.close()
-
-        logger.info("Clean working directory created at {}".format(ROOT_PATH))
-    else:
-        logger.warning("WORKING DIRECTORY EXISTS. You can either run the program"
-                       " like this and files will be overwritten, or you should do"
-                       " --force-create-wd to remove the working directory and create "
-                       "a new one. THIS WILL REMOVE ANY DATAMAP AND "
-                       "MASTER.CSV FILES PERSENT.")
-
-
-def delete_working_directory():
-    docs = os.path.join(os.path.expanduser('~'), 'Documents')
-    bcomp_working_d = 'bcompiler'
-    root_path = os.path.join(docs, bcomp_working_d)
-    try:
-        shutil.rmtree(root_path)
-        return "{} deleted".format(root_path)
-    except FileNotFoundError:
-        return
-
-
 def get_dropdown_data(header=None):
     """
     Pull the dropdown data from the Dropdown List sheet in
@@ -554,7 +479,6 @@ def create_validation(header):
 def main():
     parser = get_parser()
     args = vars(parser.parse_args())
-    check_for_correct_source_files()
     if args['loglevel']:
         log_lev = args['loglevel']
         logger.setLevel(logging.DEBUG)
@@ -600,9 +524,6 @@ def main():
         clean_datamap(DATAMAP_RETURN_TO_MASTER)
         pop_all()
         return
-    if args['create-wd']:
-        create_working_directory()
-        return
     if args['count-rows']:
         if args['csv'] and args['quiet']:
             logger.critical("-r option can only use --csv or --quiet, not both")
@@ -614,16 +535,6 @@ def main():
         else:
             row_data_formatter()
         return
-    if args['f-create-wd']:
-        print("This will destroy your existing working directory prior to"
-              "creating a new one.\n\nAre you sure?")
-        response = input('(y/n) --> ')
-        if response in ('y', 'ye', 'yes', 'Y', 'YES'):
-            delete_working_directory()
-            create_working_directory()
-            return
-        else:
-            return
     if args['compile'] and not args['compare']:
         clean_datamap(DATAMAP_RETURN_TO_MASTER)
         compile_returns.run()

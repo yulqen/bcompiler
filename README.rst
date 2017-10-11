@@ -1,4 +1,5 @@
-`Quick Start <#quick-start>`__
+`Quick Start <#quickstart>`__
+`Introduction <#introduction>`__
 
 Quick Start
 -----------

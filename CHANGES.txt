@@ -1,6 +1,7 @@
 11 October 2017
 ---------------
 - Fix bug where `.xlsx` files not being picked up.
+- Improved exception handling and bug fixes.
 
 10 October 2017
 ---------------

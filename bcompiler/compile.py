@@ -3,6 +3,8 @@ import fnmatch
 import logging
 import os
 import re
+import sys
+
 from datetime import date, datetime
 from typing import Dict, List
 
@@ -57,7 +59,11 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
         if item.template_sheet is not None and item.cell_reference is not None:
             if os.name == 'nt':
                 item.cell_key = encode_win(item.cell_key)
-            ws = wb[item.template_sheet]
+            try:
+                ws = wb[item.template_sheet]
+            except KeyError as e:
+                logger.critical(f"{e}.{source_file} is not a BICC template. Not processing. Remove it!")
+                sys.exit()
             try:
                 v = ws[item.cell_reference].value
             except IndexError:
@@ -68,6 +74,10 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
                         item.cell_reference,
                         source_file))
                 v = ""
+            except ValueError as e:
+                logger.critical(f"{e.args[0]} at cell {ws.title}:{item.cell_reference}. This value will NOT be transferred to master. Skipping...")
+                v = "NOT TRANSFERRED DUE TO ERROR: Refer to bcompiler log"
+                pass
             else:
                 if v is None:
                     logger.debug(
@@ -96,7 +106,7 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
                     pass
                 else:
                     v = c.clean()
-            destination_kv = dict(gmpp_key=item.cell_key, gmpp_key_value=v)
+            destination_kv = dict(gmpp_key=(item.cell_key).rstrip(), gmpp_key_value=v)
             ls_of_dataline_dicts.append(destination_kv)
     return ls_of_dataline_dicts
 
@@ -245,6 +255,8 @@ def run(compare_master=None):
                     compare_master=compare_master
                 )
                 count += 1
+            elif fnmatch.fnmatch(file, '*.xlsm#' or fnmatch.fnmatch(file, '*.xlsx#')):
+                logger.warning("You have a file open in your spreadsheet program. Ignoring the lock file.")
             else:
                 logger.critical("There are no Excel files in {}. Copy some in there!".format(RETURNS_DIR))
         OUTPUT_FILE = '/'.join([OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, "Q2")])
@@ -271,6 +283,8 @@ def run(compare_master=None):
                     workbook=workbook,
                 )
                 count += 1
+            elif fnmatch.fnmatch(file, '*.xlsm#' or fnmatch.fnmatch(file, '*.xlsx#')):
+                logger.warning("You have a file open in your spreadsheet program. Ignoring the lock file.")
             else:
                 logger.critical("There are no Excel files in {}. Copy some in there!".format(RETURNS_DIR))
         q_string = config['QuarterData']['CurrentQuarter'].split()[0]

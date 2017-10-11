@@ -1,3 +1,9 @@
-* Handling cp1252 encoding coming through from Windows
-* Added CHANGES.txt
-* Minor bugfixes
+11 October 2017
+---------------
+- Fix bug where `.xlsx` files not being picked up.
+
+10 October 2017
+---------------
+- Handling cp1252 encoding coming through from Windows
+- Added CHANGES.txt
+- Minor bugfixes

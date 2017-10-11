@@ -236,8 +236,7 @@ def run(compare_master=None):
         workbook = Workbook()
         count = 1
         for file in os.listdir(RETURNS_DIR):
-            if fnmatch.fnmatch(file, '*.xlsm') or \
-                    fnmatch.fnmatch(file, '*.XLSX'):
+            if fnmatch.fnmatch(file, '*.xlsm') or fnmatch.fnmatch(file, '*.XLSX') or fnmatch.fnmatch(file, '*.xlsx'):
                 logger.info("Processing {}".format(file))
                 write_excel(
                     (os.path.join(RETURNS_DIR, file)),
@@ -262,7 +261,7 @@ def run(compare_master=None):
                             " files in there. bcompiler -d may help.")
             return
         for file in d:
-            if fnmatch.fnmatch(file, '*.xlsm'):
+            if fnmatch.fnmatch(file, '*.xlsm') or fnmatch.fnmatch(file, '*.XLSX') or fnmatch.fnmatch(file, '*.xlsx'):
                 logger.info("Processing {}".format(file))
                 write_excel(
                     (os.path.join(RETURNS_DIR, file)),

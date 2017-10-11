@@ -1,7 +1,4 @@
-.. contents::
-    :depth: 2
-    :backlinks: top
-    :local:
+`Quick Start <#quick-start>`__
 
 Quick Start
 -----------

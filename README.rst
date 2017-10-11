@@ -1,5 +1,6 @@
-`Quick Start <#quickstart>`__
-`Introduction <#introduction>`__
+- `Quick Start <#quick-start>`__
+- `Introduction <#introduction>`__
+- `Installation <#installation>`__
 
 Quick Start
 -----------

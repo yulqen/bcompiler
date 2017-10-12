@@ -25,6 +25,11 @@ Excel files using the data from a master spreadsheet.
 These files are contained in a DfT reporitory on GitHub. ``bcompiler`` can be
 used to obtain/update these files.
 
+Documentation
+-------------
+
+Full documentation for the project can be found at [http://bcompiler.readthedocs.io/en/latest/index.html](http://bcompiler.readthedocs.io/en/latest/index.html)
+
 
 Installation (Windows)
 ----------------------

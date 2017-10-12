@@ -28,7 +28,7 @@ used to obtain/update these files.
 Documentation
 -------------
 
-Full documentation for the project can be found at [http://bcompiler.readthedocs.io/en/latest/index.html](http://bcompiler.readthedocs.io/en/latest/index.html)
+Full documentation for the project can be found at http://bcompiler.readthedocs.io/en/latest/index.html.
 
 
 Installation (Windows)

@@ -20,10 +20,3 @@ Quick Start
 * ``bcompiler-init``
 * ``bcompiler --help``
 
-
-Installing
------------
-
-* ``pip install bcompiler``
-* ``bcompiler-init``
-* ``bcompiler --help``

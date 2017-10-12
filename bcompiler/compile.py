@@ -15,8 +15,8 @@ from bcompiler.process.cellformat import CellFormatState
 from bcompiler.process.simple_comparitor import FileComparitor, ParsedMaster
 from bcompiler.utils import DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, RETURNS_DIR
 from bcompiler.utils import runtime_config as config
-from .process.cleansers import DATE_REGEX_TIME
-from .process.datamap import Datamap
+from bcompiler.process.cleansers import DATE_REGEX_TIME
+from bcompiler.process.datamap import Datamap
 
 CELL_REGEX = re.compile('[A-Z]+[0-9]+')
 DROPDOWN_REGEX = re.compile('^\D*$')
@@ -27,9 +27,20 @@ logger = logging.getLogger('bcompiler.compiler')
 DATA_MAP_FILE = DATAMAP_RETURN_TO_MASTER
 
 
-def get_current_quarter(source_file):
+def get_current_quarter(source_file: str) -> str:
     """
-    DOCSTRING HERE
+    :param source_file: path to a template file whose G3 cell contains the \
+    current quarter.
+    :return: str of the current quarter
+    :rtype: str
+
+    .. note::
+
+        This is a note.
+
+    .. warning::
+        This cell should not be hard-coded. Move to config.ini.
+
     """
     wb = load_workbook(RETURNS_DIR + source_file, read_only=True)
     ws = wb[config['TemplateSheets']['summary_sheet']]

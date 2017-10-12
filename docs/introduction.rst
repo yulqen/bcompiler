@@ -1,9 +1,15 @@
 Introduction
 =============
 
-This is the introduction to ``bcompiler``.
+``bcompiler`` is a tool to manage data involved in the BICC reporting process at the UK Department for Transport.
 
-This is where we get lots of introductory text. Right here!
+``bcompiler`` processes data held in Excel files, either compiling similar data
+from many Excel files into a single master spreadsheet, or populating many
+Excel files using the data from a master spreadsheet.
+
+"Auxiliary" files are required to map data in each direction, and to templates.
+These files are contained in a DfT reporitory on GitHub. ``bcompiler`` can be
+used to obtain/update these files.
 
 Quick Start
 -----------

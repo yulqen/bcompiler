@@ -5,9 +5,13 @@ Partial implementation of a state machine. It doesn't need to return
 to its original state at the moment.
 """
 import decimal
+import logging
+
 from datetime import datetime, date
 
 from openpyxl.styles import PatternFill
+
+logger = logging.getLogger('bcompiler.compiler')
 
 
 class CellFormatState:
@@ -76,6 +80,7 @@ class BlankCellFormat(CellFormatState):
         types do match, then the object is converted into the applicable
         CellFormat class (which are based on CellFormatState.
         """
+
         if isinstance(this_val, str) and isinstance(compare_val, str):
             self.__class__ = StringCellFormat
             self.compare_val = compare_val
@@ -107,10 +112,19 @@ class BlankCellFormat(CellFormatState):
             self.this_val = this_val
             self.key = key
         elif isinstance(this_val, datetime) and isinstance(compare_val, str):
-            self.__class__ = DateCellFormat
-            self.compare_val = compare_val
-            self.this_val = this_val
-            self.key = key
+            try:
+                this_val - compare_val
+            except TypeError:
+                self.__class__ = BlankCellFormat
+                self.compare_val = compare_val
+                self.this_val = this_val
+                self.key = key
+                logger.warning(f"Values {self.this_val} in processed file and {self.compare_val} in comparing master do not compare. Skipping.")
+            else:
+                self.__class__ = DateCellFormat
+                self.compare_val = compare_val
+                self.this_val = this_val
+                self.key = key
         elif isinstance(this_val, datetime) and isinstance(compare_val,
                                                            datetime):
             self.__class__ = DateCellFormat
@@ -123,7 +137,10 @@ class BlankCellFormat(CellFormatState):
             self.this_val = this_val
             self.key = key
         else:
-            pass
+            self.__class__ = BlankCellFormat
+            self.compare_val = compare_val
+            self.this_val = this_val
+            self.key = key
 
     def export_rule(self):
         # we have to return a PatternFill, even if blank

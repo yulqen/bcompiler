@@ -1,3 +1,8 @@
+16 October 2017
+---------------
+
+- Fix bug where cell value in string and datetime value would try to compare arithmetically
+
 11 October 2017
 ---------------
 - Fix bug where `.xlsx` files not being picked up.

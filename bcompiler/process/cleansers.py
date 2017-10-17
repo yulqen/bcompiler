@@ -183,8 +183,8 @@ class Cleanser:
         try:
             return parse(m.string, dayfirst=True)
         except ValueError:
-            logger.error(
-                "This date is causing problems: {}".format(self.string))
+            logger.warning(
+                "Potential date issue (perhaps a date mixed with free text?): \"{}\"".format(self.string))
             return self.string
 
     def _date_time(self, regex, fix):

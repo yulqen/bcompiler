@@ -1,7 +1,12 @@
+17 October 2017
+---------------
+
+- Changed ERROR log message to WARNING to accommodate dates mixed with free text.
+
 16 October 2017
 ---------------
 
-- Fix bug where cell value in string and datetime value would try to compare arithmetically
+- Fix bug where cell value in string and datetime value would try to compare arithmetically.
 
 11 October 2017
 ---------------

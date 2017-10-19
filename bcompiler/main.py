@@ -124,7 +124,7 @@ def get_parser():
     parser.add_argument(
         '--output',
         nargs=1,
-        help=('Path to save the resulting file. Ignore if used without --analyser.'),
+        help=('Path to save the resulting file. Ignored if used without --analyser.'),
         metavar="PATH_TO_DIRECTORY"
     )
     parser.add_argument(

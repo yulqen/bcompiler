@@ -45,6 +45,8 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
 from bcompiler.utils import runtime_config as config
 from bcompiler.utils import directory_has_returns_check
 
+from bcompiler.analysers import run as swimlane_run
+
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
 
@@ -114,6 +116,16 @@ def get_parser():
         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
         help=('Set the logging level for the console.'
               'The log file is set to DEBUG.'))
+    parser.add_argument(
+        '--analyser',
+        nargs=1,
+        help=('Currently \'swimlane\' implented. More coming...')
+    )
+    parser.add_argument(
+        '--output',
+        nargs=1,
+        help=('Path to save the resulting file')
+    )
     return parser
 
 
@@ -272,6 +284,8 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     ws_apm = blank[config['TemplateSheets']['apm']]
     ws_ap = blank[config['TemplateSheets']['ap']]
     ws_gmpp = blank[config['TemplateSheets']['gmpp']]
+
+    # TODO - flagged for removal
 
     TARGET_LOCK_CELLS = [
         {ws_summary: 'B5'},
@@ -525,6 +539,13 @@ def main():
         clean_datamap(DATAMAP_RETURN_TO_MASTER)
         pop_all()
         return
+    if args['analyser']:
+        if 'swimlane' in args['analyser']:
+            if args['output']:
+                swimlane_run(args['output'])
+            else:
+                swimlane_run()
+            return
     if args['count-rows']:
         if args['csv'] and args['quiet']:
             logger.critical("-r option can only use --csv or --quiet, not both")

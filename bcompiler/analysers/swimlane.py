@@ -8,7 +8,6 @@ import openpyxl
 from ..utils import ROOT_PATH
 
 # typing imports
-import sys
 from openpyxl.worksheet.worksheet import Worksheet
 
 import datetime
@@ -85,13 +84,13 @@ def gather_data(
 def _segment_series() -> Tuple:
     """Generator for step value when stepping through rows within a project block."""
     cut = dict(
-        sobc=1,
-        obc=1,
-        ds1=4,
-        fbc=1,
-        ds2=4,
-        ds3=4,
-        free=8
+        sobc=2,
+        obc=2,
+        ds1=5,
+        fbc=2,
+        ds2=5,
+        ds3=5,
+        free=9
     )
     for item in cut.items():
         yield item
@@ -156,11 +155,26 @@ def run(output_path=None):
                 inner_start_row = derived_end
             else:
                 inner_start_row = derived_end
-            _inner_step = next(segment_series_generator)[1]
-            series, derived_end = _series_producer(wb.active, inner_start_row, _inner_step)
-            if _inner_step == 1:
+            _inner_step = next(segment_series_generator)
+            series, derived_end = _series_producer(wb.active, inner_start_row, _inner_step[1] - 1)
+            if _inner_step[0] == 'sobc' :
+                series.marker.symbol = "circle"
+                series.marker.graphicalProperties.solidFill = "FF0000"
+            elif _inner_step[0] == 'obc':
                 series.marker.symbol = "triangle"
                 series.marker.graphicalProperties.solidFill = "01a852"
+            elif _inner_step[0] == 'ds1':
+                series.marker.symbol = "diamond"
+                series.marker.graphicalProperties.solidFill = "016da8"
+            elif _inner_step[0] == 'fbc':
+                series.marker.symbol = "square"
+                series.marker.graphicalProperties.solidFill = "a801a5"
+            elif _inner_step[0] == 'ds2':
+                series.marker.symbol = "plus"
+                series.marker.graphicalProperties.solidFill = "4401a8"
+            elif _inner_step[0] == 'ds3':
+                series.marker.symbol = "x"
+                series.marker.graphicalProperties.solidFill = "a86001"
             else:
                 series.marker.symbol = "square"
                 series.marker.graphicalProperties.solidFill = "FF0000"

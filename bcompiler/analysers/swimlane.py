@@ -1,20 +1,18 @@
-import os
+import datetime
 import logging
-
+import os
 from typing import Tuple
 
 import openpyxl
-
-from ..utils import ROOT_PATH
-
+from openpyxl.chart import ScatterChart, Reference, Series
 # typing imports
 from openpyxl.worksheet.worksheet import Worksheet
 
-import datetime
-from openpyxl.chart import ScatterChart, Reference, Series
+from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE
 
-MASTER_XLSX = 'Q2_1718_master.xlsx'
+MASTER_XLSX = os.path.join(ROOT_PATH, runtime_config['MasterForAnalysis']['name'])
 
+runtime_config.read(CONFIG_FILE)
 logger = logging.getLogger('bcompiler.compiler')
 
 HOME = os.path.abspath(os.path.expanduser('~'))
@@ -28,7 +26,8 @@ def gather_data(
         project_number: int,
         newwb: openpyxl.Workbook,
         block_start_row: int = 90,
-        interested_range: int = 365):
+        interested_range: int = 365,
+        master_path=None):
     """
     Gather data from
     :type int: start_row
@@ -42,9 +41,12 @@ def gather_data(
     col = project_number + 1
     start_row = start_row + 1
 
-    wb = openpyxl.load_workbook(
-        os.path.join(
-            DESKTOP, MASTER_XLSX))
+    if master_path:
+        master = master_path
+    else:
+        master = MASTER_XLSX
+
+    wb = openpyxl.load_workbook(master)
     sheet = wb.active
 
     # print project title
@@ -127,12 +129,18 @@ def _row_calc(project_number: int) -> Tuple[int, int]:
         return (project_number, (project_number + 30) + ((project_number - 2) * 30))
 
 
-def run(output_path=None):
+def run(output_path=None, user_provided_master_path=None):
+
+    if user_provided_master_path:
+        logger.info(f"Using master file: {user_provided_master_path}")
+    else:
+        logger.info(f"Using default master file (refer to config.ini)")
+
     wb = openpyxl.Workbook()
     segment_series_generator = _segment_series()
     for p in range(1, 31):
         proj_num, st_row = _row_calc(p)
-        wb = gather_data(st_row, proj_num, wb, block_start_row=90, interested_range=365)[0]
+        wb = gather_data(st_row, proj_num, wb, block_start_row=90, interested_range=365, master_path=user_provided_master_path)[0]
 
     chart = ScatterChart()
     chart.title = "Milestone Swimlane Chart"
@@ -157,7 +165,7 @@ def run(output_path=None):
                 inner_start_row = derived_end
             _inner_step = next(segment_series_generator)
             series, derived_end = _series_producer(wb.active, inner_start_row, _inner_step[1] - 1)
-            if _inner_step[0] == 'sobc' :
+            if _inner_step[0] == 'sobc':
                 series.marker.symbol = "circle"
                 series.marker.graphicalProperties.solidFill = "FF0000"
             elif _inner_step[0] == 'obc':
@@ -186,14 +194,14 @@ def run(output_path=None):
     wb.active.add_chart(chart, "E1")
     try:
         if output_path:
-            wb.save(os.path.join(output_path[0], 'swimlane.xlsx'))
-            logger.info(f"Saved swimlane.xlsx to {output_path}")
+            wb.save(os.path.join(output_path[0], 'swimlane_milestones.xlsx'))
+            logger.info(f"Saved swimlane_milestones.xlsx to {output_path}")
         else:
             output_path = os.path.join(ROOT_PATH, 'output')
-            wb.save(os.path.join(output_path, 'swimlane.xlsx'))
-            logger.info(f"Saved swimlane.xlsx to {output_path}")
+            wb.save(os.path.join(output_path, 'swimlane_milestones.xlsx'))
+            logger.info(f"Saved swimlane_milestones.xlsx to {output_path}")
     except PermissionError:
-        logger.critical("Cannot save output.xlsx file - you already have it open. Close and run again.")
+        logger.critical("Cannot save swimlane_milestones.xlsx file - you already have it open. Close and run again.")
         return
 
 

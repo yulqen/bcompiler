@@ -126,6 +126,11 @@ def get_parser():
         nargs=1,
         help=('Path to save the resulting file')
     )
+    parser.add_argument(
+        '--master',
+        nargs=1,
+        help=('Path to master to be used for analysis')
+    )
     return parser
 
 
@@ -541,9 +546,16 @@ def main():
         return
     if args['analyser']:
         if 'swimlane_milestones' in args['analyser']:
-            if args['output']:
+            if args['output'] and not args['master']: #  user stipulates an output directory
                 swimlane_run(args['output'])
-            else:
+                return
+            if args['output'] and args['master']:  # user stipulates an output and a target master
+                swimlane_run(args['output'], args['master'][0])
+                return
+            if args['master'] and not args['output']:  # user stipulates a master but NOT an output directory
+                swimlane_run(user_provided_master_path=args['master'][0])
+                return
+            else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
                 swimlane_run()
             return
     if args['count-rows']:

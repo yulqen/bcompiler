@@ -270,6 +270,7 @@ def working_directory(dir_type=None):
     else:
         return
 
+# TODO this lot needs cleaning up - no more use of working_directory()
 
 SOURCE_DIR = working_directory('source')
 OUTPUT_DIR = working_directory('output')

@@ -12,6 +12,7 @@ from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE
 
 runtime_config.read(CONFIG_FILE)
 
+
 def gather_data(start_row: int, project_number: int, newwb: openpyxl.Workbook, block_start_row: int = 90, interested_range: int = 365, master_path=None):
     """
     Gather data from
@@ -131,7 +132,7 @@ def run(output_path=None, user_provided_master_path=None):
 
     wb = openpyxl.Workbook()
     segment_series_generator = _segment_series()
-    for p in range(1, NUMBER_OF_PROJECTS[0]):
+    for p in range(1, NUMBER_OF_PROJECTS):
         proj_num, st_row = _row_calc(p)
         wb = gather_data(st_row, proj_num, wb, block_start_row=90, interested_range=365, master_path=user_provided_master_path)[0]
 
@@ -149,9 +150,8 @@ def run(output_path=None, user_provided_master_path=None):
 
     derived_end = 2
 
-    for p in range(1, NUMBER_OF_PROJECTS[0]):
-        for i in range(1,
-                       8):  # 8 here is hard-coded number of segments within a project series (ref: dict in _segment_series()
+    for p in range(1, NUMBER_OF_PROJECTS):
+        for i in range(1, 8):  # 8 here is hard-coded number of segments within a project series (ref: dict in _segment_series()
             if i == 1:
                 inner_start_row = derived_end
             else:

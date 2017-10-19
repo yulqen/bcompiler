@@ -136,8 +136,10 @@ def run(output_path=None):
         wb = gather_data(st_row, proj_num, wb, block_start_row=90, interested_range=365)[0]
 
     chart = ScatterChart()
-    chart.title = "Swimlane Chart"
+    chart.title = "Milestone Swimlane Chart"
     chart.style = 1
+    chart.height = 20
+    chart.width = 30
     chart.x_axis.title = 'Days from Today'
     chart.y_axis.title = 'Project No'
     chart.legend = None

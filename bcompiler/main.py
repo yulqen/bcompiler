@@ -119,7 +119,7 @@ def get_parser():
     parser.add_argument(
         '--analyser',
         nargs=1,
-        help=('Currently \'swimlane\' implented. More coming...')
+        help=('Currently \'swimlane_milstones\' implented. More coming...')
     )
     parser.add_argument(
         '--output',
@@ -540,7 +540,7 @@ def main():
         pop_all()
         return
     if args['analyser']:
-        if 'swimlane' in args['analyser']:
+        if 'swimlane_milestones' in args['analyser']:
             if args['output']:
                 swimlane_run(args['output'])
             else:

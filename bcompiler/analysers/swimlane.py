@@ -1,5 +1,4 @@
 import datetime
-import logging
 import os
 from typing import Tuple
 
@@ -8,26 +7,12 @@ from openpyxl.chart import ScatterChart, Reference, Series
 # typing imports
 from openpyxl.worksheet.worksheet import Worksheet
 
+from .utils import MASTER_XLSX, logger, projects_in_master
 from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE
 
-MASTER_XLSX = os.path.join(ROOT_PATH, runtime_config['MasterForAnalysis']['name'])
-
 runtime_config.read(CONFIG_FILE)
-logger = logging.getLogger('bcompiler.compiler')
 
-HOME = os.path.abspath(os.path.expanduser('~'))
-DESKTOP = os.path.join(HOME, 'Desktop')
-
-NUMBER_OF_PROJECTS = 32
-
-
-def gather_data(
-        start_row: int,
-        project_number: int,
-        newwb: openpyxl.Workbook,
-        block_start_row: int = 90,
-        interested_range: int = 365,
-        master_path=None):
+def gather_data(start_row: int, project_number: int, newwb: openpyxl.Workbook, block_start_row: int = 90, interested_range: int = 365, master_path=None):
     """
     Gather data from
     :type int: start_row
@@ -130,15 +115,23 @@ def _row_calc(project_number: int) -> Tuple[int, int]:
 
 
 def run(output_path=None, user_provided_master_path=None):
+    """
+    Main function to run this analyser.
+    :param output_path:
+    :param user_provided_master_path:
+    :return:
+    """
 
     if user_provided_master_path:
         logger.info(f"Using master file: {user_provided_master_path}")
+        NUMBER_OF_PROJECTS = projects_in_master(user_provided_master_path)
     else:
         logger.info(f"Using default master file (refer to config.ini)")
+        NUMBER_OF_PROJECTS = projects_in_master(os.path.join(ROOT_PATH, runtime_config['MasterForAnalysis']['name']))
 
     wb = openpyxl.Workbook()
     segment_series_generator = _segment_series()
-    for p in range(1, 31):
+    for p in range(1, NUMBER_OF_PROJECTS[0]):
         proj_num, st_row = _row_calc(p)
         wb = gather_data(st_row, proj_num, wb, block_start_row=90, interested_range=365, master_path=user_provided_master_path)[0]
 
@@ -156,7 +149,7 @@ def run(output_path=None, user_provided_master_path=None):
 
     derived_end = 2
 
-    for p in range(1, NUMBER_OF_PROJECTS):
+    for p in range(1, NUMBER_OF_PROJECTS[0]):
         for i in range(1,
                        8):  # 8 here is hard-coded number of segments within a project series (ref: dict in _segment_series()
             if i == 1:

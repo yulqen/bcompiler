@@ -39,6 +39,9 @@ Available options
 Importing analyser code into your own projects
 +++++++++++++++++++++++++++++++++++++++++++++++
 
+.. warning::
+    This functionality is not yet implemented.
+
 .. code-block:: python
 
     from bcompiler.analysers import Swimlane

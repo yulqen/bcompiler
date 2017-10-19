@@ -119,17 +119,19 @@ def get_parser():
     parser.add_argument(
         '--analyser',
         nargs=1,
-        help=('Currently \'swimlane_milstones\' implented. More coming...')
+        help=('Refer to documentation for options for ANALYSER.')
     )
     parser.add_argument(
         '--output',
         nargs=1,
-        help=('Path to save the resulting file')
+        help=('Path to save the resulting file. Ignore if used without --analyser.'),
+        metavar="PATH_TO_DIRECTORY"
     )
     parser.add_argument(
         '--master',
         nargs=1,
-        help=('Path to master to be used for analysis')
+        help=('Path to master to be used for analysis. Ignored if used without --analyser.'),
+        metavar="PATH_TO_DIRECTORY"
     )
     return parser
 

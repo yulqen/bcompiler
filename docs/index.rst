@@ -11,6 +11,7 @@ Welcome to bcompiler's documentation!
    :caption: Contents:
 
    introduction
+   analysers
 
 
 Indices and tables

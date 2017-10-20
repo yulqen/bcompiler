@@ -23,6 +23,7 @@ def projects_in_master(master: str):
                         " master file in your auxiliary directory.")
         sys.exit(1)
     ws = wb.active
-    top_row = list(ws.iter_cols(min_row=1, max_col=ws.max_column, max_row=1))
-    top_row = top_row[1:]
+    top_row = next(ws.rows)
+    top_row = list(top_row)[1:]
+    top_row = [i.value for i in top_row if i.value is not None]
     return len(top_row)

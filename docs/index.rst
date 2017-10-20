@@ -11,6 +11,7 @@ bcompiler - A tool for managing DfT BICC data
    :caption: Contents:
 
    introduction
+   roadmap
    analysers
 
 

@@ -20,7 +20,7 @@ Running from the commandline
 Basic command
 ~~~~~~~~~~~~~~
 
-``>> bcompiler --analysers ANALYSER OPTIONS``
+``>> bcompiler --analyser ANALYSER OPTIONS``
 
 
 
@@ -68,7 +68,7 @@ fashion.
 Example: Default options
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``>> bcompiler --analysers swimlane_milestones``
+``>> bcompiler --analyser swimlane_milestones``
 
 .. note::
     Default options require a master file to be present in the ``Documents/bcompiler`` directory, named ``target_master.xlsx`` as per the ``config.ini`` file.
@@ -78,7 +78,7 @@ Example: Default options
 Example: Set output directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``>> bcompiler --analysers swimlane_milestones --output C:\Users\jim\Desktop``
+``>> bcompiler --analyser swimlane_milestones --output C:\Users\jim\Desktop``
 
 .. note::
     This options requires a master file to be present in the ``Documents/bcompiler`` directory, named ``target_master.xlsx`` as per the ``config.ini`` file.
@@ -88,7 +88,7 @@ Example: Set output directory
 Example: Set output directory and target master
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``>> bcompiler --analysers swimlane_milestones --output C:\Users\jim\Desktop --master C:\Users\jim\Downloads\q1_master.xlsx``
+``>> bcompiler --analyser swimlane_milestones --output C:\Users\jim\Desktop --master C:\Users\jim\Downloads\q1_master.xlsx``
 
 .. note::
     This options requires a master file to be present in the ``C:\Users\jim\Downloads`` directory, named ``q1_master.xlsx``.
@@ -98,7 +98,7 @@ Example: Set output directory and target master
 Example: Set target master
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``>> bcompiler --analysers swimlane_milestones --master C:\Users\jim\Downloads\q1_master.xlsx``
+``>> bcompiler --analyser swimlane_milestones --master C:\Users\jim\Downloads\q1_master.xlsx``
 
 .. note::
     This options requires a master file to be present in the ``C:\Users\jim\Downloads`` directory, named ``q1_master.xlsx``.

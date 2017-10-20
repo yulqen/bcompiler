@@ -3,16 +3,21 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-bcompiler - A tool for managing DfT BICC data
-=============================================
+bcompiler
+=========
+
+A tool for managing DfT BICC data.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    introduction
-   roadmap
+   installation
+   Initialisation and settings <initialisation>
+   Typical use <use>
    analysers
+   roadmap
 
 
 Indices and tables

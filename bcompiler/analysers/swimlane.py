@@ -5,7 +5,7 @@ from typing import Tuple
 import openpyxl
 from openpyxl.chart import ScatterChart, Reference, Series
 # typing imports
-from openpyxl.worksheet.worksheet import Worksheet
+
 
 from .utils import MASTER_XLSX, logger, projects_in_master
 from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE

@@ -132,7 +132,7 @@ def run(output_path=None, user_provided_master_path=None):
 
     wb = openpyxl.Workbook()
     segment_series_generator = _segment_series()
-    for p in range(1, NUMBER_OF_PROJECTS):
+    for p in range(1, NUMBER_OF_PROJECTS + 1):
         proj_num, st_row = _row_calc(p)
         wb = gather_data(st_row, proj_num, wb, block_start_row=90, interested_range=365, master_path=user_provided_master_path)[0]
 

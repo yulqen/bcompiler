@@ -1,3 +1,8 @@
+30 October 2017
+---------------
+
+- Fix bug where not all columns in master are being processed during swimlane analyser.
+
 17 October 2017
 ---------------
 

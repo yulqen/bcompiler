@@ -3,7 +3,7 @@ import os
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import Font, Alignment, Border, Side
 
-from .utils import MASTER_XLSX, logger, projects_in_master, get_number_of_projects
+from .utils import MASTER_XLSX, logger, get_number_of_projects
 from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE
 
 runtime_config.read(CONFIG_FILE)

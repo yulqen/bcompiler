@@ -10,6 +10,21 @@ MASTER_XLSX = os.path.join(ROOT_PATH, runtime_config['MasterForAnalysis']['name'
 logger = logging.getLogger('bcompiler.compiler')
 
 
+def get_number_of_projects(source_wb) -> int:
+    """
+    Simple helper function to get an accurate number of projects in a master.
+    Also strips out any additional columns that openpyxl thinks exist actively
+    in the spreadsheet.
+
+    Returns an integer.
+    """
+    ws = source_wb.active
+    top_row = next(ws.rows)  # ws.rows produces a "generator"; use next() to get next value
+    top_row = list(top_row)[1:]  # we don't want the first column value
+    top_row = [i.value for i in top_row if i.value is not None]  # list comprehension to remove None values
+    return len(top_row)
+
+
 def projects_in_master(master: str):
     """
     Return list of project titles in master.

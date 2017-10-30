@@ -601,6 +601,7 @@ def main():
             clean_datamap(DATAMAP_RETURN_TO_MASTER)
             compile_returns.run(args['compare'])
         else:
+            import pudb; pudb.set_trace()  # XXX BREAKPOINT
             sys.exit(1)
 
 

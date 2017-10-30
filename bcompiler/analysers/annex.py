@@ -39,7 +39,6 @@ def process_master(source_wb, project_number):
     bold18Font = Font(size=18, bold=True)
 
     project_name = ws2.cell(row=1, column=project_number).value
-    print(project_name)
     SRO_name = ws2.cell(row=59, column=project_number).value
     WLC_value = ws2.cell(row=304, column=project_number).value
     project_stage = ws2.cell(row=281, column=project_number).value
@@ -132,7 +131,7 @@ def run(output_path=None, user_provided_master_path=None):
     # get the number of projects, so we know how many times to loop
     project_count = get_number_of_projects(q2)
 
-    for p in range(2, project_count + 1):  # start at 2, representating col B in master; go until number of projects plus 1
+    for p in range(2, project_count + 2):  # start at 2, representating col B in master; go until number of projects plus 2
 
         # pass out master and project number into the process_master() function
         # we capture the workbook object and project name in a tuple (these are the objects passed out by the return statement inside process_master() function

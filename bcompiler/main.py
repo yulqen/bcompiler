@@ -45,7 +45,8 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
 from bcompiler.utils import runtime_config as config
 from bcompiler.utils import directory_has_returns_check
 
-from bcompiler.analysers import run as swimlane_run
+from bcompiler.analysers import swimlane_run
+from bcompiler.analysers import annex_run
 
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
@@ -547,8 +548,10 @@ def main():
         pop_all()
         return
     if args['analyser']:
+
+        # checking for swimlane_milestones analyser
         if 'swimlane_milestones' in args['analyser']:
-            if args['output'] and not args['master']: #  user stipulates an output directory
+            if args['output'] and not args['master']:  # user stipulates an output directory
                 swimlane_run(args['output'])
                 return
             if args['output'] and args['master']:  # user stipulates an output and a target master
@@ -560,6 +563,22 @@ def main():
             else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
                 swimlane_run()
             return
+
+        # checking for swimlane_milestones analyser
+        if 'annex' in args['analyser']:
+            if args['output'] and not args['master']:  # user stipulates an output directory
+                annex_run(args['output'])
+                return
+            if args['output'] and args['master']:  # user stipulates an output and a target master
+                annex_run(args['output'], args['master'][0])
+                return
+            if args['master'] and not args['output']:  # user stipulates a master but NOT an output directory
+                annex_run(user_provided_master_path=args['master'][0])
+                return
+            else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
+                annex_run()
+            return
+
     if args['count-rows']:
         if args['csv'] and args['quiet']:
             logger.critical("-r option can only use --csv or --quiet, not both")

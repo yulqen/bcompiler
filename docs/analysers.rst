@@ -55,6 +55,52 @@ Importing analyser code into your own projects
 Built-in Analysers
 ^^^^^^^^^^^^^^^^^^
 
+annex
++++++
+
+Creates individual project spreadsheets pulling out pertinent headline and
+textual data from a master. Intended to be used a Annex to BICC report.
+
+Example: Default options
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``>> bcompiler --analyser annex``
+
+.. note::
+    Default options require a master file to be present in the ``Documents/bcompiler`` directory, named ``target_master.xlsx`` as per the ``config.ini`` file.
+    The chart is output in a file called ``swimlane_milestones.xlsx`` in the
+    ``Documents/bcompiler/output`` directory.
+
+Example: Set output directory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``>> bcompiler --analyser annex --output C:\Users\jim\Desktop``
+
+.. note::
+    This options requires a master file to be present in the ``Documents/bcompiler`` directory, named ``target_master.xlsx`` as per the ``config.ini`` file.
+    The chart is output to the directory specified after the ``--output`` flag,
+    in this case ``C:\Users\jim\Desktop``.
+    
+Example: Set output directory and target master
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``>> bcompiler --analyser annex --output C:\Users\jim\Desktop --master C:\Users\jim\Downloads\q1_master.xlsx``
+
+.. note::
+    This options requires a master file to be present in the ``C:\Users\jim\Downloads`` directory, named ``q1_master.xlsx``.
+    The chart is output to the directory specified after the ``--output`` flag,
+    in this case ``C:\Users\jim\Desktop``.
+
+Example: Set target master
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``>> bcompiler --analyser annex --master C:\Users\jim\Downloads\q1_master.xlsx``
+
+.. note::
+    This options requires a master file to be present in the ``C:\Users\jim\Downloads`` directory, named ``q1_master.xlsx``.
+    The chart is output to ``Documents/bcompiler/output`` directory.
+
+
 swimlane_milestones
 +++++++++++++++++++
 

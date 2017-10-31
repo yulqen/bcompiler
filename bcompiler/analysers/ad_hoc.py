@@ -1,14 +1,12 @@
 """
 Analyser for outputting ad hoc data from a master.
 """
-import os
 import reprlib
 
-from openpyxl import load_workbook, Workbook
-from openpyxl.styles import Font, Alignment, Border, Side
+from openpyxl import load_workbook
 
 from .utils import MASTER_XLSX, logger, get_number_of_projects
-from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE, project_data_from_master
+from ..utils import runtime_config, CONFIG_FILE, project_data_from_master
 
 runtime_config.read(CONFIG_FILE)
 

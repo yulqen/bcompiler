@@ -14,7 +14,8 @@ runtime_config.read(CONFIG_FILE)
 date_range = True
 
 
-def date_range_milestones(source_sheet, output_sheet, cols: tuple, start_row: int, column: int, date_ends: list):
+def date_range_milestones(source_sheet, output_sheet, cols: tuple,
+                          start_row: int, column: int, date_ends: list):
     """
     Helper function to populate Column B in resulting milestones spreadsheet.
     Uses start and end dates to define boundaries to milestones.
@@ -28,7 +29,10 @@ def date_range_milestones(source_sheet, output_sheet, cols: tuple, start_row: in
             time_line_date = time_line_date.date()
         try:
             if time_line_date in dates:
-                output_sheet.cell(row=current_row, column=3, value=(time_line_date - today).days)
+                output_sheet.cell(
+                    row=current_row,
+                    column=3,
+                    value=(time_line_date - today).days)
         except TypeError:
             pass
         finally:
@@ -36,8 +40,8 @@ def date_range_milestones(source_sheet, output_sheet, cols: tuple, start_row: in
     return output_sheet
 
 
-
-def date_diff_column(sheet, cols: tuple, start_row: int, column: int, interested_range: int):
+def date_diff_column(sheet, cols: tuple, start_row: int, column: int,
+                     interested_range: int):
     """Helper function to populate Column B in the resulting milestones spreadsheet."""
     today = datetime.datetime.today()
     current_row = start_row
@@ -54,7 +58,13 @@ def date_diff_column(sheet, cols: tuple, start_row: int, column: int, interested
     return sheet
 
 
-def gather_data(start_row: int, project_number: int, newwb: openpyxl.Workbook, block_start_row: int = 90, interested_range: int = 365, master_path=None):
+def gather_data(start_row: int,
+                project_number: int,
+                newwb: openpyxl.Workbook,
+                block_start_row: int = 90,
+                interested_range: int = 365,
+                master_path=None,
+                date_range=None):
     """
     Gather data from
     :type int: start_row
@@ -77,7 +87,8 @@ def gather_data(start_row: int, project_number: int, newwb: openpyxl.Workbook, b
     sheet = wb.active
 
     # print project title
-    newsheet.cell(row=start_row - 1, column=1, value=sheet.cell(row=1, column=col).value)
+    newsheet.cell(
+        row=start_row - 1, column=1, value=sheet.cell(row=1, column=col).value)
     logger.info(f"Processing: {sheet.cell(row=1, column=col).value}")
 
     x = start_row
@@ -93,12 +104,13 @@ def gather_data(start_row: int, project_number: int, newwb: openpyxl.Workbook, b
 
     # process the sheet to populate Column B
     if date_range:
-        newsheet = date_range_milestones(sheet, newsheet, (91, 269, 6), start_row, col, [
-            datetime.date(2016, 9, 1),
-            datetime.date(2017, 9, 1)
-        ])
+        newsheet = date_range_milestones(
+            sheet, newsheet, (91, 269, 6), start_row, col,
+            [datetime.date(2016, 9, 1),
+             datetime.date(2017, 9, 1)])
     else:
-        newsheet = date_diff_column(newsheet, (91, 269, 6), start_row, col, interested_range)
+        newsheet = date_diff_column(newsheet, (91, 269, 6), start_row, col,
+                                    interested_range)
 
     for i in range(start_row, start_row + 30):
         newsheet.cell(row=i, column=4, value=project_number)
@@ -108,15 +120,7 @@ def gather_data(start_row: int, project_number: int, newwb: openpyxl.Workbook, b
 
 def _segment_series() -> Tuple:
     """Generator for step value when stepping through rows within a project block."""
-    cut = dict(
-        sobc=2,
-        obc=2,
-        ds1=5,
-        fbc=2,
-        ds2=5,
-        ds3=5,
-        free=9
-    )
+    cut = dict(sobc=2, obc=2, ds1=5, fbc=2, ds2=5, ds3=5, free=9)
     for item in cut.items():
         yield item
 
@@ -131,8 +135,10 @@ def _series_producer(sheet, start_row: int, step: int) -> Tuple[Series, int]:
     :type step: int
     :return: tuple of items from cut
     """
-    xvalues = Reference(sheet, min_col=3, min_row=start_row, max_row=start_row + step)
-    values = Reference(sheet, min_col=4, min_row=start_row, max_row=start_row + step)
+    xvalues = Reference(
+        sheet, min_col=3, min_row=start_row, max_row=start_row + step)
+    values = Reference(
+        sheet, min_col=4, min_row=start_row, max_row=start_row + step)
     series = Series(values, xvalues)
     new_start = start_row + step + 1
     return series, new_start
@@ -149,10 +155,11 @@ def _row_calc(project_number: int) -> Tuple[int, int]:
     if project_number == 2:
         return 2, 32
     else:
-        return (project_number, (project_number + 30) + ((project_number - 2) * 30))
+        return (project_number,
+                (project_number + 30) + ((project_number - 2) * 30))
 
 
-def run(output_path=None, user_provided_master_path=None):
+def run(output_path=None, user_provided_master_path=None, date_range=None):
     """
     Main function to run this analyser.
     :param output_path:
@@ -165,13 +172,22 @@ def run(output_path=None, user_provided_master_path=None):
         NUMBER_OF_PROJECTS = projects_in_master(user_provided_master_path)
     else:
         logger.info(f"Using default master file (refer to config.ini)")
-        NUMBER_OF_PROJECTS = projects_in_master(os.path.join(ROOT_PATH, runtime_config['MasterForAnalysis']['name']))
+        NUMBER_OF_PROJECTS = projects_in_master(
+            os.path.join(ROOT_PATH,
+                         runtime_config['MasterForAnalysis']['name']))
 
     wb = openpyxl.Workbook()
     segment_series_generator = _segment_series()
     for p in range(1, NUMBER_OF_PROJECTS + 1):
         proj_num, st_row = _row_calc(p)
-        wb = gather_data(st_row, proj_num, wb, block_start_row=90, interested_range=365, master_path=user_provided_master_path)[0]
+        wb = gather_data(
+            st_row,
+            proj_num,
+            wb,
+            block_start_row=90,
+            interested_range=365,
+            master_path=user_provided_master_path,
+            date_range=date_range)[0]
 
     chart = ScatterChart()
     chart.title = "Milestone Swimlane Chart"
@@ -188,13 +204,16 @@ def run(output_path=None, user_provided_master_path=None):
     derived_end = 2
 
     for p in range(1, NUMBER_OF_PROJECTS):
-        for i in range(1, 8):  # 8 here is hard-coded number of segments within a project series (ref: dict in _segment_series()
+        for i in range(
+                1, 8
+        ):  # 8 here is hard-coded number of segments within a project series (ref: dict in _segment_series()
             if i == 1:
                 inner_start_row = derived_end
             else:
                 inner_start_row = derived_end
             _inner_step = next(segment_series_generator)
-            series, derived_end = _series_producer(wb.active, inner_start_row, _inner_step[1] - 1)
+            series, derived_end = _series_producer(wb.active, inner_start_row,
+                                                   _inner_step[1] - 1)
             if _inner_step[0] == 'sobc':
                 series.marker.symbol = "circle"
                 series.marker.graphicalProperties.solidFill = "FF0000"
@@ -231,7 +250,9 @@ def run(output_path=None, user_provided_master_path=None):
             wb.save(os.path.join(output_path, 'swimlane_milestones.xlsx'))
             logger.info(f"Saved swimlane_milestones.xlsx to {output_path}")
     except PermissionError:
-        logger.critical("Cannot save swimlane_milestones.xlsx file - you already have it open. Close and run again.")
+        logger.critical(
+            "Cannot save swimlane_milestones.xlsx file - you already have it open. Close and run again."
+        )
         return
 
 

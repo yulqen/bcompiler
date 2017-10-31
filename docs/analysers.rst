@@ -68,8 +68,6 @@ Example: Default options
 
 .. note::
     Default options require a master file to be present in the ``Documents/bcompiler`` directory, named ``target_master.xlsx`` as per the ``config.ini`` file.
-    The chart is output in a file called ``swimlane_milestones.xlsx`` in the
-    ``Documents/bcompiler/output`` directory.
 
 Example: Set output directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,7 +76,7 @@ Example: Set output directory
 
 .. note::
     This options requires a master file to be present in the ``Documents/bcompiler`` directory, named ``target_master.xlsx`` as per the ``config.ini`` file.
-    The chart is output to the directory specified after the ``--output`` flag,
+    The files are output to the directory specified after the ``--output`` flag,
     in this case ``C:\Users\jim\Desktop``.
     
 Example: Set output directory and target master
@@ -88,7 +86,7 @@ Example: Set output directory and target master
 
 .. note::
     This options requires a master file to be present in the ``C:\Users\jim\Downloads`` directory, named ``q1_master.xlsx``.
-    The chart is output to the directory specified after the ``--output`` flag,
+    The files are output to the directory specified after the ``--output`` flag,
     in this case ``C:\Users\jim\Desktop``.
 
 Example: Set target master
@@ -98,7 +96,7 @@ Example: Set target master
 
 .. note::
     This options requires a master file to be present in the ``C:\Users\jim\Downloads`` directory, named ``q1_master.xlsx``.
-    The chart is output to ``Documents/bcompiler/output`` directory.
+    The files are output to ``Documents/bcompiler/output`` directory.
 
 
 swimlane_milestones

@@ -53,6 +53,24 @@ logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
 
 
+def analyser_args(args, func):
+    """
+    Helper function to parse commandline arguments related to --analyser flag. Func
+    is a runner function defined elsewhere that does the work.
+    """
+    if args['output'] and not args['master']:  # user stipulates an output directory
+        func(args['output'])
+        return
+    if args['output'] and args['master']:  # user stipulates an output and a target master
+        func(args['output'], args['master'][0])
+        return
+    if args['master'] and not args['output']:  # user stipulates a master but NOT an output directory
+        func(user_provided_master_path=args['master'][0])
+        return
+    else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
+        func()
+
+
 def get_parser():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -561,32 +579,12 @@ def main():
 
         # checking for swimlane_milestones analyser
         if 'swimlane_milestones' in args['analyser']:
-            if args['output'] and not args['master']:  # user stipulates an output directory
-                swimlane_run(args['output'])
-                return
-            if args['output'] and args['master']:  # user stipulates an output and a target master
-                swimlane_run(args['output'], args['master'][0])
-                return
-            if args['master'] and not args['output']:  # user stipulates a master but NOT an output directory
-                swimlane_run(user_provided_master_path=args['master'][0])
-                return
-            else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
-                swimlane_run()
+            analyser_args(args, swimlane_run)
             return
 
         # checking for swimlane_milestones analyser
         if 'annex' in args['analyser']:
-            if args['output'] and not args['master']:  # user stipulates an output directory
-                annex_run(args['output'])
-                return
-            if args['output'] and args['master']:  # user stipulates an output and a target master
-                annex_run(args['output'], args['master'][0])
-                return
-            if args['master'] and not args['output']:  # user stipulates a master but NOT an output directory
-                annex_run(user_provided_master_path=args['master'][0])
-                return
-            else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
-                annex_run()
+            analyser_args(args, annex_run)
             return
 
     if args['count-rows']:
@@ -611,7 +609,6 @@ def main():
             clean_datamap(DATAMAP_RETURN_TO_MASTER)
             compile_returns.run(args['compare'])
         else:
-            import pudb; pudb.set_trace()  # XXX BREAKPOINT
             sys.exit(1)
 
 

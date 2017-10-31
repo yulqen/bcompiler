@@ -205,9 +205,13 @@ def get_relevant_names(project_name, project_data):
     return (sro_d, pd_d)
 
 
-def project_data_from_master(master_file: str):
-    wb = load_workbook(master_file)
-    ws = wb.active
+def project_data_from_master(master_file: str, opened_wb=False):
+    if opened_wb is False:
+        wb = load_workbook(master_file)
+        ws = wb.active
+    else:
+        wb = master_file
+        ws = wb.active
     p_dict = {}
     for col in ws.iter_cols(min_col=2):
         project_name = ""

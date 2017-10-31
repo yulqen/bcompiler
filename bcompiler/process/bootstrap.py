@@ -1,6 +1,7 @@
 from typing import List
 
 import collections
+import logging
 import os
 import sys
 import shutil
@@ -22,6 +23,8 @@ GIT_COMMANDS = {
     'modified': 'git ls-files -m',
     'log': 'git log'
 }
+
+logger = logging.getLogger('bcompiler.compiler')
 
 
 def add_git_command(key, command):
@@ -189,14 +192,13 @@ def main():
         try:
             subprocess.run(["git", "--version"])
         except OSError as e:
-            if e.errno == os.ENOENT:
-                print("You don't have git installed, or it is not on your path."
-                      "Go to https://git-scm.com/download/win and install it,"
-                      " then run bcompiler-init again. Please make sure git"
-                      "is in your PATH. This process may differ depending on"
-                      "your installation. Please consult https://git-scm.com/book/en/v2/Getting-Started-Installing-Git"
-                      " for advice.")
-                sys.exit()
+            logger.critical("You don't have git installed, or it is not on your path."
+                            "Go to https://git-scm.com/download/win and install it,"
+                            " then run bcompiler-init again. Please make sure git"
+                            "is in your PATH. This process may differ depending on"
+                            "your installation. Please consult https://git-scm.com/book/en/v2/Getting-Started-Installing-Git"
+                            " for advice.")
+            sys.exit()
         print(f"Using git to install necessary auxiliary files in {SOURCE_DIR}")
         subprocess.run(['git', 'clone', REPO_GIT, SOURCE_DIR], stdout=subprocess.PIPE)
         os.mkdir(RETURNS_DIR)

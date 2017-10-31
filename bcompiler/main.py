@@ -24,6 +24,7 @@ import logging
 import os
 import re
 import sys
+import textwrap
 from typing import Dict, List
 
 import colorlog
@@ -54,7 +55,16 @@ logger.setLevel(logging.DEBUG)
 
 def get_parser():
     parser = argparse.ArgumentParser(
-        description='Compile BICC data or prepare Excel BICC return forms.')
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent("""
+            | |__   ___ ___  _ __ ___  _ __ (_) | ___ _ __
+            | '_ \ / __/ _ \| '_ ` _ \| '_ \| | |/ _ \ '__|
+            | |_) | (_| (_) | | | | | | |_) | | |  __/ |
+            |_.__/ \___\___/|_| |_| |_| .__/|_|_|\___|_|
+                                    |_|
+            Compile BICC data or prepare Excel BICC return forms."""))
+
+
     parser.add_argument(
         '-c',
         '--clean-datamap',
@@ -101,7 +111,7 @@ def get_parser():
         help='Populate blank templates with data from master')
     parser.add_argument(
         'compile',
-        help='Compile BICC returns to master',
+        help='Compile BICC returns to master (note: this can be omitted)',
         default='compile',
         nargs='?')
     parser.add_argument(

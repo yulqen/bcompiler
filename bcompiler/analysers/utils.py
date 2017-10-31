@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 import sys
@@ -8,6 +9,13 @@ from bcompiler.utils import ROOT_PATH, runtime_config
 
 MASTER_XLSX = os.path.join(ROOT_PATH, runtime_config['MasterForAnalysis']['name'])
 logger = logging.getLogger('bcompiler.compiler')
+
+
+def diff_date_list(start_date: datetime.date, end_date: datetime.date) -> list:
+    """
+    Return a list of date objects given start and end date objects.
+    """
+    return [end_date - datetime.timedelta(days=x) for x in range(0, (end_date - start_date).days)]
 
 
 def get_number_of_projects(source_wb) -> int:

@@ -6,10 +6,35 @@ import openpyxl
 from openpyxl.chart import ScatterChart, Reference, Series
 # typing imports
 
-from .utils import MASTER_XLSX, logger, projects_in_master
+from .utils import MASTER_XLSX, logger, projects_in_master, diff_date_list
 from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE
 
 runtime_config.read(CONFIG_FILE)
+
+date_range = True
+
+
+def date_range_milestones(source_sheet, output_sheet, cols: tuple, start_row: int, column: int, date_ends: list):
+    """
+    Helper function to populate Column B in resulting milestones spreadsheet.
+    Uses start and end dates to define boundaries to milestones.
+    """
+    today = datetime.date.today()
+    current_row = start_row
+    dates = diff_date_list(*date_ends)
+    for i in range(*cols):
+        time_line_date = source_sheet.cell(row=i, column=column).value
+        if isinstance(time_line_date, datetime.datetime):
+            time_line_date = time_line_date.date()
+        try:
+            if time_line_date in dates:
+                output_sheet.cell(row=current_row, column=3, value=(time_line_date - today).days)
+        except TypeError:
+            pass
+        finally:
+            current_row += 1
+    return output_sheet
+
 
 
 def date_diff_column(sheet, cols: tuple, start_row: int, column: int, interested_range: int):
@@ -67,7 +92,13 @@ def gather_data(start_row: int, project_number: int, newwb: openpyxl.Workbook, b
         x += 1
 
     # process the sheet to populate Column B
-    newsheet = date_diff_column(newsheet, (91, 269, 6), start_row, col, interested_range)
+    if date_range:
+        newsheet = date_range_milestones(sheet, newsheet, (91, 269, 6), start_row, col, [
+            datetime.date(2016, 9, 1),
+            datetime.date(2017, 9, 1)
+        ])
+    else:
+        newsheet = date_diff_column(newsheet, (91, 269, 6), start_row, col, interested_range)
 
     for i in range(start_row, start_row + 30):
         newsheet.cell(row=i, column=4, value=project_number)

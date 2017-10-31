@@ -58,17 +58,31 @@ def analyser_args(args, func):
     Helper function to parse commandline arguments related to --analyser flag. Func
     is a runner function defined elsewhere that does the work.
     """
-    if args['output'] and not args['master']:  # user stipulates an output directory
-        func(args['output'])
-        return
-    if args['output'] and args['master']:  # user stipulates an output and a target master
-        func(args['output'], args['master'][0])
-        return
-    if args['master'] and not args['output']:  # user stipulates a master but NOT an output directory
-        func(user_provided_master_path=args['master'][0])
-        return
-    else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
-        func()
+    if args['start_date'] and args['end_date']:
+        if args['output'] and not args['master']:  # user stipulates an output directory
+            func(args['output'], date_range=[args['start_date'][0], args['end_date'][0]])
+            return
+        if args['output'] and args['master']:  # user stipulates an output and a target master
+            func(args['output'], args['master'][0], date_range=[args['start_date'][0], args['end_date'][0]])
+            return
+        if args['master'] and not args['output']:  # user stipulates a master but NOT an output directory
+            func(user_provided_master_path=args['master'][0], date_range=[args['start_date'][0], args['end_date'][0]])
+            return
+        else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
+            func(date_range=[args['start_date'][0], args['end_date'][0]])
+    else:
+        if args['output'] and not args['master']:  # user stipulates an output directory
+            func(args['output'])
+            return
+        if args['output'] and args['master']:  # user stipulates an output and a target master
+            func(args['output'], args['master'][0])
+            return
+        if args['master'] and not args['output']:  # user stipulates a master but NOT an output directory
+            func(user_provided_master_path=args['master'][0])
+            return
+        else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
+            func()
+
 
 
 def get_parser():
@@ -162,6 +176,15 @@ def get_parser():
         help=('Path to master to be used for analysis. Ignored if used without --analyser.'),
         metavar="PATH_TO_DIRECTORY"
     )
+    parser.add_argument(
+        '--start_date',
+        nargs=1,
+        help='Start date for milestone range - dd/mm/yy')
+    parser.add_argument(
+        '--end_date',
+        nargs=1,
+        help='End date for milestone range - dd/mm/yy')
+
     return parser
 
 

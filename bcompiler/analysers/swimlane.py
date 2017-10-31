@@ -58,6 +58,13 @@ def date_diff_column(sheet, cols: tuple, start_row: int, column: int,
     return sheet
 
 
+def splat_date_range(dt: str):
+    """Helper function to parse a date in dd/mm/yy format to a list of ints."""
+    xs = dt.split('/')
+    xs = [xs[2], xs[1], xs[0]]
+    return [int(i) for i in xs]
+
+
 def gather_data(start_row: int,
                 project_number: int,
                 newwb: openpyxl.Workbook,
@@ -106,8 +113,8 @@ def gather_data(start_row: int,
     if date_range:
         newsheet = date_range_milestones(
             sheet, newsheet, (91, 269, 6), start_row, col,
-            [datetime.date(2016, 9, 1),
-             datetime.date(2017, 9, 1)])
+            [datetime.date(*splat_date_range(date_range[0])),
+             datetime.date(*splat_date_range(date_range[1]))])
     else:
         newsheet = date_diff_column(newsheet, (91, 269, 6), start_row, col,
                                     interested_range)
@@ -116,6 +123,8 @@ def gather_data(start_row: int,
         newsheet.cell(row=i, column=4, value=project_number)
 
     return newwb, start_row
+
+
 
 
 def _segment_series() -> Tuple:
@@ -191,7 +200,7 @@ def run(output_path=None, user_provided_master_path=None, date_range=None):
 
     chart = ScatterChart()
     chart.title = "Milestone Swimlane Chart"
-    chart.style = 1
+    chart.style = 2
     chart.height = 20
     chart.width = 30
     chart.x_axis.title = 'Days from Today'

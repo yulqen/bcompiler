@@ -18,6 +18,7 @@ A tool for managing DfT BICC data.
    Typical use <use>
    analysers
    roadmap
+   changes
 
 
 Indices and tables

@@ -4,13 +4,13 @@ Roadmap
 ``bcompiler`` makes use of `semantic versioning <http://semver.org/>`_
 and therefore follows the MAJOR.MINOR.PATH version pattern.
 
-1.2 - Plugins
+2.0 - Plugins
 *************
 
 - Allow integration of own analysers written in Python
 - Simple plugin management interface through commandline
 
-1.1 - Analysers
+1.0 - Analysers
 ***************
 
 - Commandline analysers for simple features
@@ -45,7 +45,7 @@ others...
 ==================== ===================  ===========
 
 
-1.0 - Stability
+0.0 - Stability
 *****************
 
 - Compile master from populated templates

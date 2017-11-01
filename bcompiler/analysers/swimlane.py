@@ -47,7 +47,7 @@ def date_range_milestones(source_sheet, output_sheet, cols: tuple,
                     column=3,
                     value=(time_line_date - today).days)
                 logger.debug(f"Using date range: written {time_line_date} to "
-                             "row: {current_row} col: {column}")
+                             f"row: {current_row} col: {column}")
         except TypeError:
             pass
         finally:

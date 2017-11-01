@@ -103,8 +103,6 @@ def gather_data(start_row: int,
     x = start_row
     for i in range(block_start_row, 269, 6):
         val = sheet.cell(row=i, column=col).value
-        if isinstance(val, datetime.datetime):
-            val = val.date()
         newsheet.cell(row=x, column=1, value=val)
         x += 1
     x = start_row

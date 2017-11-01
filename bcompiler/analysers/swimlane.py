@@ -43,10 +43,12 @@ def date_range_milestones(source_sheet, output_sheet, cols: tuple,
 def date_diff_column(sheet, cols: tuple, start_row: int, column: int,
                      interested_range: int):
     """Helper function to populate Column B in the resulting milestones spreadsheet."""
-    today = datetime.datetime.today()
+    today = datetime.date.today()
     current_row = start_row
     for i in range(*cols):
         time_line_date = sheet.cell(row=i, column=column).value
+        if isinstance(time_line_date, datetime.datetime):
+            time_line_date = time_line_date.date()
         try:
             difference = (time_line_date - today).days
             if difference in range(1, interested_range):
@@ -101,11 +103,15 @@ def gather_data(start_row: int,
     x = start_row
     for i in range(block_start_row, 269, 6):
         val = sheet.cell(row=i, column=col).value
+        if isinstance(val, datetime.datetime):
+            val = val.date()
         newsheet.cell(row=x, column=1, value=val)
         x += 1
     x = start_row
     for i in range(block_start_row + 1, 270, 6):
         val = sheet.cell(row=i, column=col).value
+        if isinstance(val, datetime.datetime):
+            val = val.date()
         newsheet.cell(row=x, column=2, value=val)
         x += 1
 

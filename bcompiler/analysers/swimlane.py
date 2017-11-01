@@ -79,6 +79,9 @@ def date_diff_column(source_sheet, output_sheet, cols: tuple, start_row: int, co
 def splat_date_range(dt: str):
     """Helper function to parse a date in dd/mm/yy format to a list of ints."""
     xs = dt.split('/')
+    if len(xs[-1]) == 2:
+        xs[-1] = "".join(["20", xs[-1]])
+        logger.debug(f"Handling two digit date in argument. Assuming year is {xs[-1]}.")
     xs = [xs[2], xs[1], xs[0]]
     logger.debug(f"Splatting {dt}")
     return [int(i) for i in xs]

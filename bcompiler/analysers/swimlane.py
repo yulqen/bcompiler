@@ -16,6 +16,16 @@ BLOCK_START = int(runtime_config['AnalyserSwimlane']['block_start'])
 BLOCK_SKIP = int(runtime_config['AnalyserSwimlane']['block_skip'])
 BLOCK_END = int(runtime_config['AnalyserSwimlane']['block_end'])
 FORECAST_ACTUAL_SKIP = int(runtime_config['AnalyserSwimlane']['forecast_actual_skip'])
+MILESTONES_TO_COLLECT = int(runtime_config['AnalyserSwimlane']['milestones_to_collect'])
+CHART_ANCHOR_CELL = runtime_config['AnalyserSwimlane']['chart_anchor_cell']
+CHART_TITLE = runtime_config['AnalyserSwimlane']['chart_title']
+CHART_X_AXIS_TITLE = runtime_config['AnalyserSwimlane']['chart_x_axis_title']
+CHART_Y_AXIS_TITLE = runtime_config['AnalyserSwimlane']['chart_y_axis_title']
+CHART_HEIGHT = int(runtime_config['AnalyserSwimlane']['chart_height'])
+CHART_WIDTH = int(runtime_config['AnalyserSwimlane']['chart_width'])
+CHART_STYLE = int(runtime_config['AnalyserSwimlane']['chart_style'])
+CHART_X_AXIS_MAJOR_UNIT = int(runtime_config['AnalyserSwimlane']['chart_x_axis_major_unit'])
+CHART_Y_AXIS_MAJOR_UNIT = int(runtime_config['AnalyserSwimlane']['chart_y_axis_major_unit'])
 
 
 def date_range_milestones(source_sheet, output_sheet, cols: tuple,
@@ -36,6 +46,8 @@ def date_range_milestones(source_sheet, output_sheet, cols: tuple,
                     row=current_row,
                     column=3,
                     value=(time_line_date - today).days)
+                logger.debug(f"Using date range: written {time_line_date} to "
+                             "row: {current_row} col: {column}")
         except TypeError:
             pass
         finally:
@@ -55,6 +67,8 @@ def date_diff_column(source_sheet, output_sheet, cols: tuple, start_row: int, co
             difference = (time_line_date - today).days
             if difference in range(1, interested_range):
                 output_sheet.cell(row=current_row, column=3, value=difference)
+                logger.debug(f"Not using date range: written {time_line_date} to "
+                             f"row: {current_row} col: {column}")
         except TypeError:
             pass
         finally:
@@ -66,6 +80,7 @@ def splat_date_range(dt: str):
     """Helper function to parse a date in dd/mm/yy format to a list of ints."""
     xs = dt.split('/')
     xs = [xs[2], xs[1], xs[0]]
+    logger.debug(f"Splatting {dt}")
     return [int(i) for i in xs]
 
 
@@ -91,8 +106,10 @@ def gather_data(start_row: int,
 
     if master_path:
         master = master_path
+        logger.debug(f"Using master path: {master_path}")
     else:
         master = MASTER_XLSX
+        logger.debug(f"Using master path: {master}")
 
     wb = openpyxl.load_workbook(master)
     sheet = wb.active
@@ -106,6 +123,7 @@ def gather_data(start_row: int,
     for i in range(block_start_row, BLOCK_END, BLOCK_SKIP):
         val = sheet.cell(row=i, column=col).value
         newsheet.cell(row=x, column=1, value=val)
+        logger.debug(f"Writing {val} to row: {x} col: 1")
         x += 1
     x = start_row
     for i in range(block_start_row + FORECAST_ACTUAL_SKIP, BLOCK_END + 1, BLOCK_SKIP):
@@ -113,6 +131,7 @@ def gather_data(start_row: int,
         if isinstance(val, datetime.datetime):
             val = val.date()
         newsheet.cell(row=x, column=2, value=val)
+        logger.debug(f"Writing {val} to row: {x} col: 2")
         x += 1
 
     # process the sheet to populate Column B
@@ -125,8 +144,9 @@ def gather_data(start_row: int,
         newsheet = date_diff_column(sheet, newsheet, (93, BLOCK_END + 2, BLOCK_SKIP), start_row, col,
                                     interested_range)
 
-    for i in range(start_row, start_row + 30):
+    for i in range(start_row, start_row + MILESTONES_TO_COLLECT):
         newsheet.cell(row=i, column=4, value=project_number)
+        logger.debug(f"Writing {project_number} to row: {i} col: 4")
 
     return newwb, start_row
 
@@ -171,7 +191,7 @@ def _row_calc(project_number: int) -> Tuple[int, int]:
         return 2, 32
     else:
         return (project_number,
-                (project_number + 30) + ((project_number - 2) * 30))
+                (project_number + MILESTONES_TO_COLLECT) + ((project_number - 2) * MILESTONES_TO_COLLECT))
 
 
 def run(output_path=None, user_provided_master_path=None, date_range=None):
@@ -212,16 +232,16 @@ def run(output_path=None, user_provided_master_path=None, date_range=None):
             date_range=date_range)[0]
 
     chart = ScatterChart()
-    chart.title = "Milestone Swimlane Chart"
-    chart.style = 2
-    chart.height = 20
-    chart.width = 30
-    chart.x_axis.title = 'Days from Today'
-    chart.y_axis.title = 'Project No'
+    chart.title = CHART_TITLE
+    chart.style = CHART_STYLE
+    chart.height = CHART_HEIGHT
+    chart.width = CHART_WIDTH
+    chart.x_axis.title = CHART_X_AXIS_TITLE
+    chart.y_axis.title = CHART_Y_AXIS_TITLE
     chart.legend = None
-    chart.x_axis.majorUnit = 50
+    chart.x_axis.majorUnit = CHART_X_AXIS_MAJOR_UNIT
     chart.x_axis.minorGridlines = None
-    chart.y_axis.majorUnit = 1
+    chart.y_axis.majorUnit = CHART_Y_AXIS_MAJOR_UNIT
 
     derived_end = 2
 
@@ -262,7 +282,7 @@ def run(output_path=None, user_provided_master_path=None, date_range=None):
         segment_series_generator = _segment_series()
         derived_end = derived_end + 1
 
-    wb.active.add_chart(chart, "E1")
+    wb.active.add_chart(chart, CHART_ANCHOR_CELL)
     try:
         if output_path:
             wb.save(os.path.join(output_path[0], 'swimlane_milestones.xlsx'))

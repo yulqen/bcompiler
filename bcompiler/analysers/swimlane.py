@@ -137,11 +137,11 @@ def gather_data(start_row: int,
     # process the sheet to populate Column B
     if date_range:
         newsheet = date_range_milestones(
-            sheet, newsheet, (93, BLOCK_END + 2, BLOCK_SKIP), start_row, col,
+            sheet, newsheet, (BLOCK_START + 3, BLOCK_END + 2, BLOCK_SKIP), start_row, col,
             [datetime.date(*splat_date_range(date_range[0])),
              datetime.date(*splat_date_range(date_range[1]))])
     else:
-        newsheet = date_diff_column(sheet, newsheet, (93, BLOCK_END + 2, BLOCK_SKIP), start_row, col,
+        newsheet = date_diff_column(sheet, newsheet, (BLOCK_START + 3, BLOCK_END + 2, BLOCK_SKIP), start_row, col,
                                     interested_range)
 
     for i in range(start_row, start_row + MILESTONES_TO_COLLECT):

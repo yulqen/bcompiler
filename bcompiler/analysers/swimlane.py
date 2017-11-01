@@ -6,12 +6,16 @@ import openpyxl
 from openpyxl.chart import ScatterChart, Reference, Series
 # typing imports
 
-from .utils import MASTER_XLSX, logger, projects_in_master, diff_date_list
+from .utils import MASTER_XLSX, logger, projects_in_master, diff_date_list, date_convertor
 from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE
 
 runtime_config.read(CONFIG_FILE)
 
-date_range = True
+DAY_RANGE = int(runtime_config['AnalyserSwimlane']['day_range'])
+BLOCK_START = int(runtime_config['AnalyserSwimlane']['block_start'])
+BLOCK_SKIP = int(runtime_config['AnalyserSwimlane']['block_skip'])
+BLOCK_END = int(runtime_config['AnalyserSwimlane']['block_end'])
+FORECAST_ACTUAL_SKIP = int(runtime_config['AnalyserSwimlane']['forecast_actual_skip'])
 
 
 def date_range_milestones(source_sheet, output_sheet, cols: tuple,
@@ -25,8 +29,7 @@ def date_range_milestones(source_sheet, output_sheet, cols: tuple,
     dates = diff_date_list(*date_ends)
     for i in range(*cols):
         time_line_date = source_sheet.cell(row=i, column=column).value
-        if isinstance(time_line_date, datetime.datetime):
-            time_line_date = time_line_date.date()
+        time_line_date = date_convertor(time_line_date)
         try:
             if time_line_date in dates:
                 output_sheet.cell(
@@ -40,24 +43,23 @@ def date_range_milestones(source_sheet, output_sheet, cols: tuple,
     return output_sheet
 
 
-def date_diff_column(sheet, cols: tuple, start_row: int, column: int,
+def date_diff_column(source_sheet, output_sheet, cols: tuple, start_row: int, column: int,
                      interested_range: int):
     """Helper function to populate Column B in the resulting milestones spreadsheet."""
     today = datetime.date.today()
     current_row = start_row
     for i in range(*cols):
-        time_line_date = sheet.cell(row=i, column=column).value
-        if isinstance(time_line_date, datetime.datetime):
-            time_line_date = time_line_date.date()
+        time_line_date = source_sheet.cell(row=i, column=column).value
+        time_line_date = date_convertor(time_line_date)
         try:
             difference = (time_line_date - today).days
             if difference in range(1, interested_range):
-                sheet.cell(row=current_row, column=3, value=difference)
+                output_sheet.cell(row=current_row, column=3, value=difference)
         except TypeError:
             pass
         finally:
             current_row += 1
-    return sheet
+    return output_sheet
 
 
 def splat_date_range(dt: str):
@@ -70,8 +72,8 @@ def splat_date_range(dt: str):
 def gather_data(start_row: int,
                 project_number: int,
                 newwb: openpyxl.Workbook,
-                block_start_row: int = 90,
-                interested_range: int = 365,
+                block_start_row: int = BLOCK_START,
+                interested_range: int = DAY_RANGE,
                 master_path=None,
                 date_range=None):
     """
@@ -101,12 +103,12 @@ def gather_data(start_row: int,
     logger.info(f"Processing: {sheet.cell(row=1, column=col).value}")
 
     x = start_row
-    for i in range(block_start_row, 269, 6):
+    for i in range(block_start_row, BLOCK_END, BLOCK_SKIP):
         val = sheet.cell(row=i, column=col).value
         newsheet.cell(row=x, column=1, value=val)
         x += 1
     x = start_row
-    for i in range(block_start_row + 3, 270, 6):
+    for i in range(block_start_row + FORECAST_ACTUAL_SKIP, BLOCK_END + 1, BLOCK_SKIP):
         val = sheet.cell(row=i, column=col).value
         if isinstance(val, datetime.datetime):
             val = val.date()
@@ -116,11 +118,11 @@ def gather_data(start_row: int,
     # process the sheet to populate Column B
     if date_range:
         newsheet = date_range_milestones(
-            sheet, newsheet, (91, 269, 6), start_row, col,
+            sheet, newsheet, (93, BLOCK_END + 2, BLOCK_SKIP), start_row, col,
             [datetime.date(*splat_date_range(date_range[0])),
              datetime.date(*splat_date_range(date_range[1]))])
     else:
-        newsheet = date_diff_column(newsheet, (91, 269, 6), start_row, col,
+        newsheet = date_diff_column(sheet, newsheet, (93, BLOCK_END + 2, BLOCK_SKIP), start_row, col,
                                     interested_range)
 
     for i in range(start_row, start_row + 30):
@@ -191,14 +193,21 @@ def run(output_path=None, user_provided_master_path=None, date_range=None):
 
     wb = openpyxl.Workbook()
     segment_series_generator = _segment_series()
+
+    logger.debug(f"Using block_start of {BLOCK_START}")
+    logger.debug(f"Using day_range of {DAY_RANGE}")
+    logger.debug(f"Using block_skip of {BLOCK_SKIP}")
+    logger.debug(f"Using block_end of {BLOCK_END}")
+    logger.debug(f"Using forecast_actual_skip of {FORECAST_ACTUAL_SKIP}")
+
     for p in range(1, NUMBER_OF_PROJECTS + 1):
         proj_num, st_row = _row_calc(p)
         wb = gather_data(
             st_row,
             proj_num,
             wb,
-            block_start_row=90,
-            interested_range=365,
+            block_start_row=BLOCK_START,
+            interested_range=DAY_RANGE,
             master_path=user_provided_master_path,
             date_range=date_range)[0]
 

@@ -127,6 +127,10 @@ Default options require a master file to be present in the ``Documents/bcompiler
 The chart is output in a file called ``swimlane_milestones.xlsx`` in the
 ``Documents/bcompiler/output`` directory.
 
+By default, the analyser will chart only those milestones that fall within 365
+days of today. This can be changed in ``config.ini`` by changing the ``range``
+value in the ``['AnalyserSwimlane']`` section.
+
 Example: Set output directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

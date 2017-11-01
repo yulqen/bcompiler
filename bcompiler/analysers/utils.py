@@ -1,6 +1,7 @@
 import datetime
 import logging
 import os
+import re
 import sys
 
 from openpyxl import load_workbook
@@ -9,6 +10,40 @@ from bcompiler.utils import ROOT_PATH, runtime_config
 
 MASTER_XLSX = os.path.join(ROOT_PATH, runtime_config['MasterForAnalysis']['name'])
 logger = logging.getLogger('bcompiler.compiler')
+
+
+def date_convertor(date_thing):
+    """
+    Date thing could be a datetime object, date object or a sting that looks like
+    a date. Our job is to ensure it leaves here as a date object, or return an exception.
+    """
+    day_first_regex = r"^(\d{1,2})(/|-)(\d{1,2})(/|-)(\d{2,4})"
+    year_first_regex = r"^(\d{2,4})(/|-)(\d{1,2})(/|-)(\d{1,2})"
+
+    if not isinstance(date_thing, (str, datetime.datetime, datetime.date)):
+        if date_thing is not None:
+            logger.warning(f"{date_thing} isn't a date so not handling")
+            return date_thing
+        else:
+            return date_thing
+    if isinstance(date_thing, datetime.datetime):
+        return date_thing.date()
+    df = re.match(day_first_regex, date_thing)
+    yf = re.match(year_first_regex, date_thing)
+    if df:
+        try:
+            return datetime.date(int(df.group(5)), int(df.group(3)), int(df.group(1)))
+        except ValueError:
+            if date_thing is not None:
+                logger.warning(f"{date_thing} does not appear to be a valid date.")
+            return date_thing
+    if yf:
+        try:
+            return datetime.date(int(yf.group(1)), int(yf.group(3)), int(yf.group(5)))
+        except ValueError:
+            if date_thing is not None:
+                logger.warning(f"{date_thing} does not appear to be a valid date.")
+            return date_thing
 
 
 def diff_date_list(start_date: datetime.date, end_date: datetime.date) -> list:

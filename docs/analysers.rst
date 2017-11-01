@@ -162,9 +162,3 @@ Example: Set start and end date
 
 ``>> bcompiler --analyser swimlane_milestones --start_date 20/1/2016 --end_date
 20/1/2017``
-
-.. warning::
-
-    Currently, date format MUST be of the form **dd/mm/yyyy**. Using dd/mm/yy will not
-    work. The date format will be more flexible in upcoming verions.
-

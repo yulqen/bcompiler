@@ -13,6 +13,7 @@ v1.2.2
 * Many more configurations available in ``config.ini`` file relating to
   ``swimlane_analyser``.
 * Better logging to ``bcompiler.log`` during ``swimlane_milestones`` analyser.
+* Better handling of date objects.
 * Various bug fixes
 
 v1.2.1

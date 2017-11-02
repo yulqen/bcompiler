@@ -99,7 +99,7 @@ def keyword_args(args, func):
             return
         if args['master']:  # user stipulates an output and a target master
             try:
-                func(user_provided_master=args['master'][0], search_term=args['analyser'][1], xlsx=args['xlsx'])
+                func(user_provided_master_path=args['master'][0], search_term=args['analyser'][1], xlsx=args['xlsx'])
             except IndexError:
                 logger.critical("You need to provide a search term, e.g. '--analyser keyword RAG'")
             return

@@ -17,6 +17,8 @@ def process_master(source_wb, project_number, search_term) -> list:
     project_name = source_sheet.cell(row=1, column=project_number).value
     p_data = project_data_from_master(source_wb, opened_wb=True)[project_name]
     data = [item for item in p_data.items() if search_term in item[0]]
+    if not data:
+        logger.warning(f"No matching keyword found in {project_name}")
     return (project_name, data)
 
 

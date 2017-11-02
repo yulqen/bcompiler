@@ -1,6 +1,12 @@
 Changes
 ~~~~~~~
 
+v1.3.1
+######
+
+* Fixed bug which prevented setting the title of the output sheet from the
+  keyword analyser with xlsx output option, to a disallowed character.
+
 v1.3.0
 ######
 

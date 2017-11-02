@@ -52,7 +52,7 @@ def run(output_path=None, user_provided_master_path=None, search_term: str=None,
     else:
         output_wb = Workbook()
         ws = output_wb.active
-        ws.title = f"Results of search {search_term}"
+        ws.title = "Results of search"
 
         start_row = 1
 

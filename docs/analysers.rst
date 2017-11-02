@@ -30,7 +30,6 @@ Available options
 Available to all analysers
 :::::::::::::::::::::::::::
 
-* ``--output PATH_TO_OUTPUT_DIRECTORY``
 * ``--master PATH_TO_DIRECTORY_CONTAINING_MASTER``
 
 
@@ -40,6 +39,7 @@ Available to swimlane_milestones analyser
 The default is chart milestones within a range of 365 days from today. However,
 the following options are available to give greater control to this band:
 
+* ``--output PATH_TO_OUTPUT_DIRECTORY``
 * ``--start_date DATE (dd/mm/yyyy)``
 * ``--end_date DATE (dd/mm/yyyy)``
 
@@ -68,6 +68,42 @@ Importing analyser code into your own projects
 Built-in Analysers
 ^^^^^^^^^^^^^^^^^^
 
+keyword
++++++++
+
+Search for a keyword in the master "key" column (e.g. RAG, or SRO). By default,
+outputs to terminal.
+
+Example: Default options
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``>> bcompiler --analyser keyword "RAG"``
+
+Default options require a master file to be present in the ``Documents/bcompiler`` directory, named ``target_master.xlsx`` as per the ``config.ini`` file.
+
+Output is sent to your terminal.
+
+.. warning::
+    Terminal output will exceed 80 characters. If you are using Windows, you
+    should go to Preferences in ``cmd`` application and increase the width of
+    the terminal window to something like 150 characters.
+
+Example: Output to xlsx (Excel) file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``>> bcompiler --analyser keyword "RAG" --xlsx C:\Users\jim\Desktop\rag.xlsx``
+
+This options requires a master file to be present in the ``Documents/bcompiler`` directory, named ``target_master.xlsx`` as per the ``config.ini`` file.
+The data is output to the file specified after the ``--xlsx`` flag, in this case ``C:\Users\jim\Desktop\rag.xlsx``.
+
+Example: Output to xlsx (Excel) and get data from a specific master
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``>> bcompiler --analyser keyword "RAG" --xlsx C:\Users\jim\Desktop\rag.xlsx --master C:\Users\jim\Downloads\q1_master.xlsx``
+
+This options requires a master file to be present in the ``C:\Users\jim\Downloads`` directory, named ``q1_master.xlsx``.
+The data is output to the directory specified after the ``--output`` flag, in this case ``C:\Users\jim\Desktop\rag.xlsx``.
+
 annex
 +++++
 
@@ -90,8 +126,8 @@ This options requires a master file to be present in the ``Documents/bcompiler``
 The files are output to the directory specified after the ``--output`` flag,
 in this case ``C:\Users\jim\Desktop``.
     
-Example: Set output directory and target master
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Example: Set output directory and get data from a specific master
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``>> bcompiler --analyser annex --output C:\Users\jim\Desktop --master C:\Users\jim\Downloads\q1_master.xlsx``
 

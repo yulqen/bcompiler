@@ -1,6 +1,13 @@
 Changes
 ~~~~~~~
 
+v1.3.0
+######
+
+* Added keyword analsyer. Search fields in a master file and return the
+  values for each field, for each project in the terminal or optionally to
+  an xlsx file.
+
 v1.2.2
 #######
 

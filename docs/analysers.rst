@@ -43,10 +43,6 @@ the following options are available to give greater control to this band:
 * ``--start_date DATE (dd/mm/yyyy)``
 * ``--end_date DATE (dd/mm/yyyy)``
 
-.. hint::
-    Please see :ref:`commandline-examples` for examples of running an analyser
-    from the commandline.
-
 .. _importing-analyser-code:
 
 Importing analyser code into your own projects

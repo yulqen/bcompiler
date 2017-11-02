@@ -1,6 +1,11 @@
 Changes
 ~~~~~~~
 
+v1.3.2
+######
+
+* Partial fix for final project milestone not ending up on swimlane chart.
+
 v1.3.1
 ######
 

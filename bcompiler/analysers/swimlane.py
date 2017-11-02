@@ -248,7 +248,7 @@ def run(output_path=None, user_provided_master_path=None, date_range=None):
 
     derived_end = 2
 
-    for p in range(1, NUMBER_OF_PROJECTS):
+    for p in range(NUMBER_OF_PROJECTS):
         for i in range(
                 1, 8
         ):  # 8 here is hard-coded number of segments within a project series (ref: dict in _segment_series()

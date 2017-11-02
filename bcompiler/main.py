@@ -48,6 +48,7 @@ from bcompiler.utils import directory_has_returns_check
 
 from bcompiler.analysers import swimlane_run
 from bcompiler.analysers import annex_run
+from bcompiler.analysers import keyword_run
 
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
@@ -82,6 +83,38 @@ def analyser_args(args, func):
             return
         else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
             func()
+
+
+def keyword_args(args, func):
+    """
+    Helper function to parse commandline arguments related to --analyser keywords option.
+    Func is a runner funtion defined elsewhere that does the work.
+    """
+    if args['xlsx']:
+        if not args['master']:  # user stipulates an output directory
+            try:
+                func(search_term=args['analyser'][1], xlsx=args['xlsx'])
+            except IndexError:
+                logger.critical("You need to provide a search term, e.g. '--analyser keyword RAG'")
+            return
+        if args['master']:  # user stipulates an output and a target master
+            try:
+                func(user_provided_master=args['master'][0], search_term=args['analyser'][1], xlsx=args['xlsx'])
+            except IndexError:
+                logger.critical("You need to provide a search term, e.g. '--analyser keyword RAG'")
+            return
+        else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
+            try:
+                func(search_term=args['analyser'][1], xlsx=args['xlsx'])
+            except IndexError:
+                logger.critical("You need to provide a search term, e.g. '--analyser keyword RAG'")
+            return
+    else:
+        try:
+            func(search_term=args['analyser'][1])
+        except IndexError:
+            logger.critical("You need to provide a search term, e.g. '--analyser keyword RAG'")
+        return
 
 
 
@@ -161,7 +194,7 @@ def get_parser():
               'The log file is set to DEBUG.'))
     parser.add_argument(
         '--analyser',
-        nargs=1,
+        nargs='+',
         help=('Refer to documentation for options for ANALYSER.')
     )
     parser.add_argument(
@@ -175,6 +208,11 @@ def get_parser():
         nargs=1,
         help=('Path to master to be used for analysis. Ignored if used without --analyser.'),
         metavar="PATH_TO_DIRECTORY"
+    )
+    parser.add_argument(
+        '--xlsx',
+        nargs=1,
+        help=('Path to xlsx file to be used as output for keyword analyser')
     )
     parser.add_argument(
         '--start_date',
@@ -608,6 +646,10 @@ def main():
         # checking for swimlane_milestones analyser
         if 'annex' in args['analyser']:
             analyser_args(args, annex_run)
+            return
+
+        if 'keyword' in args['analyser']:
+            keyword_args(args, keyword_run)
             return
 
     if args['count-rows']:

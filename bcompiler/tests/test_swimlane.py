@@ -6,6 +6,26 @@ from ..analysers.swimlane import run as swimlane_run
 
 
 def test_basic_swimlane_data(tmpdir, master):
+    """
+    This tests production of the spreadsheet containing the basic swimlane_milestones
+    chart.
+
+    This test tests the default implementation where value for day_range in config.ini
+    is set to 365 - so a year from today's date.
+
+    conftest.py generates a master which is used here. Some cells in the master are
+    set to contain dates so they can be tested here.
+
+    This test also relies on the following config.ini values:
+
+        block_start = 90
+        block_skip = 6
+        block_end = 269
+        forecast_actual_skip = 3
+        milestones_to_collect = 30
+
+    """
+    today = datetime.date.today()
     tmpdir = [tmpdir]  # hacking the fact that output_path in implementation is list
     swimlane_run(output_path=tmpdir, user_provided_master_path=master)
     tmpdir = tmpdir[0]  # hacking the fact that output_path in implementation is list
@@ -24,3 +44,20 @@ def test_basic_swimlane_data(tmpdir, master):
 
     assert ws['B2'].value == datetime.datetime(2015, 1, 1)
     assert ws['B3'].value == datetime.datetime(2019, 1, 1)
+    assert ws['B4'].value == datetime.datetime(2020, 1, 1)
+    assert ws['B5'].value == datetime.datetime(2018, 1, 1)
+    assert ws['B6'].value == datetime.datetime(2019, 1, 1)
+    assert ws['B7'].value == datetime.datetime(2012, 1, 1)
+    assert ws['B8'].value == datetime.datetime(2016, 1, 1)
+    assert ws['B9'].value == datetime.datetime(2017, 1, 1)
+    assert ws['B10'].value == datetime.datetime(2018, 6, 1)
+
+    assert ws['C2'].value is None
+    assert ws['C3'].value is None
+    assert ws['C4'].value is None
+    assert ws['C5'].value is (datetime.date(2018, 1, 1) - today).days
+    assert ws['C6'].value is None
+    assert ws['C7'].value is None
+    assert ws['C8'].value is None
+    assert ws['C9'].value is None
+    assert ws['C10'].value is (datetime.date(2018, 6, 1) - today).days

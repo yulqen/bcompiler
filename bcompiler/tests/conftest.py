@@ -2,6 +2,7 @@ import configparser
 import csv
 import io
 import os
+import re
 import shutil
 import tempfile
 from datetime import date
@@ -1509,6 +1510,9 @@ def master():
                 ws[f"B{str(item[0])}"] = date(2017, 8, 10)
                 ws[f"C{str(item[0])}"] = date(2017, 8, 10)
                 ws[f"D{str(item[0])}"] = date(2017, 8, 10)
+
+            # Here we are starting a block of dates. We need these to be able to test
+            # the default swimlane_milstones analyser
             elif item[1].startswith("Approval MM1 Forecast / Actual"):
                 ws[f"B{str(item[0])}"] = date(2015, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2015, 1, 1)
@@ -1542,9 +1546,15 @@ def master():
                 ws[f"C{str(item[0])}"] = date(2017, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2017, 1, 1)
             elif item[1].startswith("Approval MM9 Forecast / Actual"):
-                ws[f"B{str(item[0])}"] = date(2018, 1, 1)
-                ws[f"C{str(item[0])}"] = date(2018, 1, 1)
-                ws[f"D{str(item[0])}"] = date(2018, 1, 1)
+                ws[f"B{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"C{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"D{str(item[0])}"] = date(2018, 6, 1)
+
+            elif re.match(r"Approval MM\d+ (Original Baseline|Latest Approved Baseline)", item[1]):
+                ws[f"B{str(item[0])}"] = date(2018, 8, 1)
+                ws[f"C{str(item[0])}"] = date(2018, 8, 1)
+                ws[f"D{str(item[0])}"] = date(2018, 8, 1)
+
             else:
                 ws[f"B{str(item[0])}"] = " ".join([ix.upper(), "1"])
                 ws[f"C{str(item[0])}"] = " ".join([ix.upper(), "2"])

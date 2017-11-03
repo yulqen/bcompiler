@@ -123,7 +123,7 @@ def gather_data(start_row: int,
     logger.info(f"Processing: {sheet.cell(row=1, column=col).value}")
 
     x = start_row
-    for i in range(block_start_row, BLOCK_END, BLOCK_SKIP):
+    for i in range(block_start_row, BLOCK_END + 1, BLOCK_SKIP):
         val = sheet.cell(row=i, column=col).value
         newsheet.cell(row=x, column=1, value=val)
         logger.debug(f"Writing {val} to row: {x} col: 1")
@@ -191,7 +191,7 @@ def _row_calc(project_number: int) -> Tuple[int, int]:
     if project_number == 1:
         return 1, 1
     if project_number == 2:
-        return 2, 32
+        return 2, 20
     else:
         return (project_number,
                 (project_number + MILESTONES_TO_COLLECT) + ((project_number - 2) * MILESTONES_TO_COLLECT))

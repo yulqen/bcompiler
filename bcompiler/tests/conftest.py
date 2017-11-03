@@ -1551,12 +1551,42 @@ def master():
                 ws[f"B{str(item[0])}"] = date(2018, 6, 1)
                 ws[f"C{str(item[0])}"] = date(2018, 6, 1)
                 ws[f"D{str(item[0])}"] = date(2018, 6, 1)
-
-            # here we're throwing values at any milestone date cell
-            elif re.match(r"(Assurance MM\d+|Approval MM\d+) (Original Baseline|Latest Approved Baseline)", item[1]):
-                ws[f"B{str(item[0])}"] = date(2018, 8, 1)
-                ws[f"C{str(item[0])}"] = date(2018, 8, 1)
-                ws[f"D{str(item[0])}"] = date(2018, 8, 1)
+            elif item[1].startswith(("Assurance MM10 Forecast", "Approval MM10 Forecast")):
+                ws[f"B{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"C{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"D{str(item[0])}"] = date(2018, 6, 1)
+            elif item[1].startswith(("Assurance MM11 Forecast", "Approval MM10 Forecast")):
+                ws[f"B{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"C{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"D{str(item[0])}"] = date(2018, 6, 1)
+            elif item[1].startswith(("Assurance MM12 Forecast", "Approval MM10 Forecast")):
+                ws[f"B{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"C{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"D{str(item[0])}"] = date(2018, 6, 1)
+            elif item[1].startswith(("Assurance MM13 Forecast", "Approval MM10 Forecast")):
+                ws[f"B{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"C{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"D{str(item[0])}"] = date(2018, 6, 1)
+            elif item[1].startswith(("Assurance MM14 Forecast", "Approval MM10 Forecast")):
+                ws[f"B{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"C{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"D{str(item[0])}"] = date(2018, 6, 1)
+            elif item[1].startswith(("Assurance MM15 Forecast", "Approval MM10 Forecast")):
+                ws[f"B{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"C{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"D{str(item[0])}"] = date(2018, 6, 1)
+            elif item[1].startswith(("Assurance MM16 Forecast", "Approval MM10 Forecast")):
+                ws[f"B{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"C{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"D{str(item[0])}"] = date(2018, 6, 1)
+            elif item[1].startswith(("Assurance MM17 Forecast", "Approval MM10 Forecast")):
+                ws[f"B{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"C{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"D{str(item[0])}"] = date(2018, 6, 1)
+            elif item[1].startswith(("Assurance MM18 Forecast", "Approval MM10 Forecast")):
+                ws[f"B{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"C{str(item[0])}"] = date(2018, 6, 1)
+                ws[f"D{str(item[0])}"] = date(2018, 6, 1)
 
             else:
                 ws[f"B{str(item[0])}"] = " ".join([ix.upper(), "1"])

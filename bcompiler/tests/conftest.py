@@ -1513,6 +1513,8 @@ def master():
 
             # Here we are starting a block of dates. We need these to be able to test
             # the default swimlane_milstones analyser
+            # we're giving these ones some variety so they can be tested as the default
+            # swimlane_milestones analyser
             elif item[1].startswith(("Assurance MM1 Forecast", "Approval MM1 Forecast / Actual")):
                 ws[f"B{str(item[0])}"] = date(2015, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2015, 1, 1)
@@ -1550,6 +1552,7 @@ def master():
                 ws[f"C{str(item[0])}"] = date(2018, 6, 1)
                 ws[f"D{str(item[0])}"] = date(2018, 6, 1)
 
+            # here we're throwing values at any milestone date cell
             elif re.match(r"(Assurance MM\d+|Approval MM\d+) (Original Baseline|Latest Approved Baseline)", item[1]):
                 ws[f"B{str(item[0])}"] = date(2018, 8, 1)
                 ws[f"C{str(item[0])}"] = date(2018, 8, 1)

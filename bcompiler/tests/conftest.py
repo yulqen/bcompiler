@@ -1513,44 +1513,44 @@ def master():
 
             # Here we are starting a block of dates. We need these to be able to test
             # the default swimlane_milstones analyser
-            elif item[1].startswith("Approval MM1 Forecast / Actual"):
+            elif item[1].startswith(("Assurance MM1 Forecast", "Approval MM1 Forecast / Actual")):
                 ws[f"B{str(item[0])}"] = date(2015, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2015, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2015, 1, 1)
-            elif item[1].startswith("Approval MM2 Forecast / Actual"):
+            elif item[1].startswith(("Assurance MM2 Forecast", "Approval MM2 Forecast / Actual")):
                 ws[f"B{str(item[0])}"] = date(2019, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2019, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2019, 1, 1)
-            elif item[1].startswith("Approval MM3 Forecast / Actual"):
+            elif item[1].startswith(("Assurance MM3 Forecast", "Approval MM3 Forecast / Actual")):
                 ws[f"B{str(item[0])}"] = date(2020, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2020, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2020, 1, 1)
-            elif item[1].startswith("Approval MM4 Forecast / Actual"):
+            elif item[1].startswith(("Assurance MM4 Forecast", "Approval MM4 Forecast / Actual")):
                 ws[f"B{str(item[0])}"] = date(2018, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2018, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2018, 1, 1)
-            elif item[1].startswith("Approval MM5 Forecast / Actual"):
+            elif item[1].startswith(("Assurance MM5 Forecast", "Approval MM5 Forecast / Actual")):
                 ws[f"B{str(item[0])}"] = date(2019, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2019, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2019, 1, 1)
-            elif item[1].startswith("Approval MM6 Forecast / Actual"):
+            elif item[1].startswith(("Assurance MM6 Forecast", "Approval MM6 Forecast / Actual")):
                 ws[f"B{str(item[0])}"] = date(2012, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2012, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2012, 1, 1)
-            elif item[1].startswith("Approval MM7 Forecast / Actual"):
+            elif item[1].startswith(("Assurance MM7 Forecast", "Approval MM7 Forecast / Actual")):
                 ws[f"B{str(item[0])}"] = date(2016, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2016, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2016, 1, 1)
-            elif item[1].startswith("Approval MM8 Forecast / Actual"):
+            elif item[1].startswith(("Assurance MM8 Forecast", "Approval MM8 Forecast / Actual")):
                 ws[f"B{str(item[0])}"] = date(2017, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2017, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2017, 1, 1)
-            elif item[1].startswith("Approval MM9 Forecast / Actual"):
+            elif item[1].startswith(("Assurance MM9 Forecast", "Approval MM9 Forecast / Actual")):
                 ws[f"B{str(item[0])}"] = date(2018, 6, 1)
                 ws[f"C{str(item[0])}"] = date(2018, 6, 1)
                 ws[f"D{str(item[0])}"] = date(2018, 6, 1)
 
-            elif re.match(r"Approval MM\d+ (Original Baseline|Latest Approved Baseline)", item[1]):
+            elif re.match(r"(Assurance MM\d+|Approval MM\d+) (Original Baseline|Latest Approved Baseline)", item[1]):
                 ws[f"B{str(item[0])}"] = date(2018, 8, 1)
                 ws[f"C{str(item[0])}"] = date(2018, 8, 1)
                 ws[f"D{str(item[0])}"] = date(2018, 8, 1)

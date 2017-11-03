@@ -123,13 +123,13 @@ def gather_data(start_row: int,
     logger.info(f"Processing: {sheet.cell(row=1, column=col).value}")
 
     x = start_row
-    for i in range(block_start_row, BLOCK_END + 1, BLOCK_SKIP):
+    for i in range(block_start_row, BLOCK_END + 2, BLOCK_SKIP):
         val = sheet.cell(row=i, column=col).value
         newsheet.cell(row=x, column=1, value=val)
         logger.debug(f"Writing {val} to row: {x} col: 1")
         x += 1
     x = start_row
-    for i in range(block_start_row + FORECAST_ACTUAL_SKIP, BLOCK_END + 1, BLOCK_SKIP):
+    for i in range(block_start_row + FORECAST_ACTUAL_SKIP, BLOCK_END + 2, BLOCK_SKIP):
         val = sheet.cell(row=i, column=col).value
         if isinstance(val, datetime.datetime):
             val = val.date()

@@ -1515,39 +1515,39 @@ def master():
             # the default swimlane_milstones analyser
             # we're giving these ones some variety so they can be tested as the default
             # swimlane_milestones analyser
-            elif item[1].startswith(("Assurance MM1 Forecast", "Approval MM1 Forecast / Actual")):
+            elif item[1].startswith(("Assurance MM1 Forecast", "Approval MM1 Forecast")):
                 ws[f"B{str(item[0])}"] = date(2015, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2015, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2015, 1, 1)
-            elif item[1].startswith(("Assurance MM2 Forecast", "Approval MM2 Forecast / Actual")):
+            elif item[1].startswith(("Assurance MM2 Forecast", "Approval MM2 Forecast")):
                 ws[f"B{str(item[0])}"] = date(2019, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2019, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2019, 1, 1)
-            elif item[1].startswith(("Assurance MM3 Forecast", "Approval MM3 Forecast / Actual")):
+            elif item[1].startswith(("Assurance MM3 Forecast", "Approval MM3 Forecast")):
                 ws[f"B{str(item[0])}"] = date(2020, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2020, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2020, 1, 1)
-            elif item[1].startswith(("Assurance MM4 Forecast", "Approval MM4 Forecast / Actual")):
+            elif item[1].startswith(("Assurance MM4 Forecast", "Approval MM4 Forecast")):
                 ws[f"B{str(item[0])}"] = date(2018, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2018, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2018, 1, 1)
-            elif item[1].startswith(("Assurance MM5 Forecast", "Approval MM5 Forecast / Actual")):
+            elif item[1].startswith(("Assurance MM5 Forecast", "Approval MM5 Forecast")):
                 ws[f"B{str(item[0])}"] = date(2019, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2019, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2019, 1, 1)
-            elif item[1].startswith(("Assurance MM6 Forecast", "Approval MM6 Forecast / Actual")):
+            elif item[1].startswith(("Assurance MM6 Forecast", "Approval MM6 Forecast")):
                 ws[f"B{str(item[0])}"] = date(2012, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2012, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2012, 1, 1)
-            elif item[1].startswith(("Assurance MM7 Forecast", "Approval MM7 Forecast / Actual")):
+            elif item[1].startswith(("Assurance MM7 Forecast", "Approval MM7 Forecast")):
                 ws[f"B{str(item[0])}"] = date(2016, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2016, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2016, 1, 1)
-            elif item[1].startswith(("Assurance MM8 Forecast", "Approval MM8 Forecast / Actual")):
+            elif item[1].startswith(("Assurance MM8 Forecast", "Approval MM8 Forecast")):
                 ws[f"B{str(item[0])}"] = date(2017, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2017, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2017, 1, 1)
-            elif item[1].startswith(("Assurance MM9 Forecast", "Approval MM9 Forecast / Actual")):
+            elif item[1].startswith(("Assurance MM9 Forecast", "Approval MM9 Forecast")):
                 ws[f"B{str(item[0])}"] = date(2018, 6, 1)
                 ws[f"C{str(item[0])}"] = date(2018, 6, 1)
                 ws[f"D{str(item[0])}"] = date(2018, 6, 1)
@@ -1571,7 +1571,6 @@ def previous_quarter_master():
     """
     This is a replica of the master() fixture above, but we're changing some
     values to simulate an earlier master than needs to be compared against.
-    import pudb; pudb.set_trace()  # XXX BREAKPOINT
 
     The values we're amending are the three values for "Working Contact Name",
     which appear in cells B11, C11, D11.

@@ -1,8 +1,11 @@
+import collections
 import datetime
 import logging
 import os
 import re
 import sys
+
+from typing import List, Tuple
 
 from openpyxl import load_workbook
 
@@ -10,6 +13,41 @@ from bcompiler.utils import ROOT_PATH, runtime_config
 
 MASTER_XLSX = os.path.join(ROOT_PATH, runtime_config['MasterForAnalysis']['name'])
 logger = logging.getLogger('bcompiler.compiler')
+
+
+def list_of_milestone_type(project_dict: dict, milestone_type: str) -> List[Tuple]:
+    return [item for item in list(iter(project_dict.items())) if item[0].startswith(f'{milestone_type} MM')]
+
+
+DatamapLine = collections.namedtuple('DatamapLine', ['key', 'sheet'])
+
+
+class DatamapData:
+    # REPLACE THIS WITH DATA FROM THE DATAMAP CSV
+    d = """Project/Programme Name,Summary,C6
+    SRO First Name,Summary,C5
+    SRO Last Name,Summary,C6
+    DRO Last Address,Summary,C7"""
+
+    # CHANGE THESE LINES ACCORDINGLY
+    lines = d.split('\n')
+    keys = [item.split(',')[0] for item in lines]
+    sheets = [item.split(',')[1] for item in lines]
+    refs = [item.split(',')[2] for item in lines]
+
+    def __init__(self):
+        self._lines = [DatamapLine(key.lstrip(), sheet) for key, sheet in zip(self.keys, self.sheets)]
+
+    def __len__(self):
+        return len(self._lines)
+
+    def __getitem__(self, position):
+        return self._lines[position]
+
+
+# IMPLEMENT A CLASS THAT SEEKS OUT ALL THE APPROVAL AND ASSURANCE MILESTONES
+# CELLS WE NEED AND MAKE THEM AN ITERATOR
+
 
 
 def date_convertor(date_thing):

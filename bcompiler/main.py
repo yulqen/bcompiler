@@ -47,6 +47,7 @@ from bcompiler.utils import runtime_config as config
 from bcompiler.utils import directory_has_returns_check
 
 from bcompiler.analysers import swimlane_run
+from bcompiler.analysers import swimlane_assurance_run
 from bcompiler.analysers import annex_run
 from bcompiler.analysers import keyword_run
 
@@ -641,6 +642,11 @@ def main():
         # checking for swimlane_milestones analyser
         if 'swimlane_milestones' in args['analyser']:
             analyser_args(args, swimlane_run)
+            return
+
+        # checking for swimlane_assurance_milestones analyser
+        if 'swimlane_assurance_milestones' in args['analyser']:
+            analyser_args(args, swimlane_assurance_run)
             return
 
         # checking for swimlane_milestones analyser

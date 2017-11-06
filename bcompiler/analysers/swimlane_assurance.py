@@ -29,37 +29,6 @@ CHART_X_AXIS_MAJOR_UNIT = int(runtime_config['AnalyserSwimlaneAssurance']['chart
 CHART_Y_AXIS_MAJOR_UNIT = int(runtime_config['AnalyserSwimlaneAssurance']['chart_y_axis_major_unit'])
 
 
-DatamapLine = collections.namedtuple('DatamapLine', ['key', 'sheet'])
-
-
-class DatamapData:
-    d = """Project/Programme Name,Summary,C6
-    SRO First Name,Summary,C5
-    SRO Last Name,Summary,C6
-    DRO Last Address,Summary,C7"""
-    lines = d.split('\n')
-    keys = [item.split(',')[0] for item in lines]
-    sheets = [item.split(',')[1] for item in lines]
-    refs = [item.split(',')[2] for item in lines]
-
-    def __init__(self):
-        self._lines = [DatamapLine(key.lstrip(), sheet) for key, sheet in zip(self.keys, self.sheets)]
-
-    def __len__(self):
-        return len(self._lines)
-
-    def __getitem__(self, position):
-        return self._lines[position]
-
-
-
-def master():
-    wb = Workbook()
-    output_file = "/".join(['~/Desktop', 'master.xlsx'])
-    ws = wb.active
-    ws.title = "Master for Testing"
-
-
 def date_range_milestones(source_sheet, output_sheet, cols: tuple,
                           start_row: int, column: int, date_ends: list):
     """

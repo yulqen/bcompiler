@@ -31,6 +31,8 @@ def test_basic_swimlane_data(tmpdir, master):
     swimlane_run(output_path=tmpdir, user_provided_master_path=master)
     tmpdir = tmpdir[0]  # hacking the fact that output_path in implementation is list
     output = load_workbook(tmpdir.join('swimlane_milestones.xlsx'))
+    # save to desktop to check
+    output.save('/home/lemon/Desktop/swimlane_assurance_milestones_verifier.xlsx')
     ws = output.active
     assert ws['A1'].value == "PROJECT/PROGRAMME NAME 1"
     assert ws['A2'].value == "APPROVAL MM1 1" # config.ini: block_start row

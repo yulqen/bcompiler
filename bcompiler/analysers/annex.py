@@ -138,7 +138,6 @@ def process_master(source_wb, project_number):
     sheet['D9'].value = benefits_DCA
     sheet['D9'].border = thin_border
     sheet.row_dimensions[10].height = 10
-    sheet.merge_cells('A11:F40')
     sheet['A11'].value = SRO_Comm
     sheet['A11'].alignment = al
     sheet['A11'].border = double_bottom_border
@@ -153,6 +152,7 @@ def process_master(source_wb, project_number):
     sheet['D40'].border = double_bottom_border
     sheet['E40'].border = double_bottom_border
     sheet['F40'].border = double_bottom_border
+    sheet.merge_cells('A11:F45')
 
 
     def _pattern(str_colour: str):

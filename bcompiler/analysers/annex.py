@@ -136,6 +136,8 @@ def run(output_path=None, user_provided_master_path=None):
         # pass out master and project number into the process_master() function
         # we capture the workbook object and project name in a tuple (these are the objects passed out by the return statement inside process_master() function
         output_wb, project_name = process_master(q2, p)
+        if '/' in project_name:
+            project_name = project_name.replace('/', '_')
 
         # save the file, using the project_name variable in the file name
         try:

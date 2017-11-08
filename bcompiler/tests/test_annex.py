@@ -59,5 +59,6 @@ def test_amber_green_cell_colour(previous_quarter_master, tmpdir, master):
 def test_dca_map(previous_quarter_master, tmpdir, master):
     annex_run(previous_quarter_master, [str(tmpdir)], master)
     wb = load_workbook(tmpdir.join('PROJECT_PROGRAMME NAME 1_ANNEX.xlsx'))
+    wb.save('/home/lemon/Desktop/tits.xlsx')
     ws = wb.active
     assert ws['D7'].value == 'Amber'

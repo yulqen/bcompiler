@@ -1535,6 +1535,14 @@ def master():
                 ws[f"B{str(item[0])}"] = "Amber/Red"
                 ws[f"C{str(item[0])}"] = "Red"
                 ws[f"D{str(item[0])}"] = "Green"
+            elif item[1].startswith('SRO Finance confidence'):
+                ws[f"B{str(item[0])}"] = "Amber/Red"
+                ws[f"C{str(item[0])}"] = "Amber/Red"
+                ws[f"D{str(item[0])}"] = "Amber"
+            elif item[1].startswith('SRO Benefits RAG'):
+                ws[f"B{str(item[0])}"] = "Red"
+                ws[f"C{str(item[0])}"] = "Green"
+                ws[f"D{str(item[0])}"] = "Amber/Green"
 
 
             # Here we are starting a block of dates. We need these to be able to test
@@ -1627,6 +1635,14 @@ def previous_quarter_master():
                 ws[f"B{str(item[0])}"] = "Amber"
                 ws[f"C{str(item[0])}"] = "Red"
                 ws[f"D{str(item[0])}"] = "Green"
+            elif item[1].startswith('SRO Finance confidence'):
+                ws[f"B{str(item[0])}"] = "Amber/Red"
+                ws[f"C{str(item[0])}"] = "Amber/Red"
+                ws[f"D{str(item[0])}"] = "Amber"
+            elif item[1].startswith('SRO Benefits RAG'):
+                ws[f"B{str(item[0])}"] = "Red"
+                ws[f"C{str(item[0])}"] = "Green"
+                ws[f"D{str(item[0])}"] = "Amber/Green"
 
 
             # Here we are starting a block of dates. We need these to be able to test

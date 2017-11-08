@@ -1523,6 +1523,10 @@ def master():
                 ws[f"B{str(item[0])}"] = 32.3333
                 ws[f"C{str(item[0])}"] = 35.2322
                 ws[f"D{str(item[0])}"] = 23.2
+            elif item[1].startswith('BICC approval point'):
+                ws[f"B{str(item[0])}"] = "Strategic Outline Case"
+                ws[f"C{str(item[0])}"] = "Outline Business Case"
+                ws[f"D{str(item[0])}"] = "Full Business Case"
 
             # Here we are starting a block of dates. We need these to be able to test
             # the default swimlane_milstones analyser

@@ -9,6 +9,17 @@ from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE
 runtime_config.read(CONFIG_FILE)
 
 
+def abbreviate_project_stage(stage: str):
+    if stage == "Outline Business Case":
+        return "OBC"
+    elif stage == "Strategic Outline Case" or stage == "Strategic Outline Business Case":
+        return "SOBC"
+    elif stage == "Full Business Case":
+        return "FBC"
+    else:
+        return "UNKNOWN STAGE"
+
+
 def process_master(source_wb, project_number):
     """
     Function which is called on each cycle in main loop. Takes a master workbook
@@ -41,7 +52,7 @@ def process_master(source_wb, project_number):
     project_name = ws2.cell(row=1, column=project_number).value
     SRO_name = ws2.cell(row=59, column=project_number).value
     WLC_value = ws2.cell(row=304, column=project_number).value
-    project_stage = ws2.cell(row=281, column=project_number).value
+    project_stage = abbreviate_project_stage(ws2.cell(row=281, column=project_number).value)
     SRO_conf = ws2.cell(row=57, column=project_number).value
     # SRO_conf_last_qtr =
     SoP = ws2.cell(row=201, column=project_number).value

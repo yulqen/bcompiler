@@ -1,6 +1,7 @@
 import os
 
 import datetime
+import sys
 
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import Font, Alignment, Border, Side
@@ -175,7 +176,7 @@ def _dca_map(master_file: str):
 
 
 
-def run(compare_master, output_path=None, user_provided_master_path=None):
+def run(compare_master=None, output_path=None, user_provided_master_path=None):
 
     if user_provided_master_path:
         logger.info(f"Using master file: {user_provided_master_path}")
@@ -184,7 +185,19 @@ def run(compare_master, output_path=None, user_provided_master_path=None):
         logger.info(f"Using default master file (refer to config.ini)")
         q2 = load_workbook(MASTER_XLSX)
 
-    dca_map = _dca_map(compare_master)
+    if compare_master:
+        dca_map = _dca_map(compare_master)
+        logger.info(f"Running annex analyser using {compare_master} as comparison.")
+    else:
+        compare_master = os.path.join(
+            ROOT_PATH, runtime_config['AnalyserAnnex']['compare_master'])
+        try:
+            dca_map = _dca_map(compare_master)
+        except FileNotFoundError:
+            logger.critical(f"Cannot find {compare_master} in /Documents/bcompiler directory. Either put it there or"
+                            f" or call annex with --compare option.")
+            sys.exit(1)
+        logger.info(f"Running annex analyser using {compare_master} as comparison.")
 
 
     # get the number of projects, so we know how many times to loop

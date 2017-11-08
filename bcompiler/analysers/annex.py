@@ -75,8 +75,8 @@ def process_master(source_wb, project_number):
     sheet['C3'] = SRO_name
     sheet.row_dimensions[4].height = 10
     sheet.row_dimensions[5].height = 20
-    sheet['A5'] = 'WLC:'
-    sheet['B5'] = WLC_value
+    sheet['A5'] = 'WLC(£m):'
+    sheet['B5'] = "{:.1f}".format(WLC_value)
     sheet['C5'] = 'Project Stage:'
     sheet['D5'] = project_stage
     sheet['E5'] = 'Start of Ops:'

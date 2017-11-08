@@ -1519,6 +1519,10 @@ def master():
                 ws[f"B{str(item[0])}"] = date(2017, 8, 10)
                 ws[f"C{str(item[0])}"] = date(2017, 8, 10)
                 ws[f"D{str(item[0])}"] = date(2017, 8, 10)
+            elif item[1].startswith('Total Forecast'):
+                ws[f"B{str(item[0])}"] = 32.3333
+                ws[f"C{str(item[0])}"] = 35.2322
+                ws[f"D{str(item[0])}"] = 23.2
 
             # Here we are starting a block of dates. We need these to be able to test
             # the default swimlane_milstones analyser

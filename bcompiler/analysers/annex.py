@@ -8,7 +8,7 @@ from openpyxl.styles.fills import PatternFill
 from openpyxl.styles.colors import Color
 
 from .utils import MASTER_XLSX, logger, get_number_of_projects
-from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE
+from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE, project_data_from_master
 
 runtime_config.read(CONFIG_FILE)
 
@@ -45,13 +45,13 @@ def abbreviate_project_stage(stage: str):
         return "UNKNOWN STAGE"
 
 
-def process_master(source_wb, project_number):
+def process_master(source_wb, project_number, dca_map):
     """
     Function which is called on each cycle in main loop. Takes a master workbook
     and a project number as arguments. Creates a new workbook, populates it with
      the required data from the source_wb file passed in, formats it, then returns
      the workbook from the function, along with the project name which is used
-     to name the file.
+     to name the file. d_map is a dict of DCA values for each project
     """
 
     wb = Workbook()
@@ -125,7 +125,7 @@ def process_master(source_wb, project_number):
     sheet['B7'].value = SRO_conf
     sheet['B7'].border = thin_border
     sheet['C7'].value = 'DCA last quarter'
-    #sheet['D7'] = SRO_conf_last_qtr
+    sheet['D7'].value = dca_map[project_name]
     sheet['D7'].border = thin_border
     sheet['E7'].value = 'IPA DCA'
     sheet['F7'].border = thin_border
@@ -166,7 +166,16 @@ def process_master(source_wb, project_number):
     return wb, project_name  # outputs a tuple of (wb, project_name) <- parens are optional!
 
 
-def run(output_path=None, user_provided_master_path=None):
+def _dca_map(master_file: str):
+    d = project_data_from_master(master_file)
+    ds = {}
+    for item in d.items():
+        ds.update({item[0]: item[1]['Departmental DCA']})
+    return ds
+
+
+
+def run(compare_master, output_path=None, user_provided_master_path=None):
 
     if user_provided_master_path:
         logger.info(f"Using master file: {user_provided_master_path}")
@@ -175,6 +184,9 @@ def run(output_path=None, user_provided_master_path=None):
         logger.info(f"Using default master file (refer to config.ini)")
         q2 = load_workbook(MASTER_XLSX)
 
+    dca_map = _dca_map(compare_master)
+
+
     # get the number of projects, so we know how many times to loop
     project_count = get_number_of_projects(q2)
 
@@ -182,7 +194,7 @@ def run(output_path=None, user_provided_master_path=None):
 
         # pass out master and project number into the process_master() function
         # we capture the workbook object and project name in a tuple (these are the objects passed out by the return statement inside process_master() function
-        output_wb, project_name = process_master(q2, p)
+        output_wb, project_name = process_master(q2, p, dca_map)
         if '/' in project_name:
             project_name = project_name.replace('/', '_')
 

@@ -72,6 +72,9 @@ def analyser_args(args, func):
             return
         else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
             func(date_range=[args['start_date'][0], args['end_date'][0]])
+    if args['compare']:
+        func(args['compare'][0])
+        return
     else:
         if args['output'] and not args['master']:  # user stipulates an output directory
             func(args['output'])

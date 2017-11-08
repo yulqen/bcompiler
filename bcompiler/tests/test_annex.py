@@ -1,3 +1,5 @@
+import datetime
+
 from openpyxl import load_workbook
 
 from ..analysers.annex import run as annex_run, abbreviate_project_stage
@@ -38,3 +40,16 @@ def test_abbreviate_stage_name(tmpdir, master):
     ws = wb.active
     assert ws['D5'].value == 'SOBC'
 
+
+def test_correct_date_format(tmpdir, master):
+    annex_run([str(tmpdir)], master)
+    wb = load_workbook(tmpdir.join('PROJECT_PROGRAMME NAME 1_ANNEX.xlsx'))
+    ws = wb.active
+    assert isinstance(ws['F5'].value, datetime.date)
+
+
+def test_amber_green_cell_colour(tmpdir, master):
+    annex_run([str(tmpdir)], master)
+    wb = load_workbook(tmpdir.join('PROJECT_PROGRAMME NAME 1_ANNEX.xlsx'))
+    ws = wb.active
+    assert ws['B7'].fill.fgColor.rgb == '00f9cb31'

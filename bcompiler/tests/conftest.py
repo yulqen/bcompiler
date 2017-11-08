@@ -5,7 +5,7 @@ import os
 import re
 import shutil
 import tempfile
-from datetime import date
+from datetime import date, datetime
 
 import pytest
 from openpyxl import load_workbook, Workbook
@@ -1527,6 +1527,15 @@ def master():
                 ws[f"B{str(item[0])}"] = "Strategic Outline Case"
                 ws[f"C{str(item[0])}"] = "Outline Business Case"
                 ws[f"D{str(item[0])}"] = "Full Business Case"
+            elif item[1].startswith('Project MM20 Forecast - Actual'):
+                ws[f"B{str(item[0])}"] = datetime(2016, 1, 1)
+                ws[f"C{str(item[0])}"] = datetime(2016, 1, 1)
+                ws[f"D{str(item[0])}"] = datetime(2016, 1, 1)
+            elif item[1].startswith('Departmental DCA'):
+                ws[f"B{str(item[0])}"] = "Amber/Red"
+                ws[f"C{str(item[0])}"] = "Red"
+                ws[f"D{str(item[0])}"] = "Green"
+
 
             # Here we are starting a block of dates. We need these to be able to test
             # the default swimlane_milstones analyser

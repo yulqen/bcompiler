@@ -1,12 +1,37 @@
 import os
 
+import datetime
+
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import Font, Alignment, Border, Side
+from openpyxl.styles.fills import PatternFill
+from openpyxl.styles.colors import Color
 
 from .utils import MASTER_XLSX, logger, get_number_of_projects
 from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE
 
 runtime_config.read(CONFIG_FILE)
+
+# Fill colours
+red_colour = Color(rgb='00fc2525')
+red_amber_colour = Color(rgb='00f9cb31')
+amber_colour = Color(rgb='00fce553')
+amber_green_colour = Color(rgb='00a5b700')
+green_colour = Color(rgb='0017960c')
+
+red = PatternFill(patternType='solid', fgColor=red_colour, bgColor="000000")
+red_amber = PatternFill(patternType='solid', fgColor=red_amber_colour, bgColor="000000")
+amber = PatternFill(patternType='solid', fgColor=amber_colour, bgColor="000000")
+amber_green = PatternFill(patternType='solid', fgColor=amber_green_colour, bgColor="000000")
+green = PatternFill(patternType='solid', fgColor=green_colour, bgColor="000000")
+
+fg_colour_map = {
+    "Red": red,
+    "Amber/Red": red_amber,
+    "Amber": amber,
+    "Amber/Green": amber_green,
+    "Green": green
+}
 
 
 def abbreviate_project_stage(stage: str):
@@ -56,6 +81,8 @@ def process_master(source_wb, project_number):
     SRO_conf = ws2.cell(row=57, column=project_number).value
     # SRO_conf_last_qtr =
     SoP = ws2.cell(row=201, column=project_number).value
+    if isinstance(SoP, datetime.datetime):
+        SoP = SoP.date()
     finance_DCA = ws2.cell(row=280, column=project_number).value
     benefits_DCA = ws2.cell(row=1152, column=project_number).value
     SRO_Comm = ws2.cell(row=58, column=project_number).value
@@ -70,7 +97,7 @@ def process_master(source_wb, project_number):
     sheet.column_dimensions['F'].width = 15
     sheet.row_dimensions[1].height = 30
     sheet.merge_cells('A1:F1')
-    sheet['A1'] = project_name
+    sheet['A1'].value = project_name
     sheet['A1'].font = bold18Font
     sheet['A1'].border = double_bottom_border
     sheet['B1'].border = double_bottom_border
@@ -81,38 +108,38 @@ def process_master(source_wb, project_number):
     sheet['A1'].alignment = al2
     sheet.row_dimensions[2].height = 10
     sheet.row_dimensions[3].height = 20
-    sheet['A3'] = 'SRO'
+    sheet['A3'].value = 'SRO'
     sheet.merge_cells('C3:F3')
-    sheet['C3'] = SRO_name
+    sheet['C3'].value = SRO_name
     sheet.row_dimensions[4].height = 10
     sheet.row_dimensions[5].height = 20
-    sheet['A5'] = 'WLC(£m):'
-    sheet['B5'] = "{:.1f}".format(WLC_value)
-    sheet['C5'] = 'Project Stage:'
-    sheet['D5'] = project_stage
-    sheet['E5'] = 'Start of Ops:'
-    sheet['F5'] = SoP
+    sheet['A5'].value = 'WLC(£m):'
+    sheet['B5'].value = "{:.1f}".format(WLC_value)
+    sheet['C5'].value = 'Project Stage:'
+    sheet['D5'].value = project_stage
+    sheet['E5'].value = 'Start of Ops:'
+    sheet['F5'].value = SoP
     sheet.row_dimensions[6].height = 10
     sheet.row_dimensions[7].height = 20
-    sheet['A7'] = 'DCA now'
-    sheet['B7'] = SRO_conf
+    sheet['A7'].value = 'DCA now'
+    sheet['B7'].value = SRO_conf
     sheet['B7'].border = thin_border
-    sheet['C7'] = 'DCA last quarter'
+    sheet['C7'].value = 'DCA last quarter'
     #sheet['D7'] = SRO_conf_last_qtr
     sheet['D7'].border = thin_border
-    sheet['E7'] = 'IPA DCA'
+    sheet['E7'].value = 'IPA DCA'
     sheet['F7'].border = thin_border
     sheet.row_dimensions[8].height = 10
     sheet.row_dimensions[9].height = 20
-    sheet['A9'] = 'Finance DCA'
-    sheet['B9'] = finance_DCA
+    sheet['A9'].value = 'Finance DCA'
+    sheet['B9'].value = finance_DCA
     sheet['B9'].border = thin_border
-    sheet['C9'] = 'Benefits DCA'
-    sheet['D9'] = benefits_DCA
+    sheet['C9'].value = 'Benefits DCA'
+    sheet['D9'].value = benefits_DCA
     sheet['D9'].border = thin_border
     sheet.row_dimensions[10].height = 10
     sheet.merge_cells('A11:F40')
-    sheet['A11'] = SRO_Comm
+    sheet['A11'].value = SRO_Comm
     sheet['A11'].alignment = al
     sheet['A11'].border = double_bottom_border
     sheet['B11'].border = double_bottom_border
@@ -126,6 +153,15 @@ def process_master(source_wb, project_number):
     sheet['D40'].border = double_bottom_border
     sheet['E40'].border = double_bottom_border
     sheet['F40'].border = double_bottom_border
+
+
+    def _pattern(str_colour: str):
+        return fg_colour_map[str_colour]
+
+    for row in sheet.iter_rows(min_row=7, max_col=6, max_row=9):
+        for cell in row:
+            if cell.value in ['Green', 'Amber/Green', 'Amber', 'Amber/Red', 'Red']:
+                cell.fill = _pattern(cell.value)
 
     return wb, project_name  # outputs a tuple of (wb, project_name) <- parens are optional!
 

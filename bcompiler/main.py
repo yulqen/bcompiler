@@ -72,6 +72,7 @@ def analyser_args(args, func):
             return
         else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
             func(date_range=[args['start_date'][0], args['end_date'][0]])
+            return
     if args['compare']:
         func(args['compare'][0])
         return

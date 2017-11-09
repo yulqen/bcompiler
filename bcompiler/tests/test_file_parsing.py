@@ -76,6 +76,7 @@ def test_compile_all_returns_to_master_with_string_comparison(datamap, previous_
     # testing default 000000 background
     assert working_contact_row[9].fill.bgColor.rgb == '00000000'
 
+
 def test_compile_all_returns_to_master_with_date_comparison(datamap, previous_quarter_master):
     """
     This depends upon the fixture setting an earlier date in the previous_quarter_master.

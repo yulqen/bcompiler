@@ -1430,7 +1430,7 @@ Analysis - future,Resource,J33,Capability RAG,
 """
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def blank_template():
     gen_template(BICC_TEMPLATE_FOR_TESTS, SOURCE_DIR)
     output_file = '/'.join([SOURCE_DIR, 'gen_bicc_template.xlsm'])
@@ -1439,7 +1439,7 @@ def blank_template():
 #   os.remove(output_file)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def datamap():
     name = 'datamap.csv'
     s = io.StringIO()
@@ -1454,7 +1454,7 @@ def datamap():
     return '/'.join([SOURCE_DIR, name])
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def populated_template():
     gen_template(BICC_TEMPLATE_FOR_TESTS, SOURCE_DIR)
     datamap()
@@ -1483,7 +1483,7 @@ def split_datamap_line(line: tuple):
         yield item
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def master():
     """
     This is master file created for the purpose of using a base for bcompiler -a, which
@@ -1496,10 +1496,10 @@ def master():
     r'(Assurance MM1 .+$|Approval MM1 .+$)'
     milestones_regex1 = re.compile(r'(Assurance MM1 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM1 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$)')
     milestones_regex2 = re.compile(r'(Assurance MM2 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM2 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$)')
-    milestones_regex3 = re.compile(r'(Assurance MM\d+ (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM\d+ (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$)')
     milestones_regex4 = re.compile(r'(Assurance MM3 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM3 (?!Notes).+$)(?!Milestone Type)(?!Type)(?!DCA)')
     milestones_regex5 = re.compile(r'(Assurance MM4 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM4 (?!Notes).+$)(?!Milestone Type)(?!Type)(?!DCA)')
     milestones_regex6 = re.compile(r'(Assurance MM5 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM5 (?!Notes).+$)(?!Milestone Type)(?!Type)(?!DCA)')
+    milestones_regex3 = re.compile(r'(Assurance MM\d+ (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM\d+ (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$)')
 
     wb = Workbook()
     output_file = "/".join([OUTPUT_DIR, 'master.xlsx'])
@@ -1582,7 +1582,7 @@ def master():
     return output_file
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def previous_quarter_master():
     """
     This is a replica of the master() fixture above, but we're changing some
@@ -1678,5 +1678,22 @@ def previous_quarter_master():
                 ws[f"B{str(item[0])}"] = " ".join([ix.upper(), "1"])
                 ws[f"C{str(item[0])}"] = " ".join([ix.upper(), "2"])
                 ws[f"D{str(item[0])}"] = " ".join([ix.upper(), "3"])
+
+    # FOR COMPARISON TESTS
+
+    # here we amend the three string cells...
+    ws['B11'].value = ' '.join([ws['B11'].value, 'AMENDED'])
+    ws['C11'].value = ' '.join([ws['B11'].value, 'AMENDED'])
+    ws['D11'].value = ' '.join([ws['B11'].value, 'AMENDED'])
+
+    # here we amend a single date cells...
+    # this is for "SRO Tenure Start Date"
+    ws['B13'].value = date(2017, 3, 1)
+
+    # now setting an later date for "SRO Tenure End Date"
+    # also now for PROJECT/PROGRAMME NAME 2
+    ws['C14'].value = date(2019, 6, 6)
+
+
     wb.save(output_file)
     return output_file

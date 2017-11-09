@@ -101,15 +101,27 @@ annex
 +++++
 
 Creates individual project spreadsheets pulling out pertinent headline and
-textual data from a master. Intended to be used a Annex to BICC report.
+textual data from a master. Intended to be used a Annex to BICC report. The
+analyser relies on two master files to be present: a master representing
+current data and one representing historical data. This is to allow for annex
+to report a "DCA Last Quarter" value.
 
 .. topic:: Default
 
     ``>> bcompiler --analyser annex``
 
-    Default options require a master file to be present in the ``Documents/bcompiler`` directory, named ``target_master.xlsx`` as per the ``config.ini`` file.
+    Default options require a master file to be present in the ``Documents/bcompiler`` directory, named ``target_master.xlsx`` as per the ``config.ini`` file, and
+    a second master file, perhaps representing the previous quarter, named
+    ``compare_master.xlsx`` in the same directory. You can use different
+    filenames but this must be reflected in ``[MasterForAnalysis]`` and
+    ``[AnalyserAnnex]`` in ``config.ini``.
 
-.. topic:: Set output directory
+.. topic:: Set compare master manually (overriding value in ``config.ini``)
+
+    ``>> bcompiler --analyser annex --compare
+    C:\Users\jim\Desktop\q1_master.xlsx``
+
+.. topic:: Set output directory manually (overriding default of Documents/bcompiler/output
 
     ``>> bcompiler --analyser annex --output C:\Users\jim\Desktop``
 
@@ -117,7 +129,7 @@ textual data from a master. Intended to be used a Annex to BICC report.
     The files are output to the directory specified after the ``--output`` flag,
     in this case ``C:\Users\jim\Desktop``.
     
-.. topic:: Set output directory and get data from a specific master
+.. topic:: Set output directory manually (overriding default output directory of Documents/bcompiler/output and master set in ``config.ini``
 
     ``>> bcompiler --analyser annex --output C:\Users\jim\Desktop --master C:\Users\jim\Downloads\q1_master.xlsx``
 
@@ -125,20 +137,25 @@ textual data from a master. Intended to be used a Annex to BICC report.
     The files are output to the directory specified after the ``--output`` flag,
     in this case ``C:\Users\jim\Desktop``.
 
-.. topic:: Set target master
+.. topic:: Set target master manually (overriding default set in ``config.ini``)
 
     ``>> bcompiler --analyser annex --master C:\Users\jim\Downloads\q1_master.xlsx``
 
     This options requires a master file to be present in the ``C:\Users\jim\Downloads`` directory, named ``q1_master.xlsx``.
     The files are output to ``Documents/bcompiler/output`` directory.
 
+.. _swimlane-milestones:
+
 swimlane_milestones
 +++++++++++++++++++
 
 Specific analyser uses project data from a master file and creates a new Excel
-scatter chart, showing a timeline of major milestones horizontally in swimlane
+scatter chart, showing a timeline of major **approval** milestones horizontally in swimlane
 fashion.
 
+.. note::
+    Basic configuration for milestones analysers is done in ``config.ini``.
+    Documentation for these is contained in comments in the file.
 
 .. topic:: Default options
 
@@ -152,7 +169,7 @@ fashion.
     days of today. This can be changed in ``config.ini`` by changing the ``range``
     value in the ``['AnalyserSwimlane']`` section.
 
-.. topic:: Set output directory
+.. topic:: Set output directory manually (overriding default of Documents/bcompiler/output
 
     ``>> bcompiler --analyser swimlane_milestones --output C:\Users\jim\Desktop``
 
@@ -160,7 +177,7 @@ fashion.
     The chart is output to the directory specified after the ``--output`` flag,
     in this case ``C:\Users\jim\Desktop``.
     
-.. topic:: Set output directory and target master
+.. topic:: Set output directory manually (overriding default output directory of Documents/bcompiler/output and master set in ``config.ini``
 
     ``>> bcompiler --analyser swimlane_milestones --output C:\Users\jim\Desktop --master C:\Users\jim\Downloads\q1_master.xlsx``
 
@@ -168,7 +185,7 @@ fashion.
     The chart is output to the directory specified after the ``--output`` flag,
     in this case ``C:\Users\jim\Desktop``.
 
-.. topic:: Set target master
+.. topic:: Set target master manually (overriding default set in ``config.ini``)
 
     ``>> bcompiler --analyser swimlane_milestones --master C:\Users\jim\Downloads\q1_master.xlsx``
 
@@ -179,3 +196,9 @@ fashion.
 
     ``>> bcompiler --analyser swimlane_milestones --start_date 20/1/2016 --end_date
     20/1/2017``
+
+swimlane_assurance_milestones
++++++++++++++++++++++++++++++
+
+As :ref:`swimlane-milestones` but showing **assurance** milestones.
+

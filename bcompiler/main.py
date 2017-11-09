@@ -47,6 +47,7 @@ from bcompiler.utils import runtime_config as config
 from bcompiler.utils import directory_has_returns_check
 
 from bcompiler.analysers import swimlane_run
+from bcompiler.analysers import swimlane_assurance_run
 from bcompiler.analysers import annex_run
 from bcompiler.analysers import keyword_run
 
@@ -71,6 +72,10 @@ def analyser_args(args, func):
             return
         else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
             func(date_range=[args['start_date'][0], args['end_date'][0]])
+            return
+    if args['compare']:
+        func(args['compare'][0])
+        return
     else:
         if args['output'] and not args['master']:  # user stipulates an output directory
             func(args['output'])
@@ -641,6 +646,11 @@ def main():
         # checking for swimlane_milestones analyser
         if 'swimlane_milestones' in args['analyser']:
             analyser_args(args, swimlane_run)
+            return
+
+        # checking for swimlane_assurance_milestones analyser
+        if 'swimlane_assurance_milestones' in args['analyser']:
+            analyser_args(args, swimlane_assurance_run)
             return
 
         # checking for swimlane_milestones analyser

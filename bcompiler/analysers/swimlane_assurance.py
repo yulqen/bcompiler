@@ -159,7 +159,7 @@ def gather_data(start_row: int,
 
 def _segment_series() -> Tuple:
     """Generator for step value when stepping through rows within a project block."""
-    cut = dict(sobc=2, obc=2, ds1=5, fbc=2, ds2=5, ds3=5, free=9)
+    cut = dict(pvr_gate_zero=2, sobc=1, obc=1, fbc=1, readiness_closure_exit=3, the_rest=10)
     for item in cut.items():
         yield item
 
@@ -251,8 +251,8 @@ def run(output_path=None, user_provided_master_path=None, date_range=None):
 
     for p in range(NUMBER_OF_PROJECTS):
         for i in range(
-                1, 8
-        ):  # 8 here is hard-coded number of segments within a project series (ref: dict in _segment_series()
+                1, 7
+        ):  # 7 here is hard-coded number of segments within a project series (ref: dict in _segment_series()
             if i == 1:
                 inner_start_row = derived_end
             else:
@@ -260,27 +260,24 @@ def run(output_path=None, user_provided_master_path=None, date_range=None):
             _inner_step = next(segment_series_generator)
             series, derived_end = _series_producer(wb.active, inner_start_row,
                                                    _inner_step[1] - 1)
-            if _inner_step[0] == 'sobc':
+            if _inner_step[0] == 'pvr_gate_zero':
+                series.marker.symbol = "diamond"
+                series.marker.graphicalProperties.solidFill = "0d95c6"
+            elif _inner_step[0] == 'sobc':
                 series.marker.symbol = "circle"
-                series.marker.graphicalProperties.solidFill = "FF0000"
+                series.marker.graphicalProperties.solidFill = "0d39c6"
             elif _inner_step[0] == 'obc':
                 series.marker.symbol = "triangle"
-                series.marker.graphicalProperties.solidFill = "01a852"
-            elif _inner_step[0] == 'ds1':
-                series.marker.symbol = "diamond"
-                series.marker.graphicalProperties.solidFill = "016da8"
+                series.marker.graphicalProperties.solidFill = "0dc69b"
             elif _inner_step[0] == 'fbc':
                 series.marker.symbol = "square"
-                series.marker.graphicalProperties.solidFill = "a801a5"
-            elif _inner_step[0] == 'ds2':
+                series.marker.graphicalProperties.solidFill = "c60dc0"
+            elif _inner_step[0] == 'readiness_closure_exit':
                 series.marker.symbol = "plus"
-                series.marker.graphicalProperties.solidFill = "4401a8"
-            elif _inner_step[0] == 'ds3':
-                series.marker.symbol = "x"
-                series.marker.graphicalProperties.solidFill = "a86001"
+                series.marker.graphicalProperties.solidFill = "c60d64"
             else:
-                series.marker.symbol = "square"
-                series.marker.graphicalProperties.solidFill = "FF0000"
+                series.marker.symbol = "triangle"
+                series.marker.graphicalProperties.solidFill = "c60d3c"
             series.marker.size = 10
             chart.series.append(series)
         segment_series_generator = _segment_series()

@@ -91,6 +91,7 @@ def process_master(source_wb, project_number, dca_map):
     SRO_conf = ws2.cell(row=57, column=project_number).value
     # SRO_conf_last_qtr =
     SoP = ws2.cell(row=201, column=project_number).value
+    ipa_rag = ws2.cell(row=1275, column=project_number).value
     if isinstance(SoP, datetime.datetime):
         SoP = SoP.date()
     finance_DCA = ws2.cell(row=280, column=project_number).value
@@ -140,6 +141,7 @@ def process_master(source_wb, project_number, dca_map):
     sheet['D7'].border = thin_border
     sheet['E7'].value = 'IPA DCA'
     sheet['F7'].border = thin_border
+    sheet['F7'].value = ipa_rag
     sheet.row_dimensions[8].height = 10
     sheet.row_dimensions[9].height = 20
     sheet['A9'].value = 'Finance DCA'

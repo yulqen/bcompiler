@@ -1543,6 +1543,10 @@ def master():
                 ws[f"B{str(item[0])}"] = "Red"
                 ws[f"C{str(item[0])}"] = "Green"
                 ws[f"D{str(item[0])}"] = "Amber/Green"
+            elif item[1].startswith('GMPP - IPA DCA'):
+                ws[f"B{str(item[0])}"] = "Amber"
+                ws[f"C{str(item[0])}"] = "Amber"
+                ws[f"D{str(item[0])}"] = "Amber/Green"
 
 
             # Here we are starting a block of dates. We need these to be able to test

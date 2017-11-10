@@ -46,7 +46,7 @@ def abbreviate_project_stage(stage: str):
         return "UNKNOWN STAGE"
 
 
-def process_master(source_wb, project_number, dca_map, exclusions=False):
+def process_master(source_wb, project_number, dca_map, diff: list):
     """
     Function which is called on each cycle in main loop. Takes a master workbook
     and a project number as arguments. Creates a new workbook, populates it with
@@ -137,7 +137,7 @@ def process_master(source_wb, project_number, dca_map, exclusions=False):
     sheet['B7'].value = SRO_conf
     sheet['B7'].border = thin_border
     sheet['C7'].value = 'DCA last quarter'
-    if exclusions is False:
+    if not project_name in diff:
         sheet['D7'].value = dca_map[project_name]
     sheet['D7'].border = thin_border
     sheet['E7'].value = 'IPA DCA'
@@ -210,6 +210,10 @@ def run(compare_master=None, output_path=None, user_provided_master_path=None):
     else:
         compare_master = os.path.join(
             ROOT_PATH, runtime_config['AnalyserAnnex']['compare_master'])
+        projects_in_compare_master = project_titles_in_master(compare_master)
+        diff = set(projects_in_current_master).difference(projects_in_compare_master)
+        if diff:
+            logger.warning("{} not present in compare master.".format(", ".join(diff)))
         try:
             dca_map = _dca_map(compare_master)
         except FileNotFoundError:
@@ -219,8 +223,6 @@ def run(compare_master=None, output_path=None, user_provided_master_path=None):
         logger.info(f"Running annex analyser using {compare_master} as comparison.")
 
 
-    excl = True if diff else False
-
     # get the number of projects, so we know how many times to loop
     project_count = get_number_of_projects(q2)
 
@@ -228,7 +230,7 @@ def run(compare_master=None, output_path=None, user_provided_master_path=None):
 
         # pass out master and project number into the process_master() function
         # we capture the workbook object and project name in a tuple (these are the objects passed out by the return statement inside process_master() function
-        output_wb, project_name = process_master(q2, p, dca_map, excl)
+        output_wb, project_name = process_master(q2, p, dca_map, diff)
         if '/' in project_name:
             project_name = project_name.replace('/', '_')
 

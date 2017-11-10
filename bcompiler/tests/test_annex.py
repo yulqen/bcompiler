@@ -24,7 +24,7 @@ def test_b5_one_decimal(previous_quarter_master, tmpdir, master):
     annex_run(previous_quarter_master, [str(tmpdir)], master)
     wb = load_workbook(tmpdir.join('PROJECT_PROGRAMME NAME 1_ANNEX.xlsx'))
     ws = wb.active
-    assert ws['B5'].value == '32.3'
+    assert ws['B5'].value == 32.3
 
 
 def test_abbr_func():

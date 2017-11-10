@@ -115,7 +115,7 @@ def process_master(source_wb, project_number, dca_map):
     sheet.row_dimensions[4].height = 10
     sheet.row_dimensions[5].height = 20
     sheet['A5'].value = 'WLC(£m):'
-    sheet['B5'].value = "{:.1f}".format(WLC_value)
+    sheet['B5'].value = float("{:.1f}".format(WLC_value))
     sheet['C5'].value = 'Project Stage:'
     sheet['D5'].value = project_stage
     sheet['E5'].value = 'Start of Ops:'

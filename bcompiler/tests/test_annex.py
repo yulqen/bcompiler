@@ -84,7 +84,7 @@ def test_list_projects_in_master(master):
 
 def test_for_new_projects_in_current_master(previous_quarter_master, tmpdir, master_one_extra_proj):
     annex_run(previous_quarter_master, [str(tmpdir)], master_one_extra_proj)
-    wb = load_workbook(tmpdir.join('PROJECT_PROGRAMME NAME 1_ANNEX.xlsx'))
+    wb = load_workbook(tmpdir.join('PROJECT_PROGRAMME NAME 4_ANNEX.xlsx'))
     ws = wb.active
     assert ws['D7'].value is None
 

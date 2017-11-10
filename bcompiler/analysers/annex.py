@@ -51,6 +51,7 @@ def process_master(source_wb, project_number, dca_map):
     Function which is called on each cycle in main loop. Takes a master workbook
     and a project number as arguments. Creates a new workbook, populates it with
      the required data from the source_wb file passed in, formats it, then returns
+     import pdb; pdb.set_trace()  # XXX BREAKPOINT
      the workbook from the function, along with the project name which is used
      to name the file. d_map is a dict of DCA values for each project
     """
@@ -65,10 +66,18 @@ def process_master(source_wb, project_number, dca_map):
     al2 = Alignment(horizontal="center", vertical="center", wrap_text=True,
                     shrink_to_fit=True)
 
+    al_right = Alignment(horizontal="right", vertical="bottom", wrap_text=True,
+                         shrink_to_fit=True)
+
     double_bottom_border = Border(left=Side(style='thin'),
                                   right=Side(style='none'),
                                   top=Side(style='none'),
                                   bottom=Side(style='double'))
+
+    single_bottom_border = Border(left=Side(style='thin'),
+                                  right=Side(style='none'),
+                                  top=Side(style='none'),
+                                  bottom=Side(style='thick'))
 
     thin_border = Border(left=Side(style='thin'), right=Side(style='thin'),
                          top=Side(style='thin'), bottom=Side(style='thin'))
@@ -116,6 +125,7 @@ def process_master(source_wb, project_number, dca_map):
     sheet.row_dimensions[5].height = 20
     sheet['A5'].value = 'WLC(£m):'
     sheet['B5'].value = float("{:.1f}".format(WLC_value))
+    sheet['B5'].alignment = al_right
     sheet['C5'].value = 'Project Stage:'
     sheet['D5'].value = project_stage
     sheet['E5'].value = 'Start of Ops:'
@@ -141,7 +151,6 @@ def process_master(source_wb, project_number, dca_map):
     sheet.row_dimensions[10].height = 10
     sheet['A11'].value = SRO_Comm
     sheet['A11'].alignment = al
-    sheet['A11'].border = double_bottom_border
     sheet['B11'].border = double_bottom_border
     sheet['C11'].border = double_bottom_border
     sheet['D11'].border = double_bottom_border
@@ -154,6 +163,7 @@ def process_master(source_wb, project_number, dca_map):
     sheet['E40'].border = double_bottom_border
     sheet['F40'].border = double_bottom_border
     sheet.merge_cells('A11:F45')
+    sheet['A45'].border = single_bottom_border
 
 
     def _pattern(str_colour: str):

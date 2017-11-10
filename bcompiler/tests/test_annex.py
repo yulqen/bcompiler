@@ -34,13 +34,6 @@ def test_b5_alignment(previous_quarter_master, tmpdir, master):
     assert ws['B5'].alignment.horizontal == "right"
 
 
-def test_a45_bottom_border(previous_quarter_master, tmpdir, master):
-    annex_run(previous_quarter_master, [str(tmpdir)], master)
-    wb = load_workbook(tmpdir.join('PROJECT_PROGRAMME NAME 1_ANNEX.xlsx'))
-    ws = wb.active
-    assert ws['A45'].border.bottom.style == "thick"
-
-
 def test_abbr_func():
     assert abbreviate_project_stage('Outline Business Case') == 'OBC'
     assert abbreviate_project_stage('Strategic Outline Case') == 'SOBC'

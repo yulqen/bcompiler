@@ -1,6 +1,13 @@
 Changes
 ~~~~~~~
 
+v1.3.4
+######
+
+* Fixed bug whereby creating an annex from a master containing a project not in
+  the compare master threw an error
+* Fixes for annex analyser
+
 v1.3.3
 ######
 

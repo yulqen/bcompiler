@@ -3,7 +3,7 @@ import datetime
 from openpyxl import load_workbook
 
 from ..analysers.annex import run as annex_run, abbreviate_project_stage
-from ..analysers.annex import _dca_map
+from ..analysers.utils import project_titles_in_master
 
 
 def test_annex_title(previous_quarter_master, tmpdir, master):
@@ -75,4 +75,16 @@ def test_ipa_rag_value(previous_quarter_master, tmpdir, master):
     wb = load_workbook(tmpdir.join('PROJECT_PROGRAMME NAME 1_ANNEX.xlsx'))
     ws = wb.active
     assert ws['F7'].value == 'Amber'
+
+
+def test_list_projects_in_master(master):
+    ps = project_titles_in_master(master)
+    assert ps[0] == 'PROJECT/PROGRAMME NAME 1'
+
+
+def test_for_new_projects_in_current_master(previous_quarter_master, tmpdir, master_one_extra_proj):
+    annex_run(previous_quarter_master, [str(tmpdir)], master_one_extra_proj)
+    wb = load_workbook(tmpdir.join('PROJECT_PROGRAMME NAME 1_ANNEX.xlsx'))
+    ws = wb.active
+    assert ws['D7'].value is None
 

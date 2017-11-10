@@ -1701,3 +1701,122 @@ def previous_quarter_master():
 
     wb.save(output_file)
     return output_file
+
+
+@pytest.fixture(scope='session')
+def master_one_extra_proj():
+    """
+    This is master file created for the purpose of using a base for bcompiler -a, which
+    populates all the returns. It simply takes the field name from the datamap and
+    puts it in upper case and appends a digit (1, 2 or 3 because we're only simulating
+    a master with 4 projects here.
+    :return: output_file
+    """
+    # regexes
+    r'(Assurance MM1 .+$|Approval MM1 .+$)'
+    milestones_regex1 = re.compile(r'(Assurance MM1 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM1 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$)')
+    milestones_regex2 = re.compile(r'(Assurance MM2 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM2 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$)')
+    milestones_regex4 = re.compile(r'(Assurance MM3 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM3 (?!Notes).+$)(?!Milestone Type)(?!Type)(?!DCA)')
+    milestones_regex5 = re.compile(r'(Assurance MM4 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM4 (?!Notes).+$)(?!Milestone Type)(?!Type)(?!DCA)')
+    milestones_regex6 = re.compile(r'(Assurance MM5 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM5 (?!Notes).+$)(?!Milestone Type)(?!Type)(?!DCA)')
+    milestones_regex3 = re.compile(r'(Assurance MM\d+ (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM\d+ (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$)')
+
+    wb = Workbook()
+    output_file = "/".join([OUTPUT_DIR, 'master_extra_project.xlsx'])
+    ws = wb.active
+    ws.title = "Master for Testing"
+    for item in enumerate(real_datamap_data.split('\n')):
+        if not item[0] == 0 and not item[1] == "":
+            g = split_datamap_line(item)
+            next(g)
+            ix = next(g).split(',')[0]
+            ws[f"A{str(item[0])}"] = ix
+            if item[1].startswith('Date'):  # testing for date objects
+                ws[f"B{str(item[0])}"] = date(2017, 6, 20)
+                ws[f"C{str(item[0])}"] = date(2017, 6, 20)
+                ws[f"D{str(item[0])}"] = date(2017, 6, 20)
+                ws[f"E{str(item[0])}"] = date(2017, 6, 20)
+            elif item[1].startswith('SRO Tenure'):  # testing for date objects
+                ws[f"B{str(item[0])}"] = date(2017, 8, 10)
+                ws[f"C{str(item[0])}"] = date(2017, 8, 10)
+                ws[f"D{str(item[0])}"] = date(2017, 8, 10)
+                ws[f"E{str(item[0])}"] = date(2017, 8, 10)
+            elif item[1].startswith('Total Forecast'):
+                ws[f"B{str(item[0])}"] = 32.3333
+                ws[f"C{str(item[0])}"] = 35.2322
+                ws[f"D{str(item[0])}"] = 23.2
+                ws[f"E{str(item[0])}"] = 23.2
+            elif item[1].startswith('BICC approval point'):
+                ws[f"B{str(item[0])}"] = "Strategic Outline Case"
+                ws[f"C{str(item[0])}"] = "Outline Business Case"
+                ws[f"D{str(item[0])}"] = "Full Business Case"
+                ws[f"E{str(item[0])}"] = "Full Business Case"
+            elif item[1].startswith('Project MM20 Forecast - Actual'):
+                ws[f"B{str(item[0])}"] = datetime(2016, 1, 1)
+                ws[f"C{str(item[0])}"] = datetime(2016, 1, 1)
+                ws[f"D{str(item[0])}"] = datetime(2016, 1, 1)
+                ws[f"E{str(item[0])}"] = datetime(2016, 1, 1)
+            elif item[1].startswith('Departmental DCA'):
+                ws[f"B{str(item[0])}"] = "Amber/Red"
+                ws[f"C{str(item[0])}"] = "Red"
+                ws[f"D{str(item[0])}"] = "Green"
+                ws[f"E{str(item[0])}"] = "Green"
+            elif item[1].startswith('SRO Finance confidence'):
+                ws[f"B{str(item[0])}"] = "Amber/Red"
+                ws[f"C{str(item[0])}"] = "Amber/Red"
+                ws[f"D{str(item[0])}"] = "Amber"
+                ws[f"E{str(item[0])}"] = "Amber"
+            elif item[1].startswith('SRO Benefits RAG'):
+                ws[f"B{str(item[0])}"] = "Red"
+                ws[f"C{str(item[0])}"] = "Green"
+                ws[f"D{str(item[0])}"] = "Amber/Green"
+                ws[f"E{str(item[0])}"] = "Amber/Green"
+            elif item[1].startswith('GMPP - IPA DCA'):
+                ws[f"B{str(item[0])}"] = "Amber"
+                ws[f"C{str(item[0])}"] = "Amber"
+                ws[f"D{str(item[0])}"] = "Amber/Green"
+                ws[f"E{str(item[0])}"] = "Amber/Green"
+
+
+            # Here we are starting a block of dates. We need these to be able to test
+            # the default swimlane_milstones analyser
+            # we're giving these ones some variety so they can be tested as the default
+            # swimlane_milestones analyser
+            elif milestones_regex1.match(item[1]):
+                ws[f"B{str(item[0])}"] = date(2015, 1, 1)
+                ws[f"C{str(item[0])}"] = date(2015, 1, 1)
+                ws[f"D{str(item[0])}"] = date(2015, 1, 1)
+                ws[f"E{str(item[0])}"] = date(2015, 1, 1)
+            elif milestones_regex2.match(item[1]):
+                ws[f"B{str(item[0])}"] = date(2019, 1, 1)
+                ws[f"C{str(item[0])}"] = date(2019, 1, 1)
+                ws[f"D{str(item[0])}"] = date(2019, 1, 1)
+                ws[f"E{str(item[0])}"] = date(2019, 1, 1)
+            elif milestones_regex3.match(item[1]):
+                ws[f"B{str(item[0])}"] = date(2020, 1, 1)
+                ws[f"C{str(item[0])}"] = date(2020, 1, 1)
+                ws[f"D{str(item[0])}"] = date(2020, 1, 1)
+                ws[f"E{str(item[0])}"] = date(2020, 1, 1)
+            elif milestones_regex4.match(item[1]):
+                ws[f"B{str(item[0])}"] = date(2018, 1, 1)
+                ws[f"C{str(item[0])}"] = date(2018, 1, 1)
+                ws[f"D{str(item[0])}"] = date(2018, 1, 1)
+                ws[f"E{str(item[0])}"] = date(2018, 1, 1)
+            elif milestones_regex5.match(item[1]):
+                ws[f"B{str(item[0])}"] = date(2019, 1, 1)
+                ws[f"C{str(item[0])}"] = date(2019, 1, 1)
+                ws[f"D{str(item[0])}"] = date(2019, 1, 1)
+                ws[f"E{str(item[0])}"] = date(2019, 1, 1)
+            elif milestones_regex6.match(item[1]):
+                ws[f"B{str(item[0])}"] = date(2012, 1, 1)
+                ws[f"C{str(item[0])}"] = date(2012, 1, 1)
+                ws[f"D{str(item[0])}"] = date(2012, 1, 1)
+                ws[f"E{str(item[0])}"] = date(2012, 1, 1)
+
+            else:
+                ws[f"B{str(item[0])}"] = " ".join([ix.upper(), "1"])
+                ws[f"C{str(item[0])}"] = " ".join([ix.upper(), "2"])
+                ws[f"D{str(item[0])}"] = " ".join([ix.upper(), "3"])
+                ws[f"E{str(item[0])}"] = " ".join([ix.upper(), "4"])
+    wb.save(output_file)
+    return output_file

@@ -106,11 +106,25 @@ def get_number_of_projects(source_wb) -> int:
     return len(top_row)
 
 
-def projects_in_master(master: str):
+def project_titles_in_master(master: str):
+    try:
+        wb = load_workbook(master)
+    except FileNotFoundError:
+        logger.critical("Please ensure you specify a master file in the command or use the correctly named"
+                        " master file in your auxiliary directory.")
+        sys.exit(1)
+    ws = wb.active
+    top_row = next(ws.rows)
+    top_row = list(top_row)[1:]
+    top_row = [i.value for i in top_row if i.value is not None]
+    return top_row
+
+
+def projects_in_master(master: int):
     """
-    Return list of project titles in master.
+    Return count of items in list of project titles in master.
     :type str: master
-    :return:
+    :return int: count of list of projects
     """
     try:
         wb = load_workbook(master)

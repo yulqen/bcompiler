@@ -8,7 +8,7 @@ from openpyxl.styles import Font, Alignment, Border, Side
 from openpyxl.styles.fills import PatternFill
 from openpyxl.styles.colors import Color
 
-from .utils import MASTER_XLSX, logger, get_number_of_projects
+from .utils import MASTER_XLSX, logger, get_number_of_projects, project_titles_in_master
 from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE, project_data_from_master
 
 runtime_config.read(CONFIG_FILE)
@@ -46,7 +46,7 @@ def abbreviate_project_stage(stage: str):
         return "UNKNOWN STAGE"
 
 
-def process_master(source_wb, project_number, dca_map):
+def process_master(source_wb, project_number, dca_map, exclusions=False):
     """
     Function which is called on each cycle in main loop. Takes a master workbook
     and a project number as arguments. Creates a new workbook, populates it with
@@ -137,7 +137,8 @@ def process_master(source_wb, project_number, dca_map):
     sheet['B7'].value = SRO_conf
     sheet['B7'].border = thin_border
     sheet['C7'].value = 'DCA last quarter'
-    sheet['D7'].value = dca_map[project_name]
+    if exclusions is False:
+        sheet['D7'].value = dca_map[project_name]
     sheet['D7'].border = thin_border
     sheet['E7'].value = 'IPA DCA'
     sheet['F7'].border = thin_border
@@ -193,11 +194,17 @@ def run(compare_master=None, output_path=None, user_provided_master_path=None):
     if user_provided_master_path:
         logger.info(f"Using master file: {user_provided_master_path}")
         q2 = load_workbook(user_provided_master_path)
+        projects_in_current_master = project_titles_in_master(user_provided_master_path)
     else:
         logger.info(f"Using default master file (refer to config.ini)")
         q2 = load_workbook(MASTER_XLSX)
+        projects_in_current_master = project_titles_in_master(MASTER_XLSX)
 
     if compare_master:
+        projects_in_compare_master = project_titles_in_master(compare_master)
+        diff = set(projects_in_current_master).difference(projects_in_compare_master)
+        if diff:
+            logger.warning("{} not present in compare master.".format(", ".join(diff)))
         dca_map = _dca_map(compare_master)
         logger.info(f"Running annex analyser using {compare_master} as comparison.")
     else:
@@ -212,6 +219,8 @@ def run(compare_master=None, output_path=None, user_provided_master_path=None):
         logger.info(f"Running annex analyser using {compare_master} as comparison.")
 
 
+    excl = True if diff else False
+
     # get the number of projects, so we know how many times to loop
     project_count = get_number_of_projects(q2)
 
@@ -219,7 +228,7 @@ def run(compare_master=None, output_path=None, user_provided_master_path=None):
 
         # pass out master and project number into the process_master() function
         # we capture the workbook object and project name in a tuple (these are the objects passed out by the return statement inside process_master() function
-        output_wb, project_name = process_master(q2, p, dca_map)
+        output_wb, project_name = process_master(q2, p, dca_map, excl)
         if '/' in project_name:
             project_name = project_name.replace('/', '_')
 

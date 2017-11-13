@@ -1,5 +1,7 @@
 import string
 
+from itertools import chain
+
 
 class Row:
     """
@@ -12,6 +14,12 @@ class Row:
         if isinstance(anchor_column, str):
             if len(anchor_column) == 1:
                 enumerated_alphabet = list(enumerate(string.ascii_uppercase, start=1))
+                col_letter = [x for x in enumerated_alphabet if x[1] == anchor_column][0]
+                self._anchor_column = col_letter[0]
+                self._anchor_row = anchor_row
+            elif len(anchor_column) == 2:
+                enumerated_alphabet = list(enumerate(list(chain(
+                    string.ascii_uppercase, ["{}{}".format(x[0], x[1]) for x in list(zip(['A'] * 26, string.ascii_uppercase))])), start=1))
                 col_letter = [x for x in enumerated_alphabet if x[1] == anchor_column][0]
                 self._anchor_column = col_letter[0]
                 self._anchor_row = anchor_row

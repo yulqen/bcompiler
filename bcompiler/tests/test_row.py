@@ -1,3 +1,5 @@
+import pytest
+
 from ..core import Row
 from openpyxl import Workbook, load_workbook
 
@@ -44,3 +46,17 @@ def test_row_object_given_column_reference_as_double_string(tmpdir):
     assert ws['AA1'].value == 'Test Value AA1'
     assert ws['AB1'].value == 'Test Value AB1'
     assert ws['AC1'].value == 'Test Value AC1'
+    assert ws['AD1'].value is None
+
+
+def test_bullshit_cell_reference(tmpdir):
+    values_l = ['Test Value AA1', 'Test Value AB1', 'Test Value AC1']
+    wb = Workbook()
+    ws = wb.active
+    with pytest.raises(ValueError) as excinfo:
+        r = Row('AAA', 1, values_l)
+    assert "You can only have a column up to AZ" in str(excinfo.value)
+    with pytest.raises(ValueError) as excinfo:
+        r = Row('AADDB', 1, values_l)
+    assert "You can only have a column up to AZ" in str(excinfo.value)
+

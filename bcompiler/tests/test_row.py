@@ -64,7 +64,7 @@ def test_row_object_given_column_reference_as_double_string(tmpdir):
     assert ws['AD1'].value is None
 
 
-def test_bullshit_cell_reference(tmpdir):
+def test_wrong_cell_reference(tmpdir):
     values_l = ['Test Value AA1', 'Test Value AB1', 'Test Value AC1']
     with pytest.raises(ValueError) as excinfo:
         Row('AAA', 1, values_l)

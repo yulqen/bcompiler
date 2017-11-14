@@ -33,8 +33,14 @@ class Quarter:
         self.start_date = self._start_date(self.quarter, self.year)
         self.end_date = self._end_date(self.quarter, self.year)
 
+    def __str__(self):
+        return f"Q{self.quarter} {str(self.year)[2:]}/{str(self.year + 1)[2:]}"
+
     def _start_date(self, q, y):
         return datetime.date(y, Quarter.start_months[q][0], 1)
 
     def _end_date(self, q, y):
         return datetime.date(y, Quarter.end_months[q][0], Quarter.end_months[q][2])
+
+    def __repr__(self):
+        return f"Quarter({self.quarter}, {self.year})"

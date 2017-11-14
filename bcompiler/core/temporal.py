@@ -1,6 +1,29 @@
 import datetime
 
 
+class FinancialYear:
+    def __init__(self, year):
+        if isinstance(year, int) and (year in range(150, 2100)):
+            self.year = year
+        else:
+            raise ValueError("A year must be an integer between 1950 and 2100")
+        self._generate_quarters()
+        self.q1 = self.quarters[0]
+        self.q2 = self.quarters[1]
+        self.q3 = self.quarters[2]
+        self.q4 = self.quarters[3]
+
+        self.start_date = self.q1.start_date
+        self.end_date = self.q4.end_date
+
+    def __str__(self):
+        return f"FY{str(self.year)}/{str(self.year + 1)[2:]}"
+
+    def _generate_quarters(self):
+        self.quarters = [Quarter(x, self.year) for x in range(1, 5)]
+
+
+
 class Quarter:
 
     start_months = {
@@ -37,9 +60,13 @@ class Quarter:
         return f"Q{self.quarter} {str(self.year)[2:]}/{str(self.year + 1)[2:]}"
 
     def _start_date(self, q, y):
+        if q == 4:
+            y = y + 1
         return datetime.date(y, Quarter.start_months[q][0], 1)
 
     def _end_date(self, q, y):
+        if q == 4:
+            y = y + 1
         return datetime.date(y, Quarter.end_months[q][0], Quarter.end_months[q][2])
 
     def __repr__(self):

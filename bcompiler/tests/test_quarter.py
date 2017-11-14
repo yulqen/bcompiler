@@ -12,6 +12,9 @@ def test_initialisation():
     q = Quarter(2, 2017)
     assert q.start_date == datetime.date(2017, 7, 1)
     assert q.end_date == datetime.date(2017, 9, 30)
+    q = Quarter(4, 2017)
+    assert q.start_date == datetime.date(2018, 1, 1)
+    assert q.end_date == datetime.date(2018, 3, 31)
 
 
 def test_desc_string():

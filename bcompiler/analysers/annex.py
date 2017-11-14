@@ -69,12 +69,12 @@ def process_master(source_wb, project_number, dca_map, diff: list):
     al_right = Alignment(horizontal="right", vertical="bottom", wrap_text=True,
                          shrink_to_fit=True)
 
-    double_bottom_border = Border(left=Side(style='thin'),
+    double_bottom_border = Border(left=Side(style='none'),
                                   right=Side(style='none'),
                                   top=Side(style='none'),
                                   bottom=Side(style='double'))
 
-    single_bottom_border = Border(left=Side(style='thin'),
+    single_bottom_border = Border(left=Side(style='none'),
                                   right=Side(style='none'),
                                   top=Side(style='none'),
                                   bottom=Side(style='thick'))
@@ -167,6 +167,12 @@ def process_master(source_wb, project_number, dca_map, diff: list):
     sheet['F40'].border = double_bottom_border
     sheet.merge_cells('A11:F45')
     sheet['A45'].border = single_bottom_border
+    sheet['B45'].border = single_bottom_border
+    sheet['C45'].border = single_bottom_border
+    sheet['D45'].border = single_bottom_border
+    sheet['E45'].border = single_bottom_border
+    sheet['F45'].border = single_bottom_border
+
 
 
     def _pattern(str_colour: str):

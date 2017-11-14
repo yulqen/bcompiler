@@ -53,7 +53,7 @@ class Row:
                     fg_colour=None,
                     number_format=None,
                     verification_list=None,
-                    r_idx=self._anchor_column,
+                    r_idx=self._anchor_row,
                     c_idx=x[0]
                 )
             )

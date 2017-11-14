@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 
-from ..core import FinancialYear
+from ..core import FinancialYear, Quarter
 
 
 def test_fy():
@@ -34,3 +34,19 @@ def test_quarters_in_fy():
     assert fy.q4.start_date == datetime.date(2017, 1, 1)
     assert fy.start_date == datetime.date(2016, 4, 1)
     assert fy.end_date == datetime.date(2017, 3, 31)
+
+    fy = FinancialYear(1999)
+    assert str(fy.q1) == "Q1 99/00"
+    assert fy.q1.start_date == datetime.date(1999, 4, 1)
+    assert fy.q1.end_date == datetime.date(1999, 6, 30)
+    assert fy.q4.start_date == datetime.date(2000, 1, 1)
+    assert fy.start_date == datetime.date(1999, 4, 1)
+    assert fy.end_date == datetime.date(2000, 3, 31)
+
+
+def test_forbid_setting_quarters_manually():
+    fy = FinancialYear(2008)
+    q = Quarter(1, 2009)
+    with pytest.raises(AttributeError) as excinfo:
+        fy.q1 = q
+    assert "You cannot set an attribute here." in str(excinfo.value)

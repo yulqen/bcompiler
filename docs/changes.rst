@@ -1,6 +1,14 @@
 Changes
 ~~~~~~~
 
+v1.3.6
+######
+
+* Chart is based on start_date option when using swimlane analysers,
+  rather than today's date.
+* swimlane charts use 30 as main x axis unit rather than 50 to approximate
+  months.
+
 v1.3.5
 ######
 

@@ -34,7 +34,8 @@ def date_range_milestones(source_sheet, output_sheet, cols: tuple,
     Helper function to populate Column B in resulting milestones spreadsheet.
     Uses start and end dates to define boundaries to milestones.
     """
-    today = datetime.date.today()
+#   today = datetime.date(2017, 10, 1)
+    base_date = date_ends[0]
     current_row = start_row
     dates = diff_date_list(*date_ends)
     for i in range(*cols):
@@ -45,7 +46,7 @@ def date_range_milestones(source_sheet, output_sheet, cols: tuple,
                 output_sheet.cell(
                     row=current_row,
                     column=3,
-                    value=(time_line_date - today).days)
+                    value=(time_line_date - base_date).days)
                 logger.debug(f"Using date range: written {time_line_date} to "
                              f"row: {current_row} col: {column}")
         except TypeError:
@@ -58,7 +59,7 @@ def date_range_milestones(source_sheet, output_sheet, cols: tuple,
 def date_diff_column(source_sheet, output_sheet, cols: tuple, start_row: int, column: int,
                      interested_range: int):
     """Helper function to populate Column B in the resulting milestones spreadsheet."""
-    today = datetime.date.today()
+    today = datetime.date(2017, 10, 1)
     current_row = start_row
     for i in range(*cols):
         time_line_date = source_sheet.cell(row=i, column=column).value

@@ -8,13 +8,29 @@ class FinancialYear:
         else:
             raise ValueError("A year must be an integer between 1950 and 2100")
         self._generate_quarters()
-        self.q1 = self.quarters[0]
-        self.q2 = self.quarters[1]
-        self.q3 = self.quarters[2]
-        self.q4 = self.quarters[3]
+        self._q1 = self.quarters[0]
+        self._q2 = self.quarters[1]
+        self._q3 = self.quarters[2]
+        self._q4 = self.quarters[3]
 
         self.start_date = self.q1.start_date
         self.end_date = self.q4.end_date
+
+    @property
+    def q1(self):
+        return self._q1
+
+    @property
+    def q2(self):
+        return self._q2
+
+    @property
+    def q3(self):
+        return self._q3
+
+    @property
+    def q4(self):
+        return self._q4
 
     def __str__(self):
         return f"FY{str(self.year)}/{str(self.year + 1)[2:]}"

@@ -49,4 +49,14 @@ def test_forbid_setting_quarters_manually():
     q = Quarter(1, 2009)
     with pytest.raises(AttributeError) as excinfo:
         fy.q1 = q
-    assert "You cannot set an attribute here." in str(excinfo.value)
+    assert "can't set attribute" in str(excinfo.value)
+    fy = FinancialYear(2018)
+    q = Quarter(1, 2009)
+    with pytest.raises(AttributeError) as excinfo:
+        fy.q1 = q
+    assert "can't set attribute" in str(excinfo.value)
+    fy = FinancialYear(2019)
+    q = Quarter(1, 2019)
+    with pytest.raises(AttributeError) as excinfo:
+        fy.q1 = q
+    assert "can't set attribute" in str(excinfo.value)

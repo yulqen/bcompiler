@@ -1,6 +1,6 @@
 from ..utils import project_data_from_master
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Iterable
 
 
 class ProjectData:
@@ -20,19 +20,28 @@ class ProjectData:
         return self._data[item]
 
     def key_filter(self, key: str) -> List[Tuple]:
+        """
+        Return a list of (k, v) tuples if k in master key.
+        """
         data = [item for item in self._data.items() if key in item[0]]
         if not data:
             raise KeyError("Sorry, there is no matching data")
         return (data)
 
-    def pull_keys(self, input_iter) -> List:
+    def pull_keys(self, input_iter: Iterable, flat=False) -> List:
         """
         Returns a list of (key, value) tuples from ProjectData if key matches a
         key. The order of tuples is based on the order of keys passed in the iterable.
         """
-        xs = [item for item in self._data.items() for i in input_iter if item[0] == i]
-        ts = sorted(xs, key=lambda x: input_iter.index(x[0]))
-        return ts
+        if flat is True:
+            xs = [item for item in self._data.items() for i in input_iter if item[0] == i]
+            ts = sorted(xs, key=lambda x: input_iter.index(x[0]))
+            ts = [item[1] for item in ts]
+            return ts
+        else:
+            xs = [item for item in self._data.items() for i in input_iter if item[0] == i]
+            ts = sorted(xs, key=lambda x: input_iter.index(x[0]))
+            return ts
 
 
 class Master:
@@ -55,7 +64,7 @@ class Master:
 
     @property
     def quarter(self):
-        return self._quarter.quarter
+        return self._quarter
 
     @property
     def filename(self):

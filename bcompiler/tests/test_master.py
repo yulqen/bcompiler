@@ -8,7 +8,7 @@ def test_master(master):
     m = Master(q1_2017, master)
     assert m.path.name == 'master.xlsx'
     assert m.filename == 'master.xlsx'
-    assert m.quarter == 1
+    assert str(m.quarter) == 'Q1 17/18'
     assert m.year == 2017
     assert len(m.projects) == 3
 
@@ -28,7 +28,7 @@ def test_project_data_object(master):
     m = Master(q2_2018, master)
     assert m.path.name == 'master.xlsx'
     assert m.filename == 'master.xlsx'
-    assert m.quarter == 2
+    assert str(m.quarter) == 'Q2 18/19'
     assert m.year == 2018
     assert len(m.projects) == 3
     assert isinstance(m['PROJECT/PROGRAMME NAME 1'], ProjectData)
@@ -54,13 +54,43 @@ def test_master_key_filter_missing_key(master):
 
 def test_pull_iterable_from_master_based_on_key(master):
     p1 = Master(Quarter(1, 2017), master)['PROJECT/PROGRAMME NAME 1']
-#   assert p1.pull_keys(['SRO Full Name']) == [('SRO Full Name', 'SRO FULL NAME 1')]
-#   assert p1.pull_keys(['Quarter Joined']) == [('Quarter Joined', 'QUARTER JOINED 1')]
+    assert p1.pull_keys(['SRO Full Name']) == [('SRO Full Name', 'SRO FULL NAME 1')]
+    assert p1.pull_keys(['Quarter Joined']) == [('Quarter Joined', 'QUARTER JOINED 1')]
     assert p1.pull_keys(['SRO Full Name', 'Quarter Joined']) == [
         ('SRO Full Name', 'SRO FULL NAME 1'),
         ('Quarter Joined', 'QUARTER JOINED 1'),
     ]
+    assert p1.pull_keys(['SRO Full Name', 'Non Existent Key']) == [
+        ('SRO Full Name', 'SRO FULL NAME 1'),
+    ]
 
+
+def test_pull_iterable_from_master_based_on_key_flat(master):
+    """
+    Same as above, but only the value is returned, not the key with it.
+    """
+    p1 = Master(Quarter(1, 2017), master)['PROJECT/PROGRAMME NAME 1']
+    assert p1.pull_keys(['SRO Full Name', 'Quarter Joined'], flat=True) == [
+        'SRO FULL NAME 1',
+        'QUARTER JOINED 1'
+    ]
+    assert p1.pull_keys([
+        'Working Contact Name',
+        'Working Contact Telephone',
+        'Working Contact Email'
+    ], flat=True) == [
+        'WORKING CONTACT NAME 1',
+        'WORKING CONTACT TELEPHONE 1',
+        'WORKING CONTACT EMAIL 1'
+    ]
+    assert p1.pull_keys([
+        'Working Contact Name',
+        'Working Contact Telephone',
+        'Non-Existent Key'
+    ], flat=True) == [
+        'WORKING CONTACT NAME 1',
+        'WORKING CONTACT TELEPHONE 1',
+    ]
 
 
 #def test_multiple_masters(master, previous_quarter_master):

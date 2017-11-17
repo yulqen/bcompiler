@@ -60,3 +60,8 @@ def test_forbid_setting_quarters_manually():
     with pytest.raises(AttributeError) as excinfo:
         fy.q1 = q
     assert "can't set attribute" in str(excinfo.value)
+
+
+def test_fy_from_quarter():
+    q1_2017 = Quarter(1, 2017)
+    assert q1_2017.fy.start_date == datetime.date(2017, 4, 1)

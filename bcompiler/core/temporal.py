@@ -87,3 +87,7 @@ class Quarter:
 
     def __repr__(self):
         return f"Quarter({self.quarter}, {self.year})"
+
+    @property
+    def fy(self):
+        return FinancialYear(self.year)

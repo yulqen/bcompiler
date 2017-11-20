@@ -1,9 +1,20 @@
+import os
+
 import pytest
 
 from openpyxl import load_workbook
 
 from ..analysers.financial import run as financial_run
 from ..analysers.utils import project_titles_in_master
+
+
+@pytest.fixture
+def master_repository(master, previous_quarter_master, tmpdir):
+    with open(master, 'w') as f:
+        f.write(os.path.join(tmpdir.dirname, master))
+    with open(previous_quarter_master, 'w') as f:
+        f.write(os.path.join(tmpdir.dirname, previous_quarter_master))
+    return tmpdir.strpath
 
 
 def test_a1_cell(tmpdir, master):
@@ -15,9 +26,8 @@ def test_a1_cell(tmpdir, master):
     assert ws['A1'].value == 'PROJECT/PROGRAMME NAME 1'
 
 
-def test_header_cells(tmpdir, master):
-    tmpdir = [tmpdir]
-    financial_run([master], output_path=tmpdir)
+def test_header_cells(tmpdir, master_repository):
+    financial_run(master_repository, output_path=tmpdir)
     tmpdir = tmpdir[0]
     wb = load_workbook(tmpdir.join('financial_analysis.xlsx'))
     ws = wb.get_sheet_by_name('PROJECT_PROGRAMME NAME 1')

@@ -34,6 +34,7 @@ class ProjectData:
         key. The order of tuples is based on the order of keys passed in the iterable.
         """
         if flat is True:
+            import pudb; pudb.set_trace()  # XXX BREAKPOINT
             xs = [item for item in self._data.items() for i in input_iter if item[0] == i]
             ts = sorted(xs, key=lambda x: input_iter.index(x[0]))
             ts = [item[1] for item in ts]

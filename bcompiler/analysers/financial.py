@@ -1,9 +1,18 @@
+import os
+
+import sys
+
 from bcompiler.core import Quarter, Master, Row
+from ..utils import logger, ROOT_PATH
 
 from openpyxl import load_workbook, Workbook
 
 
-def run(masters_list):
+def _replace_underscore(name: str):
+    return name.replace('/', '_')
+
+
+def run(masters_list, output_path=None):
     wb = Workbook()
     q1 = Quarter(1, 2017)
     q2 = Quarter(2, 2017)
@@ -13,7 +22,10 @@ def run(masters_list):
         master = Master(q1, m)
         projects = master.projects
         for p in projects:
-            ws = wb.create_sheet(p)
+            try:
+                ws = wb.create_sheet(_replace_underscore(p))
+            except AttributeError:
+                continue
             p_data = master[p]
             d = p_data.pull_keys(target_keys, flat=True)
             header = Row(2, start_row + 1, target_keys)
@@ -22,8 +34,13 @@ def run(masters_list):
             header.bind(ws)
             r.bind(ws)
             ws.cell(row=start_row, column=1, value=p)
-    wb.save('/tmp/baws.xlsx')
-
+    if output_path:
+        wb.save(os.path.join(output_path[0], 'financial_analysis.xlsx'))
+        logger.info(f"Saved swimlane_milestones.xlsx to {output_path}")
+    else:
+        output_path = os.path.join(ROOT_PATH, 'output')
+        wb.save(os.path.join(output_path, 'financial_analysis.xlsx'))
+        logger.info(f"Saved financial_analysis.xlsx to {output_path}")
 
 
 if __name__ == '__main__':

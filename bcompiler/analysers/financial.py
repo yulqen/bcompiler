@@ -100,9 +100,23 @@ def run(masters_repository_dir, output_path=None):
     # projects from latest master
     projects = master_q2.projects
 
+    project_totals = {key: t for key in target_keys for t in [0]}
+    global_totals = {}
+
 
     std = wb.get_sheet_by_name('Sheet')
     wb.remove_sheet(std)
+
+    def _update_total(keys: list, target_keys: list, data: list, quarter=None):
+        if quarter is None:
+            for t in list(zip(project_totals.keys(), data)):
+                project_totals[t[0]] += t[1]
+        else:
+            keys, target_keys = target_keys, keys
+            for t in list(zip(project_totals.keys(), data)):
+                project_totals[t[0]] += t[1]
+
+
 
     # set up sheets
     for p in projects:
@@ -124,15 +138,21 @@ def run(masters_repository_dir, output_path=None):
                 continue
             if m.quarter.quarter == 3:
                 d = p_data.pull_keys(q3_keys, flat=True)
+                _update_total(q3_keys, target_keys, d, "q3")
             elif m.quarter.quarter == 4:
                 d = p_data.pull_keys(q4_keys, flat=True)
+                _update_total(q4_keys, target_keys, d, "q4")
             else:
                 d = p_data.pull_keys(target_keys, flat=True)
+                _update_total(target_keys, target_keys, d)
             ws.cell(row=start_row + 2, column=1, value=str(m.quarter))
             r = Row(2, start_row + 2, d)
             r.bind(ws)
 
             start_row += 1
+
+        global_totals[p] = project_totals
+        project_totals = {key: t for key in target_keys for t in [0]}
 
         ws = _create_chart(ws)
 

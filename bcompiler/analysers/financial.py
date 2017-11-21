@@ -37,8 +37,8 @@ def _create_chart(worksheet):
     chart.style = 1
     chart.height = 10
     chart.width = 20
-    chart.x_axis.title = "Node"
-    chart.y_axis.title = "Cash"
+    chart.x_axis.title = "Financial Quarter"
+    chart.y_axis.title = "Cost"
     chart.legend = None
     chart.x_axis.majorUnit = 0.5
     chart.x_axis.minorGridlines = None
@@ -81,6 +81,22 @@ def run(masters_repository_dir, output_path=None):
         'Total Forecast SR (20/21)'
     ]
 
+    q3_keys = [
+        'Total forecast Whole Life Cost (RDEL) (GMPP - Total)',
+        'Total Forecast Whole Life Cost (CDEL) (GMPP - Total)',
+        'Total Forecast Whole Life Cost (Non-Gov) (GMPP - Total)',
+        'Total Forecast Whole Life Cost (GMPP - Total)',
+        'Total Cost up to 2020/21- Forecast'
+    ]
+
+    q4_keys = [
+        'Total Forecast Whole Life Cost (RDEL) (GMPP - Total)',
+        'Total Forecast Whole Life Cost (CDEL) (GMPP - Total)',
+        'Total Forecast Whole Life Cost (Non-Gov) (GMPP - Total)',
+        'Total Forecast Whole Life Cost (GMPP - Total)',
+        'Total Cost up to 2020/21- Forecast'
+    ]
+
     # projects from latest master
     projects = master_q2.projects
 
@@ -106,7 +122,12 @@ def run(masters_repository_dir, output_path=None):
             except KeyError:
                 logger.warning(f"Cannot find {p}")
                 continue
-            d = p_data.pull_keys(target_keys, flat=True)
+            if m.quarter.quarter == 3:
+                d = p_data.pull_keys(q3_keys, flat=True)
+            elif m.quarter.quarter == 4:
+                d = p_data.pull_keys(q4_keys, flat=True)
+            else:
+                d = p_data.pull_keys(target_keys, flat=True)
             ws.cell(row=start_row + 2, column=1, value=str(m.quarter))
             r = Row(2, start_row + 2, d)
             r.bind(ws)

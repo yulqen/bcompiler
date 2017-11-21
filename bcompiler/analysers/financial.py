@@ -77,6 +77,7 @@ def run(masters_repository_dir, output_path=None):
         'RDEL Total Forecast',
         'CDEL Total Forecast',
         'Non-Gov Total Forecast',
+        'Total Forecast',
         'Total Forecast SR (20/21)'
     ]
 

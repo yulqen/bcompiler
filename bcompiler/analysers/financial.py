@@ -2,6 +2,7 @@ import os
 
 from bcompiler.core import Quarter, Master, Row
 from ..utils import logger, ROOT_PATH, CONFIG_FILE, runtime_config
+from itertools import zip_longest
 
 from openpyxl.chart import ScatterChart, Reference, Series
 from openpyxl import Workbook
@@ -101,6 +102,7 @@ def run(masters_repository_dir, output_path=None):
     projects = master_q2.projects
 
     project_totals = {key: t for key in target_keys for t in [0]}
+    project_totals = {str(q): pt for q in range(1, 5) for pt in [project_totals]}
     global_totals = {}
 
 
@@ -108,13 +110,13 @@ def run(masters_repository_dir, output_path=None):
     wb.remove_sheet(std)
 
     def _update_total(keys: list, target_keys: list, data: list, quarter=None):
-        if quarter is None:
-            for t in list(zip(project_totals.keys(), data)):
-                project_totals[t[0]] += t[1]
-        else:
-            keys, target_keys = target_keys, keys
-            for t in list(zip(project_totals.keys(), data)):
-                project_totals[t[0]] += t[1]
+        keys, target_keys = target_keys, keys
+        z = list(zip_longest(project_totals['1'].keys(), data)) # don't like the hardcode here in the key
+        for t in z:
+            try:
+                project_totals[str(quarter)][t[0]] += t[1]
+            except TypeError:
+                pass
 
 
 
@@ -136,15 +138,18 @@ def run(masters_repository_dir, output_path=None):
             except KeyError:
                 logger.warning(f"Cannot find {p}")
                 continue
+            if m.quarter.quarter == 1:
+                d = p_data.pull_keys(target_keys, flat=True)
+                _update_total(target_keys, target_keys, d, m.quarter.quarter)
+            if m.quarter.quarter == 2:
+                d = p_data.pull_keys(target_keys, flat=True)
+                _update_total(target_keys, target_keys, d, m.quarter.quarter)
             if m.quarter.quarter == 3:
                 d = p_data.pull_keys(q3_keys, flat=True)
-                _update_total(q3_keys, target_keys, d, "q3")
+                _update_total(q3_keys, target_keys, d, m.quarter.quarter)
             elif m.quarter.quarter == 4:
                 d = p_data.pull_keys(q4_keys, flat=True)
-                _update_total(q4_keys, target_keys, d, "q4")
-            else:
-                d = p_data.pull_keys(target_keys, flat=True)
-                _update_total(target_keys, target_keys, d)
+                _update_total(q4_keys, target_keys, d, m.quarter.quarter)
             ws.cell(row=start_row + 2, column=1, value=str(m.quarter))
             r = Row(2, start_row + 2, d)
             r.bind(ws)
@@ -153,8 +158,28 @@ def run(masters_repository_dir, output_path=None):
 
         global_totals[p] = project_totals
         project_totals = {key: t for key in target_keys for t in [0]}
+        project_totals = {q: pt for q in range(1, 5) for pt in [project_totals]}
 
-        ws = _create_chart(ws)
+        _create_chart(ws)
+
+    # create total sheet
+
+    def _total_calc_for_all_projects(data: dict):
+        pass
+
+    total_ws = wb.create_sheet('Totals')
+    start_row = 1
+    ws.cell(row=start_row, column=1, value="Totals")
+    header = Row(2, start_row + 1, target_keys)
+    header.bind(total_ws)
+    for m in [master_q3, master_q4, master_q1, master_q2]:
+        total_ws.cell(row=start_row + 2, column=1, value=str(m.quarter))
+        d = _total_calc_for_all_projects(global_totals)
+        r = Row(2, start_row + 2, d)
+        r.bind(total_ws)
+
+
+
 
     if output_path:
         wb.save(os.path.join(output_path[0], 'financial_analysis.xlsx'))

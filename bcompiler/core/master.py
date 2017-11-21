@@ -1,3 +1,5 @@
+import unicodedata
+
 from ..utils import project_data_from_master
 from pathlib import Path
 from typing import List, Tuple, Iterable
@@ -34,13 +36,15 @@ class ProjectData:
         key. The order of tuples is based on the order of keys passed in the iterable.
         """
         if flat is True:
-            xs = [item for item in self._data.items() for i in input_iter if item[0] == i]
-            ts = sorted(xs, key=lambda x: input_iter.index(x[0]))
+            # search and replace troublesome EN DASH character
+            xs = [item for item in self._data.items() for i in input_iter if item[0].replace(unicodedata.lookup('EN DASH'), unicodedata.lookup('HYPHEN-MINUS')) == i]
+            ts = sorted(xs, key=lambda x: input_iter.index(x[0].replace(unicodedata.lookup('EN DASH'), unicodedata.lookup('HYPHEN-MINUS'))))
             ts = [item[1] for item in ts]
             return ts
         else:
+            xs = [item for item in self._data.items() for i in input_iter if item[0].replace(unicodedata.lookup('EN DASH'), unicodedata.lookup('HYPHEN-MINUS')) == i]
             xs = [item for item in self._data.items() for i in input_iter if item[0] == i]
-            ts = sorted(xs, key=lambda x: input_iter.index(x[0]))
+            ts = sorted(xs, key=lambda x: input_iter.index(x[0].replace(unicodedata.lookup('EN DASH'), unicodedata.lookup('HYPHEN-MINUS'))))
             return ts
 
 

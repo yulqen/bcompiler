@@ -1,4 +1,5 @@
 import os
+import unicodedata
 
 from bcompiler.core import Quarter, Master, Row
 from ..utils import logger, ROOT_PATH, CONFIG_FILE, runtime_config
@@ -111,7 +112,8 @@ def run(masters_repository_dir, output_path=None):
 
     def _update_total(keys: list, target_keys: list, data: list, quarter=None):
         keys, target_keys = target_keys, keys
-        z = list(zip_longest(project_totals['1'].keys(), data)) # don't like the hardcode here in the key
+#       z = list(zip_longest(project_totals['1'].keys(), data)) # don't like the hardcode here in the key
+        z = list(zip_longest(keys, data))
         for t in z:
             try:
                 project_totals[str(quarter)][t[0]] += t[1]
@@ -138,6 +140,7 @@ def run(masters_repository_dir, output_path=None):
             except KeyError:
                 logger.warning(f"Cannot find {p}")
                 continue
+            import pudb; pudb.set_trace()  # XXX BREAKPOINT
             if m.quarter.quarter == 1:
                 d = p_data.pull_keys(target_keys, flat=True)
                 _update_total(target_keys, target_keys, d, m.quarter.quarter)

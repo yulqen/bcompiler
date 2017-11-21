@@ -102,6 +102,7 @@ def run(masters_repository_dir, output_path=None):
     # projects from latest master
     projects = master_q2.projects
 
+    import pudb; pudb.set_trace()  # XXX BREAKPOINT
     project_totals = {key: t for key in target_keys for t in [0]}
     project_totals = {str(q): pt for q in range(1, 5) for pt in [project_totals]}
     global_totals = {}
@@ -113,6 +114,13 @@ def run(masters_repository_dir, output_path=None):
     def _update_total(keys: list, target_keys: list, data: list, quarter=None):
         keys, target_keys = target_keys, keys
 #       z = list(zip_longest(project_totals['1'].keys(), data)) # don't like the hardcode here in the key
+
+
+# THIS IS WHERE THE ISSUE IS:  project_totals['1'] and project_totals['2'] have
+# same id after this zip op
+#
+# find a different way
+#
         z = list(zip_longest(keys, data))
         for t in z:
             try:
@@ -140,7 +148,6 @@ def run(masters_repository_dir, output_path=None):
             except KeyError:
                 logger.warning(f"Cannot find {p}")
                 continue
-            import pudb; pudb.set_trace()  # XXX BREAKPOINT
             if m.quarter.quarter == 1:
                 d = p_data.pull_keys(target_keys, flat=True)
                 _update_total(target_keys, target_keys, d, m.quarter.quarter)

@@ -13,6 +13,39 @@ from openpyxl.drawing.line import LineProperties
 runtime_config.read(CONFIG_FILE)
 
 
+def _calc_quarter_totals(global_data: dict):
+    global_totals = {}
+    q1_entries = [item[1][1] for item in iter(global_data.items())]
+    q2_entries = [item[1][2] for item in iter(global_data.items())]
+    q3_entries = [item[1][3] for item in iter(global_data.items())]
+    q4_entries = [item[1][4] for item in iter(global_data.items())]
+    global_totals['q1', 'rdel'] = round(sum([item['RDEL Total Forecast'] for item in q1_entries]), 2)
+    global_totals['q1', 'cdel'] = round(sum([item['CDEL Total Forecast'] for item in q1_entries]), 2)
+    global_totals['q1', 'non-gov'] = round(sum([item['Non-Gov Total Forecast'] for item in q1_entries]), 2)
+    global_totals['q1', 'total_forecast'] = round(sum([item['Total Forecast'] for item in q1_entries]), 2)
+    global_totals['q1', 'total_forecast_sr'] = round(sum([item['Total Forecast SR (20/21)'] for item in q1_entries]), 2)
+
+    global_totals['q2', 'rdel'] = round(sum([item['RDEL Total Forecast'] for item in q2_entries]), 2)
+    global_totals['q2', 'cdel'] = round(sum([item['CDEL Total Forecast'] for item in q2_entries]), 2)
+    global_totals['q2', 'non-gov'] = round(sum([item['Non-Gov Total Forecast'] for item in q2_entries]), 2)
+    global_totals['q2', 'total_forecast'] = round(sum([item['Total Forecast'] for item in q2_entries]), 2)
+    global_totals['q2', 'total_forecast_sr'] = round(sum([item['Total Forecast SR (20/21)'] for item in q2_entries]), 2)
+
+    global_totals['q3', 'rdel'] = round(sum([item['RDEL Total Forecast'] for item in q3_entries]), 2)
+    global_totals['q3', 'cdel'] = round(sum([item['CDEL Total Forecast'] for item in q3_entries]), 2)
+    global_totals['q3', 'non-gov'] = round(sum([item['Non-Gov Total Forecast'] for item in q3_entries]), 2)
+    global_totals['q3', 'total_forecast'] = round(sum([item['Total Forecast'] for item in q3_entries]), 2)
+    global_totals['q3', 'total_forecast_sr'] = round(sum([item['Total Forecast SR (20/21)'] for item in q3_entries]), 2)
+
+    global_totals['q4', 'rdel'] = round(sum([item['RDEL Total Forecast'] for item in q4_entries]), 2)
+    global_totals['q4', 'cdel'] = round(sum([item['CDEL Total Forecast'] for item in q4_entries]), 2)
+    global_totals['q4', 'non-gov'] = round(sum([item['Non-Gov Total Forecast'] for item in q4_entries]), 2)
+    global_totals['q4', 'total_forecast'] = round(sum([item['Total Forecast'] for item in q4_entries]), 2)
+    global_totals['q4', 'total_forecast_sr'] = round(sum([item['Total Forecast SR (20/21)'] for item in q4_entries]), 2)
+
+    return global_totals
+
+
 def _replace_underscore(name: str):
     return name.replace('/', '_')
 
@@ -49,7 +82,7 @@ def _create_chart(worksheet):
 
     xvalues = Reference(worksheet, min_col=1, min_row=3, max_row=6)
     picker = _color_gen()
-    for i in range(2, 6):
+    for i in range(2, 7):
         values = Reference(worksheet, min_col=i, min_row=2, max_row=6)
         series = Series(values, xvalues, title_from_data=True)
         series.smooth = True
@@ -165,6 +198,32 @@ def run(masters_repository_dir, output_path=None):
         project_totals = {q: copy.copy(pt) for q in range(1, 5) for pt in [project_totals]}
 
         _create_chart(ws)
+
+
+    tots = _calc_quarter_totals(global_totals)
+
+    ws = wb.create_sheet('Totals')
+    start_row = 1
+    ws.cell(row=start_row, column=1, value='Totals')
+    header = Row(2, start_row + 1, target_keys)
+    header.bind(ws)
+
+    for q in ["Q3", "Q4", "Q1", "Q2"]:
+        ws.cell(row=start_row + 2, column=1, value=q)
+        start_row += 1
+
+    q1s = [t[1] for t in iter(tots.items()) if t[0][0] == 'q1']
+    q2s = [t[1] for t in iter(tots.items()) if t[0][0] == 'q2']
+    q3s = [t[1] for t in iter(tots.items()) if t[0][0] == 'q3']
+    q4s = [t[1] for t in iter(tots.items()) if t[0][0] == 'q4']
+    start_row = 1
+    for i in [q3s, q4s, q1s, q2s]:
+        Row(2, start_row + 2, i).bind(ws)
+        start_row += 1
+
+    _create_chart(ws)
+
+
 
     if output_path:
         wb.save(os.path.join(output_path[0], 'financial_analysis.xlsx'))

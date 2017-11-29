@@ -105,33 +105,22 @@ def run(masters_repository_dir, output_path=None):
     # TODO - we need a function in here that gleans quarter from the filename
     # of the master
 
-    master_q1 = Master(q1, os.path.join(masters_repository_dir, 'compiled_master_2017-07-18_Q1 Apr - Jun 2017 FOR Q2 COMMISSION DO NOT CHANGE.xlsx'))
-    master_q2 = Master(q2, os.path.join(masters_repository_dir, '1718_Q2_master.xlsx'))
-    master_q3 = Master(q3, os.path.join(masters_repository_dir, 'compiled_master_2017-01-25_Q3 Oct  Dec 2016_FINAL.xlsx'))
-    master_q4 = Master(q4, os.path.join(masters_repository_dir, 'compiled master 2017-04-20 Q4 Jan – Mar 2017_FINAL_VERSION_DO_NOT_CHANGE.xlsx'))
-    target_keys = [
-        'RDEL Total Forecast',
-        'CDEL Total Forecast',
-        'Non-Gov Total Forecast',
-        'Total Forecast',
-        'Total Forecast SR (20/21)'
-    ]
+    master_q1 = Master(q1, os.path.join(masters_repository_dir, runtime_config['AnalyserFinancialAnalysis']['q1_master']))
+    master_q2 = Master(q2, os.path.join(masters_repository_dir, runtime_config['AnalyserFinancialAnalysis']['q2_master']))
+    master_q3 = Master(q3, os.path.join(masters_repository_dir, runtime_config['AnalyserFinancialAnalysis']['q3_master']))
+    master_q4 = Master(q4, os.path.join(masters_repository_dir, runtime_config['AnalyserFinancialAnalysis']['q4_master']))
+#   target_keys = [
+#       'RDEL Total Forecast',
+#       'CDEL Total Forecast',
+#       'Non-Gov Total Forecast',
+#       'Total Forecast',
+#       'Total Forecast SR (20/21)'
+#   ]
 
-    q3_keys = [
-        'Total forecast Whole Life Cost (RDEL) (GMPP - Total)',
-        'Total Forecast Whole Life Cost (CDEL) (GMPP - Total)',
-        'Total Forecast Whole Life Cost (Non-Gov) (GMPP - Total)',
-        'Total Forecast Whole Life Cost (GMPP - Total)',
-        'Total Cost up to 2020/21- Forecast'
-    ]
+    target_keys = runtime_config['AnalyserFinancialAnalysis']['target_keys'].split('\n')
 
-    q4_keys = [
-        'Total Forecast Whole Life Cost (RDEL) (GMPP - Total)',
-        'Total Forecast Whole Life Cost (CDEL) (GMPP - Total)',
-        'Total Forecast Whole Life Cost (Non-Gov) (GMPP - Total)',
-        'Total Forecast Whole Life Cost (GMPP - Total)',
-        'Total Cost up to 2020/21- Forecast'
-    ]
+    q3_keys = runtime_config['AnalyserFinancialAnalysis']['q3_target_keys'].split('\n')
+    q4_keys = runtime_config['AnalyserFinancialAnalysis']['q4_target_keys'].split('\n')
 
     # projects from latest master
     projects = master_q2.projects
@@ -235,4 +224,4 @@ def run(masters_repository_dir, output_path=None):
 
 
 if __name__ == '__main__':
-    run('/tmp/master_repo')
+    run(ROOT_PATH)

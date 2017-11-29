@@ -7,7 +7,6 @@ from openpyxl import load_workbook
 from ..analysers.financial import run as financial_run
 from ..analysers.utils import project_titles_in_master
 
-
 @pytest.fixture
 def master_repository(master, previous_quarter_master, tmpdir):
     with open(master, 'w') as f:
@@ -17,9 +16,9 @@ def master_repository(master, previous_quarter_master, tmpdir):
     return tmpdir.strpath
 
 
-def test_a1_cell(tmpdir, master):
+def test_a1_cell(tmpdir, master_repository):
     tmpdir = [tmpdir]
-    financial_run([master], output_path=tmpdir)
+    financial_run(master_repository, output_path=tmpdir)
     tmpdir = tmpdir[0]
     wb = load_workbook(tmpdir.join('financial_analysis.xlsx'))
     ws = wb.get_sheet_by_name('PROJECT_PROGRAMME NAME 1')

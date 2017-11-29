@@ -1,12 +1,11 @@
-import os
-
 import datetime
+import os
 import sys
 
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import Font, Alignment, Border, Side
-from openpyxl.styles.fills import PatternFill
 from openpyxl.styles.colors import Color
+from openpyxl.styles.fills import PatternFill
 
 from .utils import MASTER_XLSX, logger, get_number_of_projects, project_titles_in_master
 from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE, project_data_from_master
@@ -51,7 +50,6 @@ def process_master(source_wb, project_number, dca_map, diff: list):
     Function which is called on each cycle in main loop. Takes a master workbook
     and a project number as arguments. Creates a new workbook, populates it with
      the required data from the source_wb file passed in, formats it, then returns
-     import pdb; pdb.set_trace()  # XXX BREAKPOINT
      the workbook from the function, along with the project name which is used
      to name the file. d_map is a dict of DCA values for each project
     """

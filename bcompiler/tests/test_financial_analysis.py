@@ -1,11 +1,10 @@
 import os
 
 import pytest
-
 from openpyxl import load_workbook
 
 from ..analysers.financial import run as financial_run
-from ..analysers.utils import project_titles_in_master
+
 
 @pytest.fixture
 def master_repository(master, previous_quarter_master, tmpdir):

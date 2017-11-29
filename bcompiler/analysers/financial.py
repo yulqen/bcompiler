@@ -95,7 +95,6 @@ def _create_chart(worksheet):
 
 
 def run(masters_repository_dir, output_path=None):
-    wb = Workbook()
 
     q1 = Quarter(1, 2017)
     q2 = Quarter(2, 2017)
@@ -130,10 +129,6 @@ def run(masters_repository_dir, output_path=None):
     project_totals = {q: copy.copy(pt) for q in range(1, 5) for pt in [project_totals]}
     global_totals = {}
 
-
-    std = wb.get_sheet_by_name('Sheet')
-    wb.remove_sheet(std)
-
     def _update_total(keys: list, target_keys: list, data: list, quarter=None):
         keys, target_keys = target_keys, keys
 #       z = list(zip_longest(project_totals['1'].keys(), data)) # don't like the hardcode here in the key
@@ -148,15 +143,12 @@ def run(masters_repository_dir, output_path=None):
 
     # set up sheets
     for p in projects:
-        try:
-            ws = wb.create_sheet(_replace_underscore(p))
-            start_row = 1
-        except AttributeError:
-            continue
-        else:
-            ws.cell(row=start_row, column=1, value=p)
-            header = Row(2, start_row + 1, target_keys)
-            header.bind(ws)
+        wb = Workbook()
+        ws = wb.active
+        start_row = 1
+        ws.cell(row=start_row, column=1, value=p)
+        header = Row(2, start_row + 1, target_keys)
+        header.bind(ws)
 
         for m in [master_q3, master_q4, master_q1, master_q2]:
             try:
@@ -188,10 +180,20 @@ def run(masters_repository_dir, output_path=None):
 
         _create_chart(ws)
 
+        if output_path:
+            wb.save(os.path.join(output_path[0], f'{p}_FINANCIAL_ANALYSIS.xlsx'))
+            logger.info(f"Saved {p}_FINANCIAL_ANALYSIS.xlsx to {output_path}")
+        else:
+            output_path = os.path.join(ROOT_PATH, 'output')
+            wb.save(os.path.join(output_path, f'{p}_FINANCIAL_ANALYSIS.xlsx'))
+            logger.info(f"Saved {p}_FINANCIAL_ANALYSIS.xlsx to {output_path}")
+            output_path = None
+
 
     tots = _calc_quarter_totals(global_totals)
 
-    ws = wb.create_sheet('Totals')
+    wb = Workbook()
+    ws = wb.active
     start_row = 1
     ws.cell(row=start_row, column=1, value='Totals')
     header = Row(2, start_row + 1, target_keys)
@@ -212,15 +214,16 @@ def run(masters_repository_dir, output_path=None):
 
     _create_chart(ws)
 
-
-
     if output_path:
-        wb.save(os.path.join(output_path[0], 'financial_analysis.xlsx'))
-        logger.info(f"Saved financial_analysis.xlsx to {output_path}")
+        wb.save(os.path.join(output_path[0], f'TOTAL_FINANCIAL_ANALYSIS.xlsx'))
+        logger.info(f"Saved TOTAL_FINANCIAL_ANALYSIS.xlsx to {output_path}")
     else:
         output_path = os.path.join(ROOT_PATH, 'output')
-        wb.save(os.path.join(output_path, 'financial_analysis.xlsx'))
-        logger.info(f"Saved financial_analysis.xlsx to {output_path}")
+        wb.save(os.path.join(output_path, f'TOTAL_FINANCIAL_ANALYSIS.xlsx'))
+        logger.info(f"Saved TOTAL_FINANCIAL_ANALYSIS.xlsx to {output_path}")
+        output_path = None
+
+
 
 
 if __name__ == '__main__':

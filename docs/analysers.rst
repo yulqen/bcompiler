@@ -64,6 +64,24 @@ Importing analyser code into your own projects
 Built-in Analysers
 ^^^^^^^^^^^^^^^^^^
 
+financial analysis
+++++++++++++++++++
+
+Output a workbook containing a single worksheet which includes a graph mapping change in certain financial data from designated quarters.
+**Must** include **four** quarters, named correctly in ``config.ini`` file.
+
+.. topic:: Default
+    ``>> bcompiler --analyser financial``
+
+    Default options require master files to be referenced in ``config.ini`` file and present in ``Documents/bcompiler`` directory.
+    A single workbook for each project is output to the ``Documents/bcompiler`` directory.
+
+.. topic::  Output files to a different directory
+    ``>> bcompiler --analyser financial --output C:\Users\jim\Desktop``
+
+    This options requires the master files to be present in the ``Documents/bcompiler`` directory, and referenced in the ``config.ini`` file.
+    The data is output to the directory specified after the ``--output`` flag, in this case ``C:\Users\jim\Desktop``.
+
 keyword
 +++++++
 

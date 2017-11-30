@@ -1840,6 +1840,8 @@ def master_with_quarter_year_in_filename():
     milestones_regex5 = re.compile(r'(Assurance MM4 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM4 (?!Notes).+$)(?!Milestone Type)(?!Type)(?!DCA)')
     milestones_regex6 = re.compile(r'(Assurance MM5 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM5 (?!Notes).+$)(?!Milestone Type)(?!Type)(?!DCA)')
 
+    milestones_regex7 = re.compile(r'Project MM\d+ Forecast - Actual')
+
     wb = Workbook()
     output_file = "/".join([OUTPUT_DIR, 'previous_quarter_master_1_2017.xlsx'])
     ws = wb.active
@@ -1912,6 +1914,11 @@ def master_with_quarter_year_in_filename():
                 ws[f"B{str(item[0])}"] = date(2012, 1, 1)
                 ws[f"C{str(item[0])}"] = date(2012, 1, 1)
                 ws[f"D{str(item[0])}"] = date(2012, 1, 1)
+            elif milestones_regex7.match(item[1]):
+                ws[f"B{str(item[0])}"] = date(2013, 1, 1)
+                ws[f"C{str(item[0])}"] = date(2013, 1, 1)
+                ws[f"D{str(item[0])}"] = date(2013, 1, 1)
+
 
             else:
                 ws[f"B{str(item[0])}"] = " ".join([ix.upper(), "1"])

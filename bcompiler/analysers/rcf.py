@@ -18,7 +18,7 @@ cells_we_want_to_capture = ['Reporting period (GMPP - Snapshot Date)',
                             'Approval MM1 Forecast / Actual',
                             'Approval MM3',
                             'Approval MM3 Forecast / Actual',
-                            'Approval MM10'
+                            'Approval MM10',
                             'Approval MM10 Forecast / Actual',
                             'Project MM18',
                             'Project MM18 Forecast - Actual',
@@ -70,6 +70,10 @@ def _insert_gaps(lst: list, indices: list) -> list:
     return lst
 
 
+def _replace_underscore(name: str):
+    return name.replace('/', '_')
+
+
 def run(master_repository):
     wb = Workbook()
     ws = wb.active
@@ -80,7 +84,6 @@ def run(master_repository):
         h_keys = _main_keys(d)
 
         # then take a project at a time
-        import pdb; pdb.set_trace()  # XXX BREAKPOINT
         for proj in h_keys:
             h_row = _headers(proj, d)
             _insert_gaps(h_row, [3, 6, 9, 12, 15, 18, 21])
@@ -89,7 +92,20 @@ def run(master_repository):
             d_row = []
             for x in _vals(proj, d):
                 d_row.append(x)
+
+            # make spaces in the row
             _insert_gaps(d_row, [3, 6, 9, 12, 15, 18, 21])
+
+            # inject the calculations
             _inject(d_row, operator.sub, 3, 2, 11)
+            _inject(d_row, operator.sub, 6, 5, 11)
+            _inject(d_row, operator.sub, 9, 8, 5)
+            _inject(d_row, operator.sub, 15, 14, 8)
+            _inject(d_row, operator.sub, 18, 17, 15)
+            _inject(d_row, operator.sub, 21, 20, 17)
+
             Row(2, 3, d_row).bind(ws)
-            wb.save('/tmp/testes.xlsx')
+            proj = ''.join([proj, ' ', str(d[0])])
+            proj = _replace_underscore(proj)
+            proj = proj.replace(' ', '_')
+            wb.save(master_repository.join(f'{proj}_RCF.xlsx'))

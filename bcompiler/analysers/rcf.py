@@ -2,6 +2,7 @@
 """
 Analyser to do Reference Class Forecasting on master documents.
 """
+import operator
 
 from typing import List, Tuple, Dict
 
@@ -58,8 +59,18 @@ def _vals(p_name: str, dictionary):
     return [x[1] for x in dictionary[1][p_name]]
 
 
+def _inject(lst: list, op, place: int, idxa: int, idxb: int) -> list:
+    lst[place] = op(lst[idxa], lst[idxb])
+    return lst
+
+
+def _insert_gaps(lst: list, indices: list) -> list:
+    for x in indices:
+        lst.insert(x, None)
+    return lst
+
+
 def run(master_repository):
-    import pdb; pdb.set_trace()  # XXX BREAKPOINT
     wb = Workbook()
     ws = wb.active
     for f in master_repository.listdir():
@@ -69,11 +80,16 @@ def run(master_repository):
         h_keys = _main_keys(d)
 
         # then take a project at a time
+        import pdb; pdb.set_trace()  # XXX BREAKPOINT
         for proj in h_keys:
+            h_row = _headers(proj, d)
+            _insert_gaps(h_row, [3, 6, 9, 12, 15, 18, 21])
+            Row(2, 2, h_row).bind(ws)
+
             d_row = []
-            Row(2, 2, _headers(proj, d)).bind(ws)
-            d_row.append(str(d[0]))
             for x in _vals(proj, d):
                 d_row.append(x)
-            Row(1, 3, d_row).bind(ws)
+            _insert_gaps(d_row, [3, 6, 9, 12, 15, 18, 21])
+            _inject(d_row, operator.sub, 3, 2, 11)
+            Row(2, 3, d_row).bind(ws)
             wb.save('/tmp/testes.xlsx')

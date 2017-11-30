@@ -1820,3 +1820,119 @@ def master_one_extra_proj():
                 ws[f"E{str(item[0])}"] = " ".join([ix.upper(), "4"])
     wb.save(output_file)
     return output_file
+
+
+@pytest.fixture(scope='session')
+def master_with_quarter_year_in_filename():
+    """
+    This is a replica of the master() fixture above, but we're chanching the
+    name of the output file to be of the form master_1_2017.xlsx, as this
+    is what the financial analyser is going to need.
+
+    :return: output_file
+    """
+    # regexes
+    r'(Assurance MM1 .+$|Approval MM1 .+$)'
+    milestones_regex1 = re.compile(r'(Assurance MM1 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM1 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$)')
+    milestones_regex2 = re.compile(r'(Assurance MM2 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM2 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$)')
+    milestones_regex3 = re.compile(r'(Assurance MM\d+ (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM\d+ (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$)')
+    milestones_regex4 = re.compile(r'(Assurance MM3 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM3 (?!Notes).+$)(?!Milestone Type)(?!Type)(?!DCA)')
+    milestones_regex5 = re.compile(r'(Assurance MM4 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM4 (?!Notes).+$)(?!Milestone Type)(?!Type)(?!DCA)')
+    milestones_regex6 = re.compile(r'(Assurance MM5 (?!Notes)(?!Milestone Type)(?!Type)(?!DCA).+$|Approval MM5 (?!Notes).+$)(?!Milestone Type)(?!Type)(?!DCA)')
+
+    wb = Workbook()
+    output_file = "/".join([OUTPUT_DIR, 'previous_quarter_master_1_2017.xlsx'])
+    ws = wb.active
+    ws.title = "Previous Master for Testing"
+    for item in enumerate(real_datamap_data.split('\n')):
+        if not item[0] == 0 and not item[1] == "":
+            g = split_datamap_line(item)
+            next(g)
+            ix = next(g).split(',')[0]
+            ws[f"A{str(item[0])}"] = ix
+            if item[1].startswith('Date'):  # testing for date objects
+                ws[f"B{str(item[0])}"] = date(2017, 6, 20)
+                ws[f"C{str(item[0])}"] = date(2017, 6, 20)
+                ws[f"D{str(item[0])}"] = date(2017, 6, 20)
+            elif item[1].startswith('SRO Tenure'):  # testing for date objects
+                ws[f"B{str(item[0])}"] = date(2017, 8, 10)
+                ws[f"C{str(item[0])}"] = date(2017, 8, 10)
+                ws[f"D{str(item[0])}"] = date(2017, 8, 10)
+            elif item[1].startswith('Total Forecast'):
+                ws[f"B{str(item[0])}"] = 32.3333
+                ws[f"C{str(item[0])}"] = 35.2322
+                ws[f"D{str(item[0])}"] = 23.2
+            elif item[1].startswith('BICC approval point'):
+                ws[f"B{str(item[0])}"] = "Strategic Outline Case"
+                ws[f"C{str(item[0])}"] = "Outline Business Case"
+                ws[f"D{str(item[0])}"] = "Full Business Case"
+            elif item[1].startswith('Project MM20 Forecast - Actual'):
+                ws[f"B{str(item[0])}"] = datetime(2016, 1, 1)
+                ws[f"C{str(item[0])}"] = datetime(2016, 1, 1)
+                ws[f"D{str(item[0])}"] = datetime(2016, 1, 1)
+            elif item[1].startswith('Departmental DCA'):
+                ws[f"B{str(item[0])}"] = "Amber"
+                ws[f"C{str(item[0])}"] = "Red"
+                ws[f"D{str(item[0])}"] = "Green"
+            elif item[1].startswith('SRO Finance confidence'):
+                ws[f"B{str(item[0])}"] = "Amber/Red"
+                ws[f"C{str(item[0])}"] = "Amber/Red"
+                ws[f"D{str(item[0])}"] = "Amber"
+            elif item[1].startswith('SRO Benefits RAG'):
+                ws[f"B{str(item[0])}"] = "Red"
+                ws[f"C{str(item[0])}"] = "Green"
+                ws[f"D{str(item[0])}"] = "Amber/Green"
+
+
+            # Here we are starting a block of dates. We need these to be able to test
+            # the default swimlane_milstones analyser
+            # we're giving these ones some variety so they can be tested as the default
+            # swimlane_milestones analyser
+            elif milestones_regex1.match(item[1]):
+                ws[f"B{str(item[0])}"] = date(2015, 1, 1)
+                ws[f"C{str(item[0])}"] = date(2015, 1, 1)
+                ws[f"D{str(item[0])}"] = date(2015, 1, 1)
+            elif milestones_regex2.match(item[1]):
+                ws[f"B{str(item[0])}"] = date(2019, 1, 1)
+                ws[f"C{str(item[0])}"] = date(2019, 1, 1)
+                ws[f"D{str(item[0])}"] = date(2019, 1, 1)
+            elif milestones_regex3.match(item[1]):
+                ws[f"B{str(item[0])}"] = date(2020, 1, 1)
+                ws[f"C{str(item[0])}"] = date(2020, 1, 1)
+                ws[f"D{str(item[0])}"] = date(2020, 1, 1)
+            elif milestones_regex4.match(item[1]):
+                ws[f"B{str(item[0])}"] = date(2018, 1, 1)
+                ws[f"C{str(item[0])}"] = date(2018, 1, 1)
+                ws[f"D{str(item[0])}"] = date(2018, 1, 1)
+            elif milestones_regex5.match(item[1]):
+                ws[f"B{str(item[0])}"] = date(2019, 1, 1)
+                ws[f"C{str(item[0])}"] = date(2019, 1, 1)
+                ws[f"D{str(item[0])}"] = date(2019, 1, 1)
+            elif milestones_regex6.match(item[1]):
+                ws[f"B{str(item[0])}"] = date(2012, 1, 1)
+                ws[f"C{str(item[0])}"] = date(2012, 1, 1)
+                ws[f"D{str(item[0])}"] = date(2012, 1, 1)
+
+            else:
+                ws[f"B{str(item[0])}"] = " ".join([ix.upper(), "1"])
+                ws[f"C{str(item[0])}"] = " ".join([ix.upper(), "2"])
+                ws[f"D{str(item[0])}"] = " ".join([ix.upper(), "3"])
+
+    # FOR COMPARISON TESTS
+
+    # here we amend the three string cells...
+    ws['B11'].value = ' '.join([ws['B11'].value, 'AMENDED'])
+    ws['C11'].value = ' '.join([ws['B11'].value, 'AMENDED'])
+    ws['D11'].value = ' '.join([ws['B11'].value, 'AMENDED'])
+
+    # here we amend a single date cells...
+    # this is for "SRO Tenure Start Date"
+    ws['B13'].value = date(2017, 3, 1)
+
+    # now setting an later date for "SRO Tenure End Date"
+    # also now for PROJECT/PROGRAMME NAME 2
+    ws['C14'].value = date(2019, 6, 6)
+
+
+    wb.save(output_file)
+    return output_file

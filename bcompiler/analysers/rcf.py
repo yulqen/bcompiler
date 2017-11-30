@@ -54,12 +54,26 @@ def _headers(p_name: str, dictionary):
     return [x[0] for x in dictionary[1][p_name]]
 
 
+def _vals(p_name: str, dictionary):
+    return [x[1] for x in dictionary[1][p_name]]
+
+
 def run(master_repository):
     import pdb; pdb.set_trace()  # XXX BREAKPOINT
     wb = Workbook()
     ws = wb.active
     for f in master_repository.listdir():
         d = create_rcf_output(f)
+
+        # create a header row first off
         h_keys = _main_keys(d)
-        Row(1, 1, _headers(h_keys[0], d)).bind(ws)
-    wb.save('/tmp/testes.xlsx')
+
+        # then take a project at a time
+        for proj in h_keys:
+            d_row = []
+            Row(2, 2, _headers(proj, d)).bind(ws)
+            d_row.append(str(d[0]))
+            for x in _vals(proj, d):
+                d_row.append(x)
+            Row(1, 3, d_row).bind(ws)
+            wb.save('/tmp/testes.xlsx')

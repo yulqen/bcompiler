@@ -3,15 +3,21 @@
 Analyser to do Reference Class Forecasting on master documents.
 """
 import operator
+import os
+import logging
+import re
 
 from typing import List, Tuple, Dict
 
-from pathlib import PurePath
+from pathlib import PurePath, Path
 from openpyxl import load_workbook, Workbook
 
 from ..utils import project_data_from_master
 from ..core import Quarter, Master, Row
 
+logger = logging.getLogger('bcompiler.compiler')
+
+target_master_fn = re.compile(r'^.+_\d{4}.xlsx')
 
 cells_we_want_to_capture = ['Reporting period (GMPP - Snapshot Date)',
                             'Approval MM1',
@@ -30,12 +36,12 @@ cells_we_want_to_capture = ['Reporting period (GMPP - Snapshot Date)',
                             'Project MM21 Forecast - Actual']
 
 
-def _process_masters(path: PurePath) -> Tuple[Quarter, Dict[str, Tuple]]:
+def _process_masters(path: str) -> Tuple[Quarter, Dict[str, Tuple]]:
     hold = {}
-    year = path.strpath[-9:][:4]
-    quarter = path.strpath[-11]
+    year = path[-9:][:4]
+    quarter = path[-11]
     q = Quarter(int(quarter), int(year))
-    m = Master(q, path.strpath)
+    m = Master(q, path)
     for p in m.projects:
         pd = m[p]
         hold[p] = pd.pull_keys(cells_we_want_to_capture)
@@ -43,7 +49,7 @@ def _process_masters(path: PurePath) -> Tuple[Quarter, Dict[str, Tuple]]:
 
 
 
-def create_rcf_output(path: PurePath):
+def create_rcf_output(path: str):
     return _process_masters(path)
 
 
@@ -60,7 +66,11 @@ def _vals(p_name: str, dictionary):
 
 
 def _inject(lst: list, op, place: int, idxa: int, idxb: int) -> list:
-    lst[place] = op(lst[idxa], lst[idxb])
+    try:
+        lst[place] = op(lst[idxa], lst[idxb])
+    except TypeError:
+        logger.warning(f'Can\'t calculate difference between {lst[idxa]} and {lst[idxb]}')
+        return
     return lst
 
 
@@ -74,11 +84,15 @@ def _replace_underscore(name: str):
     return name.replace('/', '_')
 
 
-def run(master_repository):
+def run(master_repository: str):
     wb = Workbook()
     ws = wb.active
-    for f in master_repository.listdir():
-        d = create_rcf_output(f)
+    for f in os.listdir(master_repository):
+        if re.match(target_master_fn, f):
+            d = create_rcf_output(os.path.join(master_repository, f))
+        else:
+            logger.warning(f"File {f} not a correct target for this analyser")
+            continue
 
         # create a header row first off
         h_keys = _main_keys(d)
@@ -108,4 +122,9 @@ def run(master_repository):
             proj = ''.join([proj, ' ', str(d[0])])
             proj = _replace_underscore(proj)
             proj = proj.replace(' ', '_')
-            wb.save(master_repository.join(f'{proj}_RCF.xlsx'))
+            wb.save(os.path.join(master_repository, f'{proj}_RCF.xlsx'))
+            logger.info(f"Saving {proj}_RCF.xlsx to {master_repository}")
+
+
+if __name__ == '__main__':
+    run('/tmp/master_repo')

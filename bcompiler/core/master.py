@@ -1,8 +1,8 @@
 import unicodedata
+from pathlib import PurePath
+from typing import List, Tuple, Iterable
 
 from ..utils import project_data_from_master
-from pathlib import Path
-from typing import List, Tuple, Iterable
 
 
 class ProjectData:
@@ -55,9 +55,9 @@ class Master:
     """
     Master class.
     """
-    def __init__(self, quarter, path: Path):
+    def __init__(self, quarter, path: PurePath):
         self._quarter = quarter
-        self.path = Path(path)
+        self.path = PurePath(path)
         self._data = project_data_from_master(self.path)
         self._project_titles = [item for item in self.data.keys()]
         self.year = self._quarter.year

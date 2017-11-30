@@ -1,14 +1,14 @@
+from itertools import zip_longest
+from pathlib import PurePath
+
 import copy
 import os
-import unicodedata
+from openpyxl import Workbook
+from openpyxl.chart import ScatterChart, Reference, Series
+from openpyxl.drawing.line import LineProperties
 
 from bcompiler.core import Quarter, Master, Row
 from ..utils import logger, ROOT_PATH, CONFIG_FILE, runtime_config
-from itertools import zip_longest
-
-from openpyxl.chart import ScatterChart, Reference, Series
-from openpyxl import Workbook
-from openpyxl.drawing.line import LineProperties
 
 runtime_config.read(CONFIG_FILE)
 
@@ -104,17 +104,17 @@ def run(masters_repository_dir, output_path=None):
     # TODO - we need a function in here that gleans quarter from the filename
     # of the master
 
-    master_q1 = Master(q1, os.path.join(masters_repository_dir, runtime_config['AnalyserFinancialAnalysis']['q1_master']))
-    master_q2 = Master(q2, os.path.join(masters_repository_dir, runtime_config['AnalyserFinancialAnalysis']['q2_master']))
-    master_q3 = Master(q3, os.path.join(masters_repository_dir, runtime_config['AnalyserFinancialAnalysis']['q3_master']))
-    master_q4 = Master(q4, os.path.join(masters_repository_dir, runtime_config['AnalyserFinancialAnalysis']['q4_master']))
-#   target_keys = [
-#       'RDEL Total Forecast',
-#       'CDEL Total Forecast',
-#       'Non-Gov Total Forecast',
-#       'Total Forecast',
-#       'Total Forecast SR (20/21)'
-#   ]
+    master_repo_path = PurePath(masters_repository_dir)
+
+    q1_path = PurePath(runtime_config['AnalyserFinancialAnalysis']['q1_master'])
+    q2_path = PurePath(runtime_config['AnalyserFinancialAnalysis']['q2_master'])
+    q3_path = PurePath(runtime_config['AnalyserFinancialAnalysis']['q3_master'])
+    q4_path = PurePath(runtime_config['AnalyserFinancialAnalysis']['q4_master'])
+
+    master_q1 = Master(q1, master_repo_path / q1_path)
+    master_q2 = Master(q2, master_repo_path / q2_path)
+    master_q3 = Master(q3, master_repo_path / q3_path)
+    master_q4 = Master(q4, master_repo_path / q4_path)
 
     target_keys = runtime_config['AnalyserFinancialAnalysis']['target_keys'].split('\n')
 
@@ -131,7 +131,6 @@ def run(masters_repository_dir, output_path=None):
 
     def _update_total(keys: list, target_keys: list, data: list, quarter=None):
         keys, target_keys = target_keys, keys
-#       z = list(zip_longest(project_totals['1'].keys(), data)) # don't like the hardcode here in the key
         z = list(zip_longest(keys, data))
         for t in z:
             try:
@@ -139,10 +138,8 @@ def run(masters_repository_dir, output_path=None):
             except TypeError:
                 pass
 
-
-
     # set up sheets
-    for p in projects:
+    for p in  projects:
         wb = Workbook()
         ws = wb.active
         start_row = 1

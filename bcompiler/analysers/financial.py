@@ -78,7 +78,7 @@ def _create_chart(worksheet):
     chart.legend = None
     chart.x_axis.majorUnit = 0.5
     chart.x_axis.minorGridlines = None
-#   chart.y_axis.majorUnit = 200
+    #   chart.y_axis.majorUnit = 200
 
     xvalues = Reference(worksheet, min_col=1, min_row=3, max_row=6)
     picker = _color_gen()
@@ -87,24 +87,24 @@ def _create_chart(worksheet):
         series = Series(values, xvalues, title_from_data=True)
         series.smooth = True
         series.marker.symbol = "circle"
-        lineProp = LineProperties(solidFill=next(picker))
-        series.graphicalProperties.line = lineProp
+        line_prop = LineProperties(solidFill=next(picker))
+        series.graphicalProperties.line = line_prop
         chart.series.append(series)
     worksheet.add_chart(chart, "G1")
     return worksheet
 
 
-def run(masters_repository_dir, output_path=None):
+def run(output_path=None):
+    q1 = Quarter(int(runtime_config['AnalyserFinancialAnalysis']['q1'].split()[0]),
+                 int(runtime_config['AnalyserFinancialAnalysis']['q1'].split()[1]))
+    q2 = Quarter(int(runtime_config['AnalyserFinancialAnalysis']['q2'].split()[0]),
+                 int(runtime_config['AnalyserFinancialAnalysis']['q2'].split()[1]))
+    q3 = Quarter(int(runtime_config['AnalyserFinancialAnalysis']['q3'].split()[0]),
+                 int(runtime_config['AnalyserFinancialAnalysis']['q3'].split()[1]))
+    q4 = Quarter(int(runtime_config['AnalyserFinancialAnalysis']['q4'].split()[0]),
+                 int(runtime_config['AnalyserFinancialAnalysis']['q4'].split()[1]))
 
-    q1 = Quarter(1, 2017)
-    q2 = Quarter(2, 2017)
-    q3 = Quarter(3, 2016)
-    q4 = Quarter(4, 2016)
-
-    # TODO - we need a function in here that gleans quarter from the filename
-    # of the master
-
-    master_repo_path = PurePath(masters_repository_dir)
+    master_repo_path = PurePath(ROOT_PATH)
 
     q1_path = PurePath(runtime_config['AnalyserFinancialAnalysis']['q1_master'])
     q2_path = PurePath(runtime_config['AnalyserFinancialAnalysis']['q2_master'])
@@ -129,8 +129,8 @@ def run(masters_repository_dir, output_path=None):
     project_totals = {q: copy.copy(pt) for q in range(1, 5) for pt in [project_totals]}
     global_totals = {}
 
-    def _update_total(keys: list, target_keys: list, data: list, quarter=None):
-        keys, target_keys = target_keys, keys
+    def _update_total(keys: list, inner_target_keys: list, data: list, quarter=None):
+        keys, inner_target_keys = inner_target_keys, keys
         z = list(zip_longest(keys, data))
         for t in z:
             try:
@@ -139,7 +139,7 @@ def run(masters_repository_dir, output_path=None):
                 pass
 
     # set up sheets
-    for p in  projects:
+    for p in projects:
         wb = Workbook()
         ws = wb.active
         start_row = 1
@@ -151,7 +151,7 @@ def run(masters_repository_dir, output_path=None):
             try:
                 p_data = m[p]
             except KeyError:
-                logger.warning(f"Cannot find {p}")
+                logger.warning(f"Cannot find {p} in {m.quarter}")
                 continue
             if m.quarter.quarter == 1:
                 d = p_data.pull_keys(target_keys, flat=True)
@@ -186,7 +186,6 @@ def run(masters_repository_dir, output_path=None):
             logger.info(f"Saved {p}_FINANCIAL_ANALYSIS.xlsx to {output_path}")
             output_path = None
 
-
     tots = _calc_quarter_totals(global_totals)
 
     wb = Workbook()
@@ -219,8 +218,6 @@ def run(masters_repository_dir, output_path=None):
         wb.save(os.path.join(output_path, f'TOTAL_FINANCIAL_ANALYSIS.xlsx'))
         logger.info(f"Saved TOTAL_FINANCIAL_ANALYSIS.xlsx to {output_path}")
         output_path = None
-
-
 
 
 if __name__ == '__main__':

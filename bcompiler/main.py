@@ -447,7 +447,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
                 continue
             try:
-                if re.match(r'(\d+/\d+/\d+)', test_ptarget_keysroj_data[item.cell_key]):
+                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
                     ws_fb[item.cell_reference].value = test_proj_data[item.cell_key]
                     ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
             except TypeError:

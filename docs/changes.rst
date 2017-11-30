@@ -1,6 +1,11 @@
 Changes
 ~~~~~~~
 
+v1.3.7
+######
+
+* new financial analysis analyser
+
 v1.3.6
 ######
 
@@ -27,7 +32,6 @@ v1.3.3
 * new swimlane assurance milestones analyser
 * annex analyser now does comparison with previous master document
 * fix issues in annex analyser
-*  
 
 v1.3.2
 ######

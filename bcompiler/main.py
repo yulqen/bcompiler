@@ -21,19 +21,24 @@ IN THE SOFTWARE. """
 import argparse
 import datetime
 import logging
-import os
-import re
 import sys
 import textwrap
 from typing import Dict, List
 
 import colorlog
+import os
+import re
 from openpyxl import load_workbook
 from openpyxl.styles import Protection
 from openpyxl.worksheet.datavalidation import DataValidation
 
 import bcompiler.compile as compile_returns
 from bcompiler import __version__
+from bcompiler.analysers import annex_run
+from bcompiler.analysers import financial_analyser_run
+from bcompiler.analysers import keyword_run
+from bcompiler.analysers import swimlane_assurance_run
+from bcompiler.analysers import swimlane_run
 from bcompiler.process import Cleanser
 from bcompiler.process.datamap import Datamap
 from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
@@ -43,13 +48,8 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              working_directory, SHEETS, CURRENT_QUARTER,
                              row_data_formatter,
                              BLANK_TEMPLATE_FN, project_data_from_master)
-from bcompiler.utils import runtime_config as config
 from bcompiler.utils import directory_has_returns_check
-
-from bcompiler.analysers import swimlane_run
-from bcompiler.analysers import swimlane_assurance_run
-from bcompiler.analysers import annex_run
-from bcompiler.analysers import keyword_run
+from bcompiler.utils import runtime_config as config
 
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
@@ -447,7 +447,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
                 ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
                 continue
             try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
+                if re.match(r'(\d+/\d+/\d+)', test_ptarget_keysroj_data[item.cell_key]):
                     ws_fb[item.cell_reference].value = test_proj_data[item.cell_key]
                     ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
             except TypeError:
@@ -660,6 +660,10 @@ def main():
 
         if 'keyword' in args['analyser']:
             keyword_args(args, keyword_run)
+            return
+
+        if 'financial' in args['analyser']:
+            analyser_args(args, financial_analyser_run)
             return
 
     if args['count-rows']:

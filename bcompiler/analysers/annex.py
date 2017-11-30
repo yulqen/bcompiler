@@ -1,12 +1,11 @@
-import os
-
 import datetime
+import os
 import sys
 
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import Font, Alignment, Border, Side
-from openpyxl.styles.fills import PatternFill
 from openpyxl.styles.colors import Color
+from openpyxl.styles.fills import PatternFill
 
 from .utils import MASTER_XLSX, logger, get_number_of_projects, project_titles_in_master
 from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE, project_data_from_master

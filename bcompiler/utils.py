@@ -227,6 +227,11 @@ def project_data_from_master(master_file: str, opened_wb=False):
                     p_dict[project_name][val] = d_value
                 else:
                     p_dict[project_name][val] = cell.value
+    # remove any "None" projects that were pulled from the master
+    try:
+        del p_dict[None]
+    except KeyError:
+        pass
     return p_dict
 
 

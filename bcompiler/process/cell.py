@@ -15,15 +15,23 @@ class Cell:
                  bg_colour: Union[str, None],
                  fg_colour: Union[str, None],
                  number_format: Union[str, None],
-                 verification_list: Union[str, None]) -> None:
+                 verification_list: Union[str, None],
+                 r_idx: int=None,
+                 c_idx: int=None
+                 ) -> None:
+        if cell_value:
+            self.cell_value = cell_value
+        else:
+            self.cell_value = None
         self.cell_key = cell_key
-        self.cell_value = None  # type: Any
         self.cell_reference = cell_reference
         self.template_sheet = template_sheet
         self.bg_colour = bg_colour
         self.fg_colour = fg_colour
         self.number_format = number_format
         self.verification_list = verification_list
+        self.r_idx = r_idx
+        self.c_idx = c_idx
 
     def __repr__(self) -> str:
         return ("<Cell: cell_key: {} cell_value: {} cell_reference: {} "

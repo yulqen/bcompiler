@@ -9,3 +9,4 @@ def test_rcf(master_with_quarter_year_in_filename, tmpdir):
     wb = load_workbook(tmpdir.join('PROJECT_PROGRAMME_NAME_1_Q1_17_18_RCF.xlsx'))
     ws = wb.active
     assert ws['B2'].value == "Reporting period (GMPP - Snapshot Date)"
+    assert ws['C2'].value == "Approval MM1"

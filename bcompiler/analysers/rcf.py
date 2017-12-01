@@ -3,15 +3,18 @@
 Analyser to do Reference Class Forecasting on master documents.
 """
 import operator
+import datetime
 import os
 import logging
 import re
 
 from typing import List, Tuple, Dict
 
+from collections import namedtuple
 from pathlib import PurePath, Path
 from openpyxl import load_workbook, Workbook
 
+from ..process.cleansers import DATE_REGEX
 from ..utils import project_data_from_master
 from ..core import Quarter, Master, Row
 
@@ -66,10 +69,29 @@ def _vals(p_name: str, dictionary):
 
 
 def _inject(lst: list, op, place: int, idxa: int, idxb: int) -> list:
+    if not isinstance(lst[idxa], datetime.date) and isinstance(lst[idxa], str):
+        if re.match(DATE_REGEX, lst[idxa]):
+            try:
+                ds = lst[idxa].split('-')
+                ds = datetime.date(int(ds[0]), int(ds[1]), int(ds[2]))
+            except (TypeError, AttributeError):
+                logger.warning(f'{lst[idxa]} is not a date so no calculation.')
+                return
+        else:
+            return
+    if not isinstance(lst[idxb], datetime.date) and isinstance(lst[idxa], str):
+        if re.match(DATE_REGEX, lst[idxb]):
+            try:
+                ds = lst[idxb].split('-')
+                ds = datetime.date(int(ds[0]), int(ds[1]), int(ds[2]))
+            except (TypeError, AttributeError):
+                logger.warning(f'{lst[idxb]} is not a date so no calculation.')
+                return
+        else:
+            return
     try:
         lst[place] = op(lst[idxa], lst[idxb])
     except TypeError:
-        logger.warning(f'Can\'t calculate difference between {lst[idxa]} and {lst[idxb]}')
         return
     return lst
 
@@ -93,9 +115,11 @@ def _get_master_files_and_order_them(path: str):
     return m
 
 
+QueuedWorkbook = namedtuple('QueuedWorkbook', ['project_name', 'file_title', 'workbook'])
+
+
 def run(master_repository: str):
-    wb = Workbook()
-    ws = wb.active
+    file_queue = []
     mxs = _get_master_files_and_order_them(master_repository)
     for start_row, f in list(enumerate(mxs, start=2)):
         d = create_rcf_output(os.path.join(master_repository, f))
@@ -103,6 +127,17 @@ def run(master_repository: str):
         project_titles = _main_keys(d)
         # then take a project at a time
         for proj in project_titles:
+            if len(file_queue) > 0:
+                for t in file_queue:
+                    if proj == t.project_name:
+                        wb = t.workbook
+                        ws = wb.active
+                    else:
+                        wb = Workbook()
+                        ws = wb.active
+            else:
+                wb = Workbook()
+                ws = wb.active
             h_row = _headers(proj, d)
             _insert_gaps(h_row, [3, 6, 9, 12, 15, 18, 21])
             Row(2, 2, h_row).bind(ws)
@@ -126,9 +161,11 @@ def run(master_repository: str):
             proj = ''.join([proj, ' ', str(d[0])])
             proj = _replace_underscore(proj)
             proj = proj.replace(' ', '_')
-            logger.info(f"Saving {proj}_RCF.xlsx to {master_repository}")
+            f_title = f"{proj}_RCF.xlsx"
+            file_queue.append(QueuedWorkbook(proj, f_title, wb))
 
-        wb.save(os.path.join(master_repository, f'{proj}_RCF.xlsx'))
+#       logger.info(f"Saving {proj}_RCF.xlsx to {master_repository}")
+#       wb.save(os.path.join(master_repository, f'{proj}_RCF.xlsx'))
 
 if __name__ == '__main__':
     run('/tmp/master_repo')

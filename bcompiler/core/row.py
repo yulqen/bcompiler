@@ -1,4 +1,5 @@
 import string
+import datetime
 
 from ..process.cell import Cell
 
@@ -58,7 +59,11 @@ class Row:
                 )
             )
         for c in self._cell_map:
-            self._ws.cell(row=c.r_idx, column=c.c_idx, value=c.cell_value)
+            if not isinstance(c.cell_value, datetime.date) and not None:
+                self._ws.cell(row=c.r_idx, column=c.c_idx, value=c.cell_value).number_format = '0'
+            else:
+                self._ws.cell(row=c.r_idx, column=c.c_idx, value=c.cell_value)
+
 
 
     def bind(self, worksheet):

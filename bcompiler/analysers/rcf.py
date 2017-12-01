@@ -3,6 +3,7 @@
 Analyser to do Reference Class Forecasting on master documents.
 """
 import operator
+import copy
 import datetime
 import os
 import logging
@@ -158,14 +159,16 @@ def run(master_repository: str):
             _inject(d_row, operator.sub, 21, 20, 17)
 
             Row(2, start_row + 1, d_row).bind(ws)
+            proj_pack = copy.deepcopy(proj)
             proj = ''.join([proj, ' ', str(d[0])])
             proj = _replace_underscore(proj)
             proj = proj.replace(' ', '_')
             f_title = f"{proj}_RCF.xlsx"
-            file_queue.append(QueuedWorkbook(proj, f_title, wb))
+            file_queue.append(QueuedWorkbook(proj_pack, f_title, wb))
 
 #       logger.info(f"Saving {proj}_RCF.xlsx to {master_repository}")
 #       wb.save(os.path.join(master_repository, f'{proj}_RCF.xlsx'))
+
 
 if __name__ == '__main__':
     run('/tmp/master_repo')

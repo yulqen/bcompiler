@@ -84,21 +84,26 @@ def _replace_underscore(name: str):
     return name.replace('/', '_')
 
 
+def _get_master_files_and_order_them(path: str):
+    m = [f for f in os.listdir(path) if re.match(target_master_fn, f)]
+    get_quarter = lambda x: x[-11]
+    get_year = lambda x: x[-9::][:4]
+    m = sorted(m, key=get_quarter)
+    m = sorted(m, key=get_year)
+    return m
+
+
 def run(master_repository: str):
     wb = Workbook()
     ws = wb.active
-    for f in os.listdir(master_repository):
-        if re.match(target_master_fn, f):
-            d = create_rcf_output(os.path.join(master_repository, f))
-        else:
-            logger.warning(f"File {f} not a correct target for this analyser")
-            continue
-
+    mxs = _get_master_files_and_order_them(master_repository)
+    for f in mxs:
+        d = create_rcf_output(os.path.join(master_repository, f))
         # create a header row first off
-        h_keys = _main_keys(d)
-
+        import pdb; pdb.set_trace()  # XXX BREAKPOINT
+        project_titles = _main_keys(d)
         # then take a project at a time
-        for proj in h_keys:
+        for proj in project_titles:
             h_row = _headers(proj, d)
             _insert_gaps(h_row, [3, 6, 9, 12, 15, 18, 21])
             Row(2, 2, h_row).bind(ws)

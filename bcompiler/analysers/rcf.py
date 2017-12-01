@@ -97,10 +97,9 @@ def run(master_repository: str):
     wb = Workbook()
     ws = wb.active
     mxs = _get_master_files_and_order_them(master_repository)
-    for f in mxs:
+    for start_row, f in list(enumerate(mxs, start=2)):
         d = create_rcf_output(os.path.join(master_repository, f))
         # create a header row first off
-        import pdb; pdb.set_trace()  # XXX BREAKPOINT
         project_titles = _main_keys(d)
         # then take a project at a time
         for proj in project_titles:
@@ -123,13 +122,13 @@ def run(master_repository: str):
             _inject(d_row, operator.sub, 18, 17, 15)
             _inject(d_row, operator.sub, 21, 20, 17)
 
-            Row(2, 3, d_row).bind(ws)
+            Row(2, start_row + 1, d_row).bind(ws)
             proj = ''.join([proj, ' ', str(d[0])])
             proj = _replace_underscore(proj)
             proj = proj.replace(' ', '_')
-            wb.save(os.path.join(master_repository, f'{proj}_RCF.xlsx'))
             logger.info(f"Saving {proj}_RCF.xlsx to {master_repository}")
 
+        wb.save(os.path.join(master_repository, f'{proj}_RCF.xlsx'))
 
 if __name__ == '__main__':
     run('/tmp/master_repo')

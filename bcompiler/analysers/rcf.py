@@ -121,6 +121,7 @@ QueuedWorkbook = namedtuple('QueuedWorkbook', ['project_name', 'file_title', 'wo
 
 def run(master_repository: str):
     file_queue = []
+    flag = False
     mxs = _get_master_files_and_order_them(master_repository)
     for start_row, f in list(enumerate(mxs, start=2)):
         d = create_rcf_output(os.path.join(master_repository, f))
@@ -133,6 +134,8 @@ def run(master_repository: str):
                     if proj == t.project_name:
                         wb = t.workbook
                         ws = wb.active
+                        flag = True
+                        break
                     else:
                         wb = Workbook()
                         ws = wb.active
@@ -159,15 +162,18 @@ def run(master_repository: str):
             _inject(d_row, operator.sub, 21, 20, 17)
 
             Row(2, start_row + 1, d_row).bind(ws)
+            if flag:
+                continue
             proj_pack = copy.deepcopy(proj)
-            proj = ''.join([proj, ' ', str(d[0])])
+#           proj = ''.join([proj, ' ', str(d[0])])
             proj = _replace_underscore(proj)
             proj = proj.replace(' ', '_')
             f_title = f"{proj}_RCF.xlsx"
             file_queue.append(QueuedWorkbook(proj_pack, f_title, wb))
 
-#       logger.info(f"Saving {proj}_RCF.xlsx to {master_repository}")
-#       wb.save(os.path.join(master_repository, f'{proj}_RCF.xlsx'))
+    for item in file_queue:
+        logger.info(f"Saving {item.file_title} to {master_repository}")
+        item.workbook.save(os.path.join(master_repository, item.file_title))
 
 
 if __name__ == '__main__':

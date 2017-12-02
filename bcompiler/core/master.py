@@ -74,9 +74,9 @@ class Master:
     """
     Master class.
     """
-    def __init__(self, quarter, path: PurePath) -> None:
+    def __init__(self, quarter, path: str) -> None:
         self._quarter = quarter
-        self.path = PurePath(path)
+        self.path = path
         self._data = project_data_from_master(self.path)
         self._project_titles = [item for item in self.data.keys()]
         self.year = self._quarter.year

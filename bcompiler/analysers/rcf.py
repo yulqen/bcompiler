@@ -9,7 +9,7 @@ import os
 import logging
 import re
 
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Optional
 
 from collections import namedtuple
 from pathlib import PurePath, Path
@@ -69,7 +69,7 @@ def _vals(p_name: str, dictionary):
     return [x[1] for x in dictionary[1][p_name]]
 
 
-def _inject(lst: list, op, place: int, idxa: int, idxb: int) -> list:
+def _inject(lst: list, op, place: int, idxa: int, idxb: int) -> Optional[List]:
     if not isinstance(lst[idxa], datetime.date) and isinstance(lst[idxa], str):
         if re.match(DATE_REGEX, lst[idxa]):
             try:

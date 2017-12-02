@@ -119,7 +119,7 @@ def _get_master_files_and_order_them(path: str):
 QueuedWorkbook = namedtuple('QueuedWorkbook', ['project_name', 'file_title', 'workbook'])
 
 
-def run(master_repository: str):
+def run(master_repository: str) -> None:
     file_queue = []
     flag = False
     mxs = _get_master_files_and_order_them(master_repository)

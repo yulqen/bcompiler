@@ -119,10 +119,42 @@ def _get_master_files_and_order_them(path: str):
 QueuedWorkbook = namedtuple('QueuedWorkbook', ['project_name', 'file_title', 'workbook'])
 
 
+def _process_data_cols(worksheet, data_row: list, masters: list, headers: list, start_row: int, chart_level_start: int):
+    no_masters = len(masters)
+
+    # write the columns used for the chart
+    Row(2, start_row, ["SOBC", data_row[3], chart_level_start]).bind(worksheet)
+    start_row  = start_row + no_masters
+    chart_level_start += 1
+
+    Row(2, start_row, ["OBC", data_row[6], chart_level_start]).bind(worksheet)
+    start_row += no_masters
+    chart_level_start += 1
+
+    Row(2, start_row, ["FBC", data_row[9], chart_level_start]).bind(worksheet)
+    start_row = start_row + no_masters
+    chart_level_start += 1
+
+    Row(2, start_row, ["Start of Construction", data_row[15], chart_level_start]).bind(worksheet)
+    start_row = start_row + no_masters
+    chart_level_start += 1
+
+    Row(2, start_row, ["Start of Operation", data_row[18], chart_level_start]).bind(worksheet)
+    start_row = start_row + no_masters
+    chart_level_start += 1
+
+    Row(2, start_row, ["Project End", data_row[21], chart_level_start]).bind(worksheet)
+    start_row = start_row + no_masters
+    chart_level_start += 1
+    return worksheet
+
+
 def run(master_repository: str) -> None:
     file_queue = []
     flag = False
     mxs = _get_master_files_and_order_them(master_repository)
+    chart_data_start_row = 10
+    chart_level = 1
     for start_row, f in list(enumerate(mxs, start=2)):
         d = create_rcf_output(os.path.join(master_repository, f))
         # create a header row first off
@@ -162,6 +194,11 @@ def run(master_repository: str) -> None:
             _inject(d_row, operator.sub, 21, 20, 17)
 
             Row(2, start_row + 1, d_row).bind(ws)
+
+            # call process here
+            ws = _process_data_cols(ws, d_row, mxs, h_row, chart_data_start_row, chart_level)
+
+
             if flag:
                 continue
             proj_pack = copy.deepcopy(proj)

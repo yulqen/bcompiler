@@ -668,7 +668,6 @@ def main():
             return
 
         if 'rcf' in args['analyser']:
-            import pdb; pdb.set_trace()  # XXX BREAKPOINT
             analyser_args(args, rcf_run)
             return
 

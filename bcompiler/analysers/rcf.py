@@ -213,7 +213,7 @@ def run(master_repository: str=None, output_path: str=None) -> None:
 
             # inject the calculations
             _inject(d_row, operator.sub, 3, 2, 11)
-            _inject(d_row, operator.sub, 6, 5, 11)
+            _inject(d_row, operator.sub, 6, 5, 2)
             _inject(d_row, operator.sub, 9, 8, 5)
             _inject(d_row, operator.sub, 15, 14, 8)
             _inject(d_row, operator.sub, 18, 17, 14)

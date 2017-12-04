@@ -199,7 +199,6 @@ def run(master_repository: str) -> None:
 
             # call process here
             ws = _process_data_cols(ws, d_row, mxs, h_row, chart_data_start_row)
-            chart_data_start_row += 1
 
 
             if flag:
@@ -210,6 +209,7 @@ def run(master_repository: str) -> None:
             proj = proj.replace(' ', '_')
             f_title = f"{proj}_RCF.xlsx"
             file_queue.append(QueuedWorkbook(proj_pack, f_title, wb))
+        chart_data_start_row += 1
 
     for item in file_queue:
         logger.info(f"Saving {item.file_title} to {master_repository}")

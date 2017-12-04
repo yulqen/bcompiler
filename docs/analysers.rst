@@ -64,6 +64,33 @@ Importing analyser code into your own projects
 Built-in Analysers
 ^^^^^^^^^^^^^^^^^^
 
+rcf
++++
+
+Perform Reference Class Forecasting on selected master files. Target master
+files must be named according to this pattern:
+``*_N_YYYY.xlsx`` where ``N`` represents a number between 1 and 4 and ``YYY``
+represents a year. This file therefore represents the Nth quarter of year Financial Year YYYY.
+
+.. topic:: Default
+    ``>> bcompiler --analyser rcf``
+
+    Default options require master files to be referenced in ``Documents/bcompiler`` directory
+    A single workbook for each project is output to the ``Documents/bcompiler`` directory.
+
+.. topic::  Output files to a different directory
+    ``>> bcompiler --analyser rcf --output C:\Users\jim\Desktop``
+
+    This options requires the master files to be present in the ``Documents/bcompiler`` directory.
+    The data is output to the directory specified after the ``--output`` flag, in this case ``C:\Users\jim\Desktop``.
+
+.. topic:: Set target master directory manually
+
+	``>> bcompiler --analyser rcf --master C:\Users\jim\Downloads``
+
+	This options requires a master files to be present in the ``C:\Users\jim\Downloads`` directory, named ``q1_master.xlsx``.
+	The files are output to ``Documents/bcompiler/output`` directory.
+
 financial analysis
 ++++++++++++++++++
 

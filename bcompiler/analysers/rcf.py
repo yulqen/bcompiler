@@ -18,9 +18,12 @@ from openpyxl.chart import ScatterChart, Reference, Series
 
 from ..process.cleansers import DATE_REGEX
 from ..utils import project_data_from_master
+from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE
+
 from ..core import Quarter, Master, Row
 
 logger = logging.getLogger('bcompiler.compiler')
+runtime_config.read(CONFIG_FILE)
 
 target_master_fn = re.compile(r'^.+_\d{4}.xlsx')
 
@@ -169,7 +172,11 @@ def _generate_chart(worksheet, top_row: int, leftmost_col: int) -> ScatterChart:
     return chart
 
 
-def run(master_repository: str) -> None:
+def run(master_repository: str=None, output_path: str=None) -> None:
+    if master_repository is None:
+        master_repository = ROOT_PATH
+    if output_path is None:
+        output_path = os.path.join(ROOT_PATH, 'output')
     file_queue: list = []
     flag = False
     mxs = _get_master_files_and_order_them(master_repository)
@@ -230,8 +237,8 @@ def run(master_repository: str) -> None:
         chart_data_start_row += 1
 
     for item in file_queue:
-        logger.info(f"Saving {item.file_title} to {master_repository}")
-        item.workbook.save(os.path.join(master_repository, item.file_title))
+        logger.info(f"Saving {item.file_title} to {output_path}")
+        item.workbook.save(os.path.join(output_path, item.file_title))
 
 
 if __name__ == '__main__':

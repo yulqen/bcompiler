@@ -157,7 +157,7 @@ def _generate_chart(worksheet, top_row: int, leftmost_col: int) -> ScatterChart:
     chart = ScatterChart()
     chart.title = "RCF"
     chart.style = 13
-    chart.x_axis.title = "Cost"
+    chart.x_axis.title = "Days"
     chart.y_axis.title = "Milestone Type"
     xvalues = Reference(worksheet, min_col=3, min_row=10, max_row=33)
     yvalues = Reference(worksheet, min_col=4, min_row=10, max_row=33)
@@ -206,7 +206,7 @@ def run(master_repository: str) -> None:
             _inject(d_row, operator.sub, 6, 5, 11)
             _inject(d_row, operator.sub, 9, 8, 5)
             _inject(d_row, operator.sub, 15, 14, 8)
-            _inject(d_row, operator.sub, 18, 17, 15)
+            _inject(d_row, operator.sub, 18, 17, 14)
             _inject(d_row, operator.sub, 21, 20, 17)
 
             Row(2, start_row + 1, d_row).bind(ws)

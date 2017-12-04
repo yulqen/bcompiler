@@ -8,6 +8,7 @@ import datetime
 import os
 import logging
 import re
+import sys
 
 from typing import List, Tuple, Dict, Optional
 
@@ -113,6 +114,9 @@ def _replace_underscore(name: str):
 
 def _get_master_files_and_order_them(path: str):
     m = [f for f in os.listdir(path) if re.match(target_master_fn, f)]
+    if len(m) == 0:
+        raise ValueError("No masters present")
+    logger.info(f"Found {m} master files...")
     get_quarter = lambda x: x[-11]
     get_year = lambda x: x[-9::][:4]
     m = sorted(m, key=get_quarter)
@@ -172,17 +176,30 @@ def _generate_chart(worksheet, top_row: int, leftmost_col: int) -> ScatterChart:
     return chart
 
 
-def run(master_repository: str=None, output_path: str=None) -> None:
-    if master_repository is None:
-        master_repository = ROOT_PATH
+def run(output_path: str=None, user_provided_master_path: str=None,) -> None:
+
+    if user_provided_master_path:
+        logger.info(f"Using master file location: {user_provided_master_path}")
+    else:
+        logger.info(f"Using default master location (bcompiler aux directory)")
+
+    if user_provided_master_path is None:
+        user_provided_master_path = ROOT_PATH
     if output_path is None:
         output_path = os.path.join(ROOT_PATH, 'output')
+    else:
+        output_path = output_path[0]
+
     file_queue: list = []
     flag = False
-    mxs = _get_master_files_and_order_them(master_repository)
+    try:
+        mxs = _get_master_files_and_order_them(user_provided_master_path)
+    except ValueError as e:
+        logger.critical(f"No masters present in {user_provided_master_path}")
+        sys.exit(1)
     chart_data_start_row = 10
     for start_row, f in list(enumerate(mxs, start=2)):
-        d = create_rcf_output(os.path.join(master_repository, f))
+        d = create_rcf_output(os.path.join(user_provided_master_path, f))
         # create a header row first off
         project_titles = _main_keys(d)
         # then take a project at a time
@@ -236,10 +253,15 @@ def run(master_repository: str=None, output_path: str=None) -> None:
             file_queue.append(QueuedWorkbook(proj_pack, f_title, wb))
         chart_data_start_row += 1
 
-    for item in file_queue:
-        logger.info(f"Saving {item.file_title} to {output_path}")
-        item.workbook.save(os.path.join(output_path, item.file_title))
+    try:
+        for item in file_queue:
+            logger.info(f"Saving {item.file_title} to {output_path}")
+            item.workbook.save(os.path.join(output_path, item.file_title))
+    except PermissionError:
+        logger.critical(
+            "Cannot save output file - you already have it open. Close and run again."
+        )
 
 
 if __name__ == '__main__':
-    run('/tmp/master_repo')
+    run()

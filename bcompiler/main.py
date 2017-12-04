@@ -79,7 +79,7 @@ def analyser_args(args, func):
         return
     else:
         if args['output'] and not args['master']:  # user stipulates an output directory
-            func(args['output'])
+            func(output_path=args['output'])
             return
         if args['output'] and args['master']:  # user stipulates an output and a target master
             func(args['output'], args['master'][0])

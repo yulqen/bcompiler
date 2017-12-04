@@ -14,6 +14,7 @@ from typing import List, Tuple, Dict, Optional
 from collections import namedtuple
 from pathlib import PurePath, Path
 from openpyxl import load_workbook, Workbook
+from openpyxl.chart import ScatterChart, Reference, Series
 
 from ..process.cleansers import DATE_REGEX
 from ..utils import project_data_from_master
@@ -152,8 +153,21 @@ def _process_data_cols(worksheet, data_row: list, masters: list, headers: list, 
     return worksheet
 
 
+def _generate_chart(worksheet, top_row: int, leftmost_col: int) -> ScatterChart:
+    chart = ScatterChart()
+    chart.title = "RCF"
+    chart.style = 13
+    chart.x_axis.title = "Cost"
+    chart.y_axis.title = "Milestone Type"
+    xvalues = Reference(worksheet, min_col=3, min_row=10, max_row=33)
+    yvalues = Reference(worksheet, min_col=4, min_row=10, max_row=33)
+    series = Series(yvalues, xvalues)
+    chart.series.append(series)
+    return chart
+
+
 def run(master_repository: str) -> None:
-    file_queue = []
+    file_queue: list = []
     flag = False
     mxs = _get_master_files_and_order_them(master_repository)
     chart_data_start_row = 10
@@ -199,7 +213,8 @@ def run(master_repository: str) -> None:
 
             # call process here
             ws = _process_data_cols(ws, d_row, mxs, h_row, chart_data_start_row)
-
+            chart = _generate_chart(ws, 10, 2)
+            ws.add_chart(chart, "F10")
 
             if flag:
                 continue

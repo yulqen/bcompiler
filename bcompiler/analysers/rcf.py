@@ -157,11 +157,14 @@ def _generate_chart(worksheet, top_row: int, leftmost_col: int) -> ScatterChart:
     chart = ScatterChart()
     chart.title = "RCF"
     chart.style = 13
+    chart.height = 18
+    chart.width = 28
     chart.x_axis.title = "Days"
     chart.y_axis.title = "Milestone Type"
     xvalues = Reference(worksheet, min_col=3, min_row=10, max_row=33)
     yvalues = Reference(worksheet, min_col=4, min_row=10, max_row=33)
     series = Series(yvalues, xvalues)
+    series.marker.size = 6
     chart.series.append(series)
     return chart
 

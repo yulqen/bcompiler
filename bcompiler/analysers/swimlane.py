@@ -104,7 +104,7 @@ def gather_data(start_row: int,
     :type int: interested_range
     :rtype: Tuple
     """
-    newsheet: Worksheet = newwb.active
+    newsheet = newwb.active
     col = project_number + 1
     start_row = start_row + 1
 

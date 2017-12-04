@@ -1,6 +1,11 @@
 Changes
 ~~~~~~~
 
+v1.3.8
+######
+
+* new Reference Class Forecasting analyser
+
 v1.3.7
 ######
 

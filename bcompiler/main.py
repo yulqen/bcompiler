@@ -39,6 +39,7 @@ from bcompiler.analysers import financial_analyser_run
 from bcompiler.analysers import keyword_run
 from bcompiler.analysers import swimlane_assurance_run
 from bcompiler.analysers import swimlane_run
+from bcompiler.analysers import rcf_run
 from bcompiler.process import Cleanser
 from bcompiler.process.datamap import Datamap
 from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
@@ -78,7 +79,7 @@ def analyser_args(args, func):
         return
     else:
         if args['output'] and not args['master']:  # user stipulates an output directory
-            func(args['output'])
+            func(output_path=args['output'])
             return
         if args['output'] and args['master']:  # user stipulates an output and a target master
             func(args['output'], args['master'][0])
@@ -664,6 +665,10 @@ def main():
 
         if 'financial' in args['analyser']:
             analyser_args(args, financial_analyser_run)
+            return
+
+        if 'rcf' in args['analyser']:
+            analyser_args(args, rcf_run)
             return
 
     if args['count-rows']:

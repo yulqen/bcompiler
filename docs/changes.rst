@@ -1,6 +1,11 @@
 Changes
 ~~~~~~~
 
+v1.3.9
+######
+
+* ability to output only grey markers on the swimlane analyser charts
+
 v1.3.8
 ######
 

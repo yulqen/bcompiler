@@ -18,6 +18,8 @@ pytest = "*"
 neovim = "*"
 pdbpp = "*"
 "flake8" = "*"
+sphinx = "*"
+sphinx-rtd-theme = "*"
 
 
 [requires]

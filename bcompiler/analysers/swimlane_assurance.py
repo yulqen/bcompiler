@@ -28,6 +28,20 @@ CHART_STYLE = int(runtime_config['AnalyserSwimlaneAssurance']['chart_style'])
 CHART_X_AXIS_MAJOR_UNIT = int(runtime_config['AnalyserSwimlaneAssurance']['chart_x_axis_major_unit'])
 CHART_Y_AXIS_MAJOR_UNIT = int(runtime_config['AnalyserSwimlaneAssurance']['chart_y_axis_major_unit'])
 
+GREYMARKER = True
+
+_marker_colours = [
+    "FF0000",
+    "a86001",
+    "4401a8",
+    "a801a5",
+    "016da8",
+    "01a852",
+    "FF0000",
+]
+
+_grey_marker_colours = ["969696"] * 7
+
 
 def date_range_milestones(source_sheet, output_sheet, cols: tuple,
                           start_row: int, column: int, date_ends: list):
@@ -249,6 +263,11 @@ def run(output_path=None, user_provided_master_path=None, date_range=None):
 
     derived_end = 2
 
+    if GREYMARKER:
+        markercol = _grey_marker_colours
+    else:
+        markercol = _marker_colours
+
     for p in range(NUMBER_OF_PROJECTS):
         for i in range(
                 1, 7
@@ -262,22 +281,22 @@ def run(output_path=None, user_provided_master_path=None, date_range=None):
                                                    _inner_step[1] - 1)
             if _inner_step[0] == 'pvr_gate_zero':
                 series.marker.symbol = "diamond"
-                series.marker.graphicalProperties.solidFill = "0d95c6"
+                series.marker.graphicalProperties.solidFill = markercol[0]
             elif _inner_step[0] == 'sobc':
                 series.marker.symbol = "circle"
-                series.marker.graphicalProperties.solidFill = "0d39c6"
+                series.marker.graphicalProperties.solidFill = markercol[0]
             elif _inner_step[0] == 'obc':
                 series.marker.symbol = "triangle"
-                series.marker.graphicalProperties.solidFill = "0dc69b"
+                series.marker.graphicalProperties.solidFill = markercol[0]
             elif _inner_step[0] == 'fbc':
                 series.marker.symbol = "square"
-                series.marker.graphicalProperties.solidFill = "c60dc0"
+                series.marker.graphicalProperties.solidFill = markercol[0]
             elif _inner_step[0] == 'readiness_closure_exit':
                 series.marker.symbol = "plus"
-                series.marker.graphicalProperties.solidFill = "c60d64"
+                series.marker.graphicalProperties.solidFill = markercol[0]
             else:
                 series.marker.symbol = "triangle"
-                series.marker.graphicalProperties.solidFill = "c60d3c"
+                series.marker.graphicalProperties.solidFill = markercol[0]
             series.marker.size = 10
             chart.series.append(series)
         segment_series_generator = _segment_series()

@@ -1,0 +1,25 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+colorlog = "*"
+openpyxl = "==2.4.9"
+python-dateutil = "*"
+
+
+[dev-packages]
+
+pytest = "*"
+neovim = "*"
+pdbpp = "*"
+"flake8" = "*"
+
+
+[requires]
+
+python_version = "3.6"

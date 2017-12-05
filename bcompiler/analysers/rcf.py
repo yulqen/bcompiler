@@ -188,7 +188,7 @@ def run(output_path: str=None, user_provided_master_path: str=None,) -> None:
     if output_path is None:
         output_path = os.path.join(ROOT_PATH, 'output')
     else:
-        output_path = output_path[0]
+        output_path = output_path
 
     file_queue: list = []
     flag = False

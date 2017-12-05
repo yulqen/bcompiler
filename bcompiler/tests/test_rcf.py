@@ -22,7 +22,7 @@ def test_rcf_chart_data_columns(master_with_quarter_year_in_filename, tmpdir):
     assert ws['C10'].value == 730
     assert ws['D10'].value == 1
     assert ws['B11'].value == "OBC"
-    assert ws['C11'].value == 2556
+    assert ws['C11'].value == 1826
     assert ws['D11'].value == 2
     assert ws['B12'].value == "FBC"
     assert ws['C12'].value is None  # need to verify why this passes

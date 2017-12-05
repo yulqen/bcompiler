@@ -28,7 +28,10 @@ CHART_X_AXIS_MAJOR_UNIT = int(runtime_config['AnalyserSwimlane']['chart_x_axis_m
 CHART_Y_AXIS_MAJOR_UNIT = int(runtime_config['AnalyserSwimlane']['chart_y_axis_major_unit'])
 
 
-GREYMARKER = True
+if runtime_config['AnalyserSwimlane']['grey_markers'] in ['True', 'true', 'yes', 'on']:
+    GREYMARKER = True
+else:
+    GREYMARKER = False
 
 _marker_colours = [
     "FF0000",

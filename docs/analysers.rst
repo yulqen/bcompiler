@@ -199,6 +199,16 @@ scatter chart, showing a timeline of major **approval** milestones horizontally 
 fashion.
 
 .. note::
+    By default, the swimlane chart will be produced with multi-coloured
+    markers. If you wish all markers to be grey, ensure the following
+    setting is present in ``config.ini``:
+
+    .. code-block:: ini
+
+        [AnalyserSwimlane]
+        grey_markers = true
+
+.. note::
     Basic configuration for milestones analysers is done in ``config.ini``.
     Documentation for these is contained in comments in the file.
 

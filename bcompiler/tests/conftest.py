@@ -1454,7 +1454,7 @@ def datamap():
     return '/'.join([SOURCE_DIR, name])
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def populated_template():
     gen_template(BICC_TEMPLATE_FOR_TESTS, SOURCE_DIR)
     datamap()
@@ -1475,7 +1475,38 @@ def populated_template():
                                     .format(fl)])
             wb.save(output_file)
     # we save 10 of them but only return the first for testing
-    return output_file
+    yield output_file
+    fs = [f for f in os.listdir(RETURNS_DIR)]
+    for f in fs:
+        os.remove(os.path.join(RETURNS_DIR, f))
+
+
+
+@pytest.fixture
+def populated_template_comparison():
+    gen_template(BICC_TEMPLATE_FOR_TESTS, SOURCE_DIR)
+    datamap()
+    dm = "/".join([SOURCE_DIR, 'datamap.csv'])
+    wb = load_workbook("/".join([SOURCE_DIR, 'gen_bicc_template.xlsm']), keep_vba=True)
+    output_file = "/".join([RETURNS_DIR, 'populated_test_template.xlsm'])
+    for fl in range(3):
+        with open(dm, 'r', newline='') as f:
+            reader = csv.DictReader(f)
+            for line in reader:
+                if line['cell_key'].startswith('Date'):  # we want to test date strings
+                    wb[line['template_sheet']][line['cell_reference']].value = "20/06/2017"
+                elif line['cell_key'].startswith('SRO Tenure'):  # we want to test date strings
+                    wb[line['template_sheet']][line['cell_reference']].value = "10/08/2017"
+                else:
+                    wb[line['template_sheet']][line['cell_reference']].value = " ".join([line['cell_key'].upper(), str(fl)])
+            output_file = "/".join([RETURNS_DIR, 'populated_test_template{}.xlsm'
+                                    .format(fl)])
+            wb.save(output_file)
+    # we save 3 of them but only return the first for testing
+    yield output_file
+    fs = [f for f in os.listdir(RETURNS_DIR)]
+    for f in fs:
+        os.remove(os.path.join(RETURNS_DIR, f))
 
 
 def split_datamap_line(line: tuple):
@@ -1616,9 +1647,9 @@ def previous_quarter_master():
             ix = next(g).split(',')[0]
             ws[f"A{str(item[0])}"] = ix
             if item[1].startswith('Date'):  # testing for date objects
-                ws[f"B{str(item[0])}"] = date(2017, 6, 20)
-                ws[f"C{str(item[0])}"] = date(2017, 6, 20)
-                ws[f"D{str(item[0])}"] = date(2017, 6, 20)
+                ws[f"B{str(item[0])}"] = date(2012, 6, 20)
+                ws[f"C{str(item[0])}"] = date(2012, 6, 20)
+                ws[f"D{str(item[0])}"] = date(2012, 6, 20)
             elif item[1].startswith('SRO Tenure'):  # testing for date objects
                 ws[f"B{str(item[0])}"] = date(2017, 8, 10)
                 ws[f"C{str(item[0])}"] = date(2017, 8, 10)

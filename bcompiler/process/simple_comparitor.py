@@ -211,6 +211,10 @@ class FileComparitor:
             self._early_master = ParsedMaster(self._master)
             return self._early_master
 
+    @property
+    def data(self):
+        return self._early_master
+
     def compare(self, proj_index, key):
         """
         Returns a tuple of two values, the first is the value of key in

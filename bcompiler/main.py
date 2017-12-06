@@ -51,6 +51,7 @@ from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              BLANK_TEMPLATE_FN, project_data_from_master)
 from bcompiler.utils import directory_has_returns_check
 from bcompiler.utils import runtime_config as config
+from bcompiler.compile import parse_comparison_master
 
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
@@ -652,7 +653,8 @@ def main():
     if args['compare']:
         if directory_has_returns_check(os.path.join(SOURCE_DIR, 'returns')):
             clean_datamap(DATAMAP_RETURN_TO_MASTER)
-            compile_returns.run(args['compare'])
+            comparitor = parse_comparison_master(args['compare'][0])
+            compile_returns.run(comparitor=comparitor)
         else:
             sys.exit(1)
 

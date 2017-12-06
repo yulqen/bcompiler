@@ -5,6 +5,7 @@ from datetime import date
 from openpyxl import load_workbook
 
 import bcompiler.compile as compile_module
+from ..compile import parse_comparison_master
 from ..compile import parse_source_cells as parse
 from ..compile import run
 from ..process.datamap import Datamap
@@ -60,7 +61,8 @@ def test_compile_all_returns_to_master_with_string_comparison(datamap, previous_
     :return:
     """
     setattr(compile_module, 'DATAMAP_RETURN_TO_MASTER', datamap)
-    run([previous_quarter_master])
+    comparitor = parse_comparison_master(previous_quarter_master)
+    run(comparitor=comparitor)
     # now to test the cell styling to make sure it's changed
     wb = load_workbook(os.path.join(OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, "Q2")))
     ws = wb.active

@@ -122,18 +122,22 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
     return ls_of_dataline_dicts
 
 
-def _index_projects(master: str) -> dict:
+def _index_projects(parsed_master: FileComparitor) -> dict:
     _project_header_index = {}
-    wb = load_workbook(master)
+    wb = load_workbook(parsed_master.data.master_file)
     ws = wb.active
-    _projects = [cell.value for cell in ws[1][1:]]
+    _projects = parsed_master.data.projects
     for cell in ws[1][1:]:
         if cell.value in _projects:
             _project_header_index[cell.value] = cell.col_idx
     return _project_header_index
 
 
-def write_excel(source_file, count, workbook, compare_master=None) -> None:
+def parse_comparison_master(compare_master: str) -> FileComparitor:
+    return FileComparitor([compare_master])
+
+
+def write_excel(source_file, count, workbook, compare_master=None, comparitor=None) -> None:
     """
     Writes all return data to a single master Excel sheet.
     """
@@ -153,13 +157,12 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
         for item in out_map if item['gmpp_key'] == 'Project/Programme Name'][0]
 
     try:
-        if compare_master:
-            compare_file = compare_master[0]
-            projects_in_comparitor = _index_projects(compare_file)
+        if comparitor:
+            projects_in_comparitor = _index_projects(comparitor)
     except TypeError:
-        compare_file = None
+        comparitor = None
 
-    if compare_master:
+    if comparitor:
         hd_indices = projects_in_comparitor
         try:
             this_index = [
@@ -170,12 +173,6 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                  "compile data but not compare until return form and master "
                  "match. Alternatively, this could be a new file.").format(
                     project_name))
-
-    try:
-        # this deals with issue of not passing --compare to compile argument
-        comparitor = FileComparitor([compare_file])
-    except UnboundLocalError:
-        pass
 
     if count == 1:
         i = 1
@@ -259,12 +256,12 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
             i += 1
 
 
-def run(compare_master=None):
+def run(compare_master=None, comparitor=None):
     """
     Run the compile function.
     """
     # if we want to do a comparison
-    if compare_master:
+    if comparitor:
 
         workbook = Workbook()
         count = 1
@@ -275,7 +272,8 @@ def run(compare_master=None):
                     (os.path.join(RETURNS_DIR, file)),
                     count=count,
                     workbook=workbook,
-                    compare_master=compare_master
+                    compare_master=None,
+                    comparitor=comparitor
                 )
                 count += 1
             elif fnmatch.fnmatch(file, '*.xlsm#' or fnmatch.fnmatch(file, '*.xlsx#')):

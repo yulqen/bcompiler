@@ -4,3 +4,4 @@ db.json
 .mypy_cache/
 dist/*
 .pdb-pyhist
+bcompiler/prof/*

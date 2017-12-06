@@ -653,7 +653,7 @@ def main():
     if args['compare']:
         if directory_has_returns_check(os.path.join(SOURCE_DIR, 'returns')):
             clean_datamap(DATAMAP_RETURN_TO_MASTER)
-            comparitor = parse_comparison_master(args['compare'])
+            comparitor = parse_comparison_master(args['compare'][0])
             compile_returns.run(comparitor=comparitor)
         else:
             sys.exit(1)

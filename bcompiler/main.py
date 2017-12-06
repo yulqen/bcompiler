@@ -44,7 +44,7 @@ from bcompiler.process import Cleanser
 from bcompiler.process.datamap import Datamap
 from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              DATAMAP_RETURN_TO_MASTER,
-                             OUTPUT_DIR, SOURCE_DIR, VALIDATION_REFERENCES,
+                             OUTPUT_DIR, SOURCE_DIR, ROOT_PATH, VALIDATION_REFERENCES,
                              parse_csv_to_file,
                              working_directory, SHEETS, CURRENT_QUARTER,
                              row_data_formatter,
@@ -556,11 +556,11 @@ def pop_all():
     Populates the blank bicc_template file with data from the master, one
     form for each project dataset.
     """
-    number_of_projects = len(get_list_projects(os.path.join(SOURCE_DIR, config['Master']['name'])))
+    number_of_projects = len(get_list_projects(os.path.join(ROOT_PATH, config['Master']['name'])))
     # we need to iterate through the master based on indexes so we use a range
     # based on the number of projects
     for p in range(number_of_projects):
-        populate_blank_bicc_form(os.path.join(SOURCE_DIR, config['Master']['name']), p)
+        populate_blank_bicc_form(os.path.join(ROOT_PATH, config['Master']['name']), p)
 
 
 def get_dropdown_data(header=None):

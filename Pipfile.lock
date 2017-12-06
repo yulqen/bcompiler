@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "9d16077a26dee6dae112b0bff9153d5f613fd8c71d13a483b14807cba987c0f5"
+            "sha256": "8718693f5017800e650989790d958408bc95971887e8bc87979e3c50ff4aa2b0"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -91,6 +91,12 @@
             ],
             "version": "==2.5.1"
         },
+        "bottle": {
+            "hashes": [
+                "sha256:39b751aee0b167be8dffb63ca81b735bbf1dd0905b3bc42761efedee8f123355"
+            ],
+            "version": "==0.12.13"
+        },
         "certifi": {
             "hashes": [
                 "sha256:244be0d93b71e93fc0a0a479862051414d0e00e16435707e5bf5000f92e04694",
@@ -104,6 +110,12 @@
                 "sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae"
             ],
             "version": "==3.0.4"
+        },
+        "cprofilev": {
+            "hashes": [
+                "sha256:8791748b1f3d3468c2c927c3fd5f905080b84d8f2d217ca764b7d9d7a1fb9a77"
+            ],
+            "version": "==1.0.7"
         },
         "docopt": {
             "hashes": [
@@ -131,6 +143,12 @@
                 "sha256:7253265f7abd8b313e3892944044a365e3f4ac3fcdcfb4298f55ee9ddf188ba0"
             ],
             "version": "==3.5.0"
+        },
+        "gprof2dot": {
+            "hashes": [
+                "sha256:cebc7aa2782fd813ead415ea1fae3409524343485eadc7fb60ef5bd1e810309e"
+            ],
+            "version": "==2017.9.19"
         },
         "greenlet": {
             "hashes": [
@@ -324,6 +342,14 @@
                 "sha256:cf8436dc59d8695346fcd3ab296de46425ecab00d64096cebe79fb51ecb2eb93"
             ],
             "version": "==3.3.1"
+        },
+        "pytest-profiling": {
+            "hashes": [
+                "sha256:a8039ada6c9a1ca26f3b76806e1bed76783201172e30e1d961e3694c36138475",
+                "sha256:02af76b14160f646ce2c07072f32d82ac420af20036698e6c45588454baf4949",
+                "sha256:8904f9a1ed31d6be2c0b586c4e2fbc14cc17fb0afae2c01a6c0f701978a1c9a4"
+            ],
+            "version": "==1.2.11"
         },
         "pytz": {
             "hashes": [

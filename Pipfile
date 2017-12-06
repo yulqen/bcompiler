@@ -23,6 +23,8 @@ sphinx-rtd-theme = "*"
 twine = "*"
 ptpython = "*"
 mypy = "*"
+pytest-profiling = "*"
+cprofilev = "*"
 
 
 [requires]

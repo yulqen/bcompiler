@@ -196,7 +196,7 @@ def write_excel(source_file, count, workbook, compare_master=None, comparitor=No
                     comps = [int(x) for x in ds[0].split('-')]
                     compare_val = datetime(*comps)
 
-            except UnboundLocalError:
+            except (UnboundLocalError, AttributeError):
                 compare_val = False
 
             # TODO - apply number format WITHOUT a compare_val
@@ -233,7 +233,7 @@ def write_excel(source_file, count, workbook, compare_master=None, comparitor=No
                     ds = compare_val.split(' ')
                     comps = [int(x) for x in ds[0].split('-')]
                     compare_val = datetime(*comps)
-            except UnboundLocalError:
+            except (UnboundLocalError, AttributeError):
                 compare_val = False
 
             # if there is something to compare it
@@ -280,7 +280,8 @@ def run(compare_master=None, comparitor=None):
                 logger.warning("You have a file open in your spreadsheet program. Ignoring the lock file.")
             else:
                 logger.critical("There are no Excel files in {}. Copy some in there!".format(RETURNS_DIR))
-        OUTPUT_FILE = '/'.join([OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, "Q2")])
+        q_string = config['QuarterData']['CurrentQuarter'].split()[0]
+        OUTPUT_FILE = '/'.join([OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, q_string)])
         workbook.save(OUTPUT_FILE)
     else:
         # we just want a straight master with no change indication

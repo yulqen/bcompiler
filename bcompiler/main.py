@@ -377,6 +377,7 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     ws_gmpp = blank[config['TemplateSheets']['gmpp']]
 
     for item in datamap.cell_map:
+        item.cell_key = item.cell_key.strip()
         if item.template_sheet == config['TemplateSheets']['summary_sheet']:
             if 'Project/Programme Name' in item.cell_key:
                 ws_summary[item.cell_reference].value = test_proj

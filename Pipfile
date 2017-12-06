@@ -22,6 +22,7 @@ sphinx = "*"
 sphinx-rtd-theme = "*"
 twine = "*"
 ptpython = "*"
+mypy = "*"
 
 
 [requires]

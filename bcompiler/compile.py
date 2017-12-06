@@ -122,6 +122,17 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
     return ls_of_dataline_dicts
 
 
+def _index_projects(master: str) -> dict:
+    _project_header_index = {}
+    wb = load_workbook(master)
+    ws = wb.active
+    _projects = [cell.value for cell in ws[1][1:]]
+    for cell in ws[1][1:]:
+        if cell.value in _projects:
+            _project_header_index[cell.value] = cell.col_idx
+    return _project_header_index
+
+
 def write_excel(source_file, count, workbook, compare_master=None) -> None:
     """
     Writes all return data to a single master Excel sheet.
@@ -130,6 +141,7 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
 
     # give it a title
     ws.title = "Constructed BICC Data Master"
+
 
     # this is the data from the source spreadsheet
     out_map = parse_source_cells(source_file, DATAMAP_RETURN_TO_MASTER)
@@ -143,12 +155,12 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
     try:
         if compare_master:
             compare_file = compare_master[0]
+            projects_in_comparitor = _index_projects(compare_file)
     except TypeError:
         compare_file = None
 
     if compare_master:
-        parsed_master = ParsedMaster(compare_file)
-        hd_indices = parsed_master._project_header_index
+        hd_indices = projects_in_comparitor
         try:
             this_index = [
                 v for k, v in hd_indices.items() if k == project_name][0]

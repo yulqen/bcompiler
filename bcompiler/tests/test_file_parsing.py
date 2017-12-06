@@ -51,7 +51,7 @@ def test_compile_all_returns_to_master_no_comparison(populated_template, datamap
     assert project_title in project_title_row
 
 
-def test_compile_all_returns_to_master_with_string_comparison(datamap, previous_quarter_master):
+def test_compile_all_returns_to_master_with_string_comparison(datamap, previous_quarter_master, populated_template):
     """
     This tests 'bcompiler compile --compare' or 'bcompiler --compare' option.
     :param populated_template:

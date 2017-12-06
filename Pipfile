@@ -21,6 +21,7 @@ pdbpp = "*"
 sphinx = "*"
 sphinx-rtd-theme = "*"
 twine = "*"
+ptpython = "*"
 
 
 [requires]

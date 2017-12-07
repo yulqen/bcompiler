@@ -118,9 +118,6 @@ def run(output_path=None):
 
     target_keys = runtime_config['AnalyserFinancialAnalysis']['target_keys'].split('\n')
 
-    q3_keys = runtime_config['AnalyserFinancialAnalysis']['q3_target_keys'].split('\n')
-    q4_keys = runtime_config['AnalyserFinancialAnalysis']['q4_target_keys'].split('\n')
-
     # projects from latest master
     projects = master_q2.projects
 
@@ -160,11 +157,11 @@ def run(output_path=None):
                 d = p_data.pull_keys(target_keys, flat=True)
                 _update_total(target_keys, target_keys, d, m.quarter.quarter)
             if m.quarter.quarter == 3:
-                d = p_data.pull_keys(q3_keys, flat=True)
-                _update_total(q3_keys, target_keys, d, m.quarter.quarter)
+                d = p_data.pull_keys(target_keys, flat=True)
+                _update_total(target_keys, target_keys, d, m.quarter.quarter)
             elif m.quarter.quarter == 4:
-                d = p_data.pull_keys(q4_keys, flat=True)
-                _update_total(q4_keys, target_keys, d, m.quarter.quarter)
+                d = p_data.pull_keys(target_keys, flat=True)
+                _update_total(target_keys, target_keys, d, m.quarter.quarter)
             ws.cell(row=start_row + 2, column=1, value=str(m.quarter))
             r = Row(2, start_row + 2, d)
             r.bind(ws)

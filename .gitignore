@@ -5,3 +5,4 @@ db.json
 dist/*
 .pdb-pyhist
 bcompiler/prof/*
+bcompiler/htmlcov/

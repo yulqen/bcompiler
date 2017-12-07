@@ -387,6 +387,15 @@ def populate_blank_bicc_form(source_master_file, proj_num):
 
     for item in datamap.cell_map:
         item.cell_key = _initial_clean(item.cell_key)
+        try:
+            test_proj_data[item.cell_key]
+        except KeyError:
+            if 'Project/Programme Name' in item.cell_key:
+                ws_summary[item.cell_reference].value = test_proj
+                continue
+            else:
+                logger.warning(f"Cannot find {item.cell_key} in {test_proj} - check for double spaces in cell in master. Skipping.")
+                continue
         if item.template_sheet == config['TemplateSheets']['summary_sheet']:
             if 'Project/Programme Name' in item.cell_key:
                 ws_summary[item.cell_reference].value = test_proj

@@ -93,13 +93,13 @@ def analyser_args(args, func):
 
 
 def rcf_args(args, func):
-        if args['output'][0] and not args['master'][0]:  # user stipulates an output directory
+        if args['output'] and not args['master']:  # user stipulates an output directory
             func(output_path=args['output'][0])
             return
-        if args['output'][0] and args['master'][0]:  # user stipulates an output and a target master
+        if args['output'] and args['master']:  # user stipulates an output and a target master
             func(args['output'][0], args['master'][0])
             return
-        if args['master'][0] and not args['output'][0]:  # user stipulates a master but NOT an output directory
+        if args['master'] and not args['output']:  # user stipulates a master but NOT an output directory
             func(user_provided_master_path=args['master'][0])
             return
         else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini

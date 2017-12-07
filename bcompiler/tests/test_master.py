@@ -6,7 +6,7 @@ from ..core import Master, Quarter, ProjectData
 def test_master(master):
     q1_2017 = Quarter(1, 2017)
     m = Master(q1_2017, master)
-    assert m.path.name == 'master.xlsx'
+    assert m.path == '/tmp/bcompiler/output/master.xlsx'
     assert m.filename == 'master.xlsx'
     assert str(m.quarter) == 'Q1 17/18'
     assert m.year == 2017
@@ -26,7 +26,7 @@ def test_master(master):
 def test_project_data_object(master):
     q2_2018 = Quarter(2, 2018)
     m = Master(q2_2018, master)
-    assert m.path.name == 'master.xlsx'
+    assert m.path == '/tmp/bcompiler/output/master.xlsx'
     assert m.filename == 'master.xlsx'
     assert str(m.quarter) == 'Q2 18/19'
     assert m.year == 2018

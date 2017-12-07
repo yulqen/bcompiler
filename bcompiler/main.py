@@ -44,13 +44,14 @@ from bcompiler.process import Cleanser
 from bcompiler.process.datamap import Datamap
 from bcompiler.utils import (CLEANED_DATAMAP, DATAMAP_MASTER_TO_RETURN,
                              DATAMAP_RETURN_TO_MASTER,
-                             OUTPUT_DIR, SOURCE_DIR, VALIDATION_REFERENCES,
+                             OUTPUT_DIR, SOURCE_DIR, ROOT_PATH, VALIDATION_REFERENCES,
                              parse_csv_to_file,
                              working_directory, SHEETS, CURRENT_QUARTER,
                              row_data_formatter,
                              BLANK_TEMPLATE_FN, project_data_from_master)
 from bcompiler.utils import directory_has_returns_check
 from bcompiler.utils import runtime_config as config
+from bcompiler.compile import parse_comparison_master
 
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
@@ -92,13 +93,13 @@ def analyser_args(args, func):
 
 
 def rcf_args(args, func):
-        if args['output'][0] and not args['master'][0]:  # user stipulates an output directory
+        if args['output'] and not args['master']:  # user stipulates an output directory
             func(output_path=args['output'][0])
             return
-        if args['output'][0] and args['master'][0]:  # user stipulates an output and a target master
+        if args['output'] and args['master']:  # user stipulates an output and a target master
             func(args['output'][0], args['master'][0])
             return
-        if args['master'][0] and not args['output'][0]:  # user stipulates a master but NOT an output directory
+        if args['master'] and not args['output']:  # user stipulates a master but NOT an output directory
             func(user_provided_master_path=args['master'][0])
             return
         else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
@@ -360,31 +361,12 @@ def imprint_current_quarter(sheet) -> None:
     sheet['G3'].value = CURRENT_QUARTER
 
 
-def lock_cells(sheets: list, target_cells: List[Dict]) -> None:
-    """
-    This function will set projection for each sheet in sheets to True
-    and then mark all cells to be protected throughout the spreadsheet.
-
-    Example:
-
-        t_cells = [
-            {'ws_summary': 'A20'},
-            {'ws_summary': 'B10'}
-            ]
-
-        lock_cells([ws_summary], t_cells)
-    """
-
-    try:
-        for s in sheets:
-            s.protection.sheet = True
-    except:
-        print("Cannot access that sheet")
-
-    prot = Protection(locked=True, hidden=False)
-    for d in target_cells:
-        for k, v in d.items():
-            k[v].protection = prot
+def _initial_clean(key: str) -> str:
+    # double spaces - killed!
+    key = key.replace('  ', ' ')
+    # trailing whitespace = killed!
+    key = key.rstrip()
+    return key
 
 
 def populate_blank_bicc_form(source_master_file, proj_num):
@@ -403,37 +385,17 @@ def populate_blank_bicc_form(source_master_file, proj_num):
     ws_ap = blank[config['TemplateSheets']['ap']]
     ws_gmpp = blank[config['TemplateSheets']['gmpp']]
 
-    # TODO - flagged for removal
-
-    TARGET_LOCK_CELLS = [
-        {ws_summary: 'B5'},
-        {ws_summary: 'B6'},
-        {ws_summary: 'C6'},
-        {ws_summary: 'G3'},
-        {ws_summary: 'G5'},
-        {ws_summary: 'I3'},
-        {ws_apm: 'A9'},
-        {ws_apm: 'A10'},
-        {ws_apm: 'A11'},
-        {ws_apm: 'A12'},
-        {ws_apm: 'A13'},
-        {ws_apm: 'A14'},
-        {ws_apm: 'A15'},
-        {ws_apm: 'A16'},
-        {ws_apm: 'A17'},
-        {ws_apm: 'A18'},
-        {ws_apm: 'A19'},
-        {ws_ap: 'A8'},
-        {ws_ap: 'A9'},
-        {ws_ap: 'A10'},
-        {ws_ap: 'A11'},
-        {ws_ap: 'A12'},
-        {ws_ap: 'A13'},
-        {ws_ap: 'A14'},
-        {ws_ap: 'A15'}
-    ]
-
     for item in datamap.cell_map:
+        item.cell_key = _initial_clean(item.cell_key)
+        try:
+            test_proj_data[item.cell_key]
+        except KeyError:
+            if 'Project/Programme Name' in item.cell_key:
+                ws_summary[item.cell_reference].value = test_proj
+                continue
+            else:
+                logger.warning(f"Cannot find {item.cell_key} in {test_proj} - check for double spaces in cell in master. Skipping.")
+                continue
         if item.template_sheet == config['TemplateSheets']['summary_sheet']:
             if 'Project/Programme Name' in item.cell_key:
                 ws_summary[item.cell_reference].value = test_proj
@@ -540,12 +502,6 @@ def populate_blank_bicc_form(source_master_file, proj_num):
             ws_gmpp[item.cell_reference].value = cleaned
 
     imprint_current_quarter(ws_summary)
-    lock_cells([
-        ws_summary,
-        ws_apm,
-        ws_gmpp,
-        ws_ap,
-        ws_fb], TARGET_LOCK_CELLS)
 
     blank.save('/'.join([OUTPUT_DIR, '{}_{}_Return.xlsm'.format(
         test_proj.replace('/', '_'), config['QuarterData']['CurrentQuarter'])]))
@@ -556,11 +512,11 @@ def pop_all():
     Populates the blank bicc_template file with data from the master, one
     form for each project dataset.
     """
-    number_of_projects = len(get_list_projects(os.path.join(SOURCE_DIR, config['Master']['name'])))
+    number_of_projects = len(get_list_projects(os.path.join(ROOT_PATH, config['Master']['name'])))
     # we need to iterate through the master based on indexes so we use a range
     # based on the number of projects
     for p in range(number_of_projects):
-        populate_blank_bicc_form(os.path.join(SOURCE_DIR, config['Master']['name']), p)
+        populate_blank_bicc_form(os.path.join(ROOT_PATH, config['Master']['name']), p)
 
 
 def get_dropdown_data(header=None):
@@ -706,7 +662,8 @@ def main():
     if args['compare']:
         if directory_has_returns_check(os.path.join(SOURCE_DIR, 'returns')):
             clean_datamap(DATAMAP_RETURN_TO_MASTER)
-            compile_returns.run(args['compare'])
+            comparitor = parse_comparison_master(args['compare'][0])
+            compile_returns.run(comparitor=comparitor)
         else:
             sys.exit(1)
 

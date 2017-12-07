@@ -18,8 +18,6 @@ logger = logging.getLogger('bcompiler.utils')
 
 rdel_cdel_merge = ''
 
-CURRENT_QUARTER = "Q2 Jul - Sep 2017"
-
 DOCS = os.path.join(os.path.expanduser('~'), 'Documents')
 BCOMPILER_WORKING_D = 'bcompiler'
 ROOT_PATH = os.path.join(DOCS, BCOMPILER_WORKING_D)
@@ -30,6 +28,8 @@ CONFIG_FILE = os.path.join(SOURCE_DIR, 'config.ini')
 
 runtime_config = configparser.ConfigParser()
 runtime_config.read(CONFIG_FILE)
+
+CURRENT_QUARTER = runtime_config['QuarterData']['CurrentQuarter']
 
 try:
     SHEETS = [i for i in dict((runtime_config.items('TemplateSheets'))).values()]

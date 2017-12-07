@@ -122,7 +122,22 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
     return ls_of_dataline_dicts
 
 
-def write_excel(source_file, count, workbook, compare_master=None) -> None:
+def _index_projects(parsed_master: FileComparitor) -> dict:
+    _project_header_index = {}
+    wb = load_workbook(parsed_master.data.master_file)
+    ws = wb.active
+    _projects = parsed_master.data.projects
+    for cell in ws[1][1:]:
+        if cell.value in _projects:
+            _project_header_index[cell.value] = cell.col_idx
+    return _project_header_index
+
+
+def parse_comparison_master(compare_master: str) -> FileComparitor:
+    return FileComparitor([compare_master])
+
+
+def write_excel(source_file, count, workbook, compare_master=None, comparitor=None) -> None:
     """
     Writes all return data to a single master Excel sheet.
     """
@@ -130,6 +145,7 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
 
     # give it a title
     ws.title = "Constructed BICC Data Master"
+
 
     # this is the data from the source spreadsheet
     out_map = parse_source_cells(source_file, DATAMAP_RETURN_TO_MASTER)
@@ -141,14 +157,13 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
         for item in out_map if item['gmpp_key'] == 'Project/Programme Name'][0]
 
     try:
-        if compare_master:
-            compare_file = compare_master[0]
+        if comparitor:
+            projects_in_comparitor = _index_projects(comparitor)
     except TypeError:
-        compare_file = None
+        comparitor = None
 
-    if compare_master:
-        parsed_master = ParsedMaster(compare_file)
-        hd_indices = parsed_master._project_header_index
+    if comparitor:
+        hd_indices = projects_in_comparitor
         try:
             this_index = [
                 v for k, v in hd_indices.items() if k == project_name][0]
@@ -158,12 +173,6 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                  "compile data but not compare until return form and master "
                  "match. Alternatively, this could be a new file.").format(
                     project_name))
-
-    try:
-        # this deals with issue of not passing --compare to compile argument
-        comparitor = FileComparitor([compare_file])
-    except UnboundLocalError:
-        pass
 
     if count == 1:
         i = 1
@@ -187,7 +196,7 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                     comps = [int(x) for x in ds[0].split('-')]
                     compare_val = datetime(*comps)
 
-            except UnboundLocalError:
+            except (UnboundLocalError, AttributeError):
                 compare_val = False
 
             # TODO - apply number format WITHOUT a compare_val
@@ -224,7 +233,7 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
                     ds = compare_val.split(' ')
                     comps = [int(x) for x in ds[0].split('-')]
                     compare_val = datetime(*comps)
-            except UnboundLocalError:
+            except (UnboundLocalError, AttributeError):
                 compare_val = False
 
             # if there is something to compare it
@@ -247,12 +256,12 @@ def write_excel(source_file, count, workbook, compare_master=None) -> None:
             i += 1
 
 
-def run(compare_master=None):
+def run(compare_master=None, comparitor=None):
     """
     Run the compile function.
     """
     # if we want to do a comparison
-    if compare_master:
+    if comparitor:
 
         workbook = Workbook()
         count = 1
@@ -263,14 +272,16 @@ def run(compare_master=None):
                     (os.path.join(RETURNS_DIR, file)),
                     count=count,
                     workbook=workbook,
-                    compare_master=compare_master
+                    compare_master=None,
+                    comparitor=comparitor
                 )
                 count += 1
             elif fnmatch.fnmatch(file, '*.xlsm#' or fnmatch.fnmatch(file, '*.xlsx#')):
                 logger.warning("You have a file open in your spreadsheet program. Ignoring the lock file.")
             else:
                 logger.critical("There are no Excel files in {}. Copy some in there!".format(RETURNS_DIR))
-        OUTPUT_FILE = '/'.join([OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, "Q2")])
+        q_string = config['QuarterData']['CurrentQuarter'].split()[0]
+        OUTPUT_FILE = '/'.join([OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, q_string)])
         workbook.save(OUTPUT_FILE)
     else:
         # we just want a straight master with no change indication

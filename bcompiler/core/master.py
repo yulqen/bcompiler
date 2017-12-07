@@ -1,7 +1,7 @@
 import re
 import datetime
 import unicodedata
-from pathlib import PurePath
+from pathlib import Path
 from typing import List, Tuple, Iterable, Optional, Any
 
 from ..utils import project_data_from_master
@@ -94,7 +94,8 @@ class Master:
 
     @property
     def filename(self):
-        return self.path.name
+        p = Path(self.path)
+        return p.name
 
     @property
     def projects(self):

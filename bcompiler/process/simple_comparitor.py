@@ -134,7 +134,7 @@ class ParsedMaster:
         if self._query_for_key(data, key):
             return self._query_result
         else:
-            logger.warning("No key {} in comparing master".format(key))
+            logger.warning("No key {} in comparing master. Check for double spaces in cell in master. Skipping".format(key))
             return None
 
     def index_target_files_with_previous_master(self):
@@ -210,6 +210,10 @@ class FileComparitor:
         if self._comp_type == 'one':
             self._early_master = ParsedMaster(self._master)
             return self._early_master
+
+    @property
+    def data(self):
+        return self._early_master
 
     def compare(self, proj_index, key):
         """

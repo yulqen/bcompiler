@@ -342,9 +342,9 @@ CDEL Total Forecast,Finance & Benefits,D134,
 Non-Gov Total Forecast,Finance & Benefits,D135,
 Total Forecast,Finance & Benefits,D136,
 RDEL Total Variance,Finance & Benefits,E133,
-CDEL Total Variance ,Finance & Benefits,E134,
-Non Gov Total Variance ,Finance & Benefits,E135,
-Total Variance ,Finance & Benefits,E136,
+CDEL Total Variance,Finance & Benefits,E134,
+Non Gov Total Variance,Finance & Benefits,E135,
+Total Variance,Finance & Benefits,E136,
 RDEL Total Budget/BL SR (20/21),Finance & Benefits,H133,
 CDEL Total Budget/BL SR (20/21),Finance & Benefits,H134,
 Non-Gov Total Budget/BL SR (20/21),Finance & Benefits,H135,
@@ -395,10 +395,10 @@ Pre 17-18 RDEL Actual one off new costs,Finance & Benefits,C36,
 Pre 17-18 RDEL Actual recurring new costs,Finance & Benefits,D36,
 Pre 17-18 RDEL Actual recurring old costs,Finance & Benefits,E36,
 Pre 17-18 RDEL Actual Total,Finance & Benefits,F36,
-RDEL one off new cost spend 17-18  on profile ,Finance & Benefits,C37,
-RDEL recurring new cost spend 17-18 on profile ,Finance & Benefits,D37,
-RDEL recurring old cost spend 17-18 on profile ,Finance & Benefits,E37,
-RDEL total spend 17-18 on profile ,Finance & Benefits,F37,
+RDEL one off new cost spend 17-18 on profile,Finance & Benefits,C37,
+RDEL recurring new cost spend 17-18 on profile,Finance & Benefits,D37,
+RDEL recurring old cost spend 17-18 on profile,Finance & Benefits,E37,
+RDEL total spend 17-18 on profile,Finance & Benefits,F37,
 17-18 RDEL BL one off new costs,Finance & Benefits,C38,
 17-18 RDEL BL recurring new costs,Finance & Benefits,D38,
 17-18 RDEL BL recurring old costs,Finance & Benefits,E38,
@@ -585,10 +585,10 @@ Pre 17-18 CDEL Actual one off new costs,Finance & Benefits,C89,
 Pre 17-18 CDEL Actual recurring new costs,Finance & Benefits,D89,
 Pre 17-18 CDEL Actual recurring old costs,Finance & Benefits,E89,
 Pre 17-18 CDEL Actual Total,Finance & Benefits,F89,
-CDEL one off new cost spend in year on profile ,Finance & Benefits,C90,
-CDEL recurring new cost spend in year on profile ,Finance & Benefits,D90,
-CDEL recurring old cost spend in year on profile ,Finance & Benefits,E90,
-CDEL total spend in year on profile ,Finance & Benefits,F90,
+CDEL one off new cost spend in year on profile,Finance & Benefits,C90,
+CDEL recurring new cost spend in year on profile,Finance & Benefits,D90,
+CDEL recurring old cost spend in year on profile,Finance & Benefits,E90,
+CDEL total spend in year on profile,Finance & Benefits,F90,
 17-18 CDEL BL one off new costs,Finance & Benefits,C91,
 17-18 CDEL BL recurring new costs,Finance & Benefits,D91,
 17-18 CDEL BL recurring old costs,Finance & Benefits,E91,
@@ -737,15 +737,15 @@ Annual Steady State for CDEL recurring new costs,Finance & Benefits,D127,
 Year CDEL spend stops,Finance & Benefits,C128,Years (Spend),
 Unprofiled Non-Gov BL,Finance & Benefits,H70,
 Unprofiled Non-Gov Forecast,Finance & Benefits,H71,
-Total BL Non-Gov ,Finance & Benefits,H135,
-Total Forecast Non-Gov ,Finance & Benefits,I135,
-Pre 14-15 BL Non-Gov ,Finance & Benefits,H27,
+Total BL Non-Gov,Finance & Benefits,H135,
+Total Forecast Non-Gov,Finance & Benefits,I135,
+Pre 14-15 BL Non-Gov,Finance & Benefits,H27,
 Pre 14-15 Forecast Non-Gov BL,Finance & Benefits,H28,
-14-15 BL Non-Gov ,Finance & Benefits,H29,
+14-15 BL Non-Gov,Finance & Benefits,H29,
 14-15 Actual Non-Gov,Finance & Benefits,H30,
-15-16 BL Non-Gov ,Finance & Benefits,H31,
-15-16 Actual Non-Gov ,Finance & Benefits,H32,
-16-17 BL Non-Gov ,Finance & Benefits,H33,
+15-16 BL Non-Gov,Finance & Benefits,H31,
+15-16 Actual Non-Gov,Finance & Benefits,H32,
+16-17 BL Non-Gov,Finance & Benefits,H33,
 16-17 Actual Non-Gov,Finance & Benefits,H34,
 Pre 17-18 BL Non-Gov,Finance & Benefits,H35,
 Pre 17-18 Actual Non-Gov,Finance & Benefits,H36,
@@ -755,32 +755,32 @@ Pre 17-18 Actual Non-Gov,Finance & Benefits,H36,
 Pre 18-19 BL Non-Gov,Finance & Benefits,H40,
 Pre 18-19 Forecast Non-Gov,Finance & Benefits,H41,
 18-19 BL Non-Gov,Finance & Benefits,H42,
-18-19 Forecast Non-Gov ,Finance & Benefits,H43,
+18-19 Forecast Non-Gov,Finance & Benefits,H43,
 Pre 19-20 BL Non-Gov,Finance & Benefits,H44,
 Pre 19-20 Forecast Non-Gov,Finance & Benefits,H45,
-19-20 BL Non-Gov ,Finance & Benefits,H46,
+19-20 BL Non-Gov,Finance & Benefits,H46,
 19-20 Forecast Non-Gov,Finance & Benefits,H47,
 Pre 20-21 BL Non-Gov,Finance & Benefits,H48,
 Pre 20-21 Forecast Non-Gov,Finance & Benefits,H49,
-20-21 BL Non-Gov ,Finance & Benefits,H50,
+20-21 BL Non-Gov,Finance & Benefits,H50,
 20-21 Forecast Non-Gov,Finance & Benefits,H51,
 Pre 21-22 BL Non-Gov,Finance & Benefits,H52,
 Pre 21-22 Forecast Non-Gov,Finance & Benefits,H53,
-21-22 BL Non-Gov ,Finance & Benefits,H54,
+21-22 BL Non-Gov,Finance & Benefits,H54,
 21-22 Forecast Non-Gov,Finance & Benefits,H55,
 Pre 22-23 BL Non-Gov,Finance & Benefits,H56,
 Pre 22-23 Forecast Non-Gov,Finance & Benefits,H57,
-22-23 BL Non-Gov ,Finance & Benefits,H58,
+22-23 BL Non-Gov,Finance & Benefits,H58,
 22-23 Forecast Non-Gov,Finance & Benefits,H59,
-23-24 BL Non-Gov ,Finance & Benefits,H60,
+23-24 BL Non-Gov,Finance & Benefits,H60,
 23-24 Forecast Non-Gov,Finance & Benefits,H61,
-24-25 BL Non-Gov ,Finance & Benefits,H62,
+24-25 BL Non-Gov,Finance & Benefits,H62,
 24-25 Forecast Non-Gov,Finance & Benefits,H63,
-25-26 BL Non-Gov ,Finance & Benefits,H64,
+25-26 BL Non-Gov,Finance & Benefits,H64,
 25-26 Forecast Non-Gov,Finance & Benefits,H65,
-26-27 BL Non-Gov ,Finance & Benefits,H66,
+26-27 BL Non-Gov,Finance & Benefits,H66,
 26-27 Forecast Non-Gov,Finance & Benefits,H67,
-27-28 BL Non-Gov ,Finance & Benefits,H68,
+27-28 BL Non-Gov,Finance & Benefits,H68,
 27-28 Forecast Non-Gov,Finance & Benefits,H69,
 Unprofiled BL Non-Gov,Finance & Benefits,H70,
 Unprofiled Forecast-Gov,Finance & Benefits,D71,
@@ -827,7 +827,7 @@ Pre 22-23 Actual – Income both Revenue and Capital,Finance & Benefits,I57,
 26-27 Forecast – Income both Revenue and Capital,Finance & Benefits,I67,
 27-28 BL – Income both Revenue and Capital,Finance & Benefits,I68,
 27-28 Forecast – Income both Revenue and Capital,Finance & Benefits,I69,
-Unprofiled BL Income ,Finance & Benefits,I70,
+Unprofiled BL Income,Finance & Benefits,I70,
 Unprofiled Forecast Income,Finance & Benefits,I71,
 Total Baseline - Income both Revenue and Capital,Finance & Benefits,I72,
 Total Forecast - Income both Revenue and Capital,Finance & Benefits,I73,
@@ -1270,7 +1270,7 @@ AA No vacancies,Resource,G16,
 AA Total,Resource,I16,
 Digital No public sector,Resource,C25,
 Digital No externals,Resource,E25,
-Digital  No vacancies,Resource,G25,
+Digital No vacancies,Resource,G25,
 IT No public sector,Resource,C26,
 IT No externals,Resource,E26,
 IT No vacancies,Resource,G26,
@@ -1454,7 +1454,7 @@ def datamap():
     return '/'.join([SOURCE_DIR, name])
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def populated_template():
     gen_template(BICC_TEMPLATE_FOR_TESTS, SOURCE_DIR)
     datamap()
@@ -1475,7 +1475,38 @@ def populated_template():
                                     .format(fl)])
             wb.save(output_file)
     # we save 10 of them but only return the first for testing
-    return output_file
+    yield output_file
+    fs = [f for f in os.listdir(RETURNS_DIR)]
+    for f in fs:
+        os.remove(os.path.join(RETURNS_DIR, f))
+
+
+
+@pytest.fixture
+def populated_template_comparison():
+    gen_template(BICC_TEMPLATE_FOR_TESTS, SOURCE_DIR)
+    datamap()
+    dm = "/".join([SOURCE_DIR, 'datamap.csv'])
+    wb = load_workbook("/".join([SOURCE_DIR, 'gen_bicc_template.xlsm']), keep_vba=True)
+    output_file = "/".join([RETURNS_DIR, 'populated_test_template.xlsm'])
+    for fl in range(3):
+        with open(dm, 'r', newline='') as f:
+            reader = csv.DictReader(f)
+            for line in reader:
+                if line['cell_key'].startswith('Date'):  # we want to test date strings
+                    wb[line['template_sheet']][line['cell_reference']].value = "20/06/2017"
+                elif line['cell_key'].startswith('SRO Tenure'):  # we want to test date strings
+                    wb[line['template_sheet']][line['cell_reference']].value = "10/08/2017"
+                else:
+                    wb[line['template_sheet']][line['cell_reference']].value = " ".join([line['cell_key'].upper(), str(fl)])
+            output_file = "/".join([RETURNS_DIR, 'populated_test_template{}.xlsm'
+                                    .format(fl)])
+            wb.save(output_file)
+    # we save 3 of them but only return the first for testing
+    yield output_file
+    fs = [f for f in os.listdir(RETURNS_DIR)]
+    for f in fs:
+        os.remove(os.path.join(RETURNS_DIR, f))
 
 
 def split_datamap_line(line: tuple):
@@ -1616,9 +1647,9 @@ def previous_quarter_master():
             ix = next(g).split(',')[0]
             ws[f"A{str(item[0])}"] = ix
             if item[1].startswith('Date'):  # testing for date objects
-                ws[f"B{str(item[0])}"] = date(2017, 6, 20)
-                ws[f"C{str(item[0])}"] = date(2017, 6, 20)
-                ws[f"D{str(item[0])}"] = date(2017, 6, 20)
+                ws[f"B{str(item[0])}"] = date(2012, 6, 20)
+                ws[f"C{str(item[0])}"] = date(2012, 6, 20)
+                ws[f"D{str(item[0])}"] = date(2012, 6, 20)
             elif item[1].startswith('SRO Tenure'):  # testing for date objects
                 ws[f"B{str(item[0])}"] = date(2017, 8, 10)
                 ws[f"C{str(item[0])}"] = date(2017, 8, 10)

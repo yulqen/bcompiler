@@ -13,12 +13,10 @@ import sys
 from typing import List, Tuple, Dict, Optional
 
 from collections import namedtuple
-from pathlib import PurePath, Path
-from openpyxl import load_workbook, Workbook
+from openpyxl import Workbook
 from openpyxl.chart import ScatterChart, Reference, Series
 
 from ..process.cleansers import DATE_REGEX
-from ..utils import project_data_from_master
 from ..utils import ROOT_PATH, runtime_config, CONFIG_FILE
 
 from ..core import Quarter, Master, Row

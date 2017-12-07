@@ -1,6 +1,16 @@
 Changes
 ~~~~~~~
 
+v1.3.10
+######
+
+* Fixed bug where rcf analyser wouldn't run with no arguments
+* Removed necessity to have to stipulate different keys for Q3 and Q4 in financial
+  analysis
+* Improved test speed; better test coverage
+* Feneral improvements and rationalisations in template population code
+* Bug fixes
+
 v1.3.9
 ######
 

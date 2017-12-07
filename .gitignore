@@ -3,3 +3,6 @@ DfT_GMPP_Return.xlsx
 db.json
 .mypy_cache/
 dist/*
+.pdb-pyhist
+bcompiler/prof/*
+bcompiler/htmlcov/

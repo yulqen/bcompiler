@@ -65,8 +65,6 @@ def date_range_milestones(source_sheet, output_sheet, cols: tuple,
                     row=current_row,
                     column=3,
                     value=(time_line_date - base_date).days)
-                logger.debug(f"Using date range: written {time_line_date} to "
-                             f"row: {current_row} col: {column}")
         except TypeError:
             pass
         finally:
@@ -86,8 +84,6 @@ def date_diff_column(source_sheet, output_sheet, cols: tuple, start_row: int, co
             difference = (time_line_date - today).days
             if difference in range(1, interested_range):
                 output_sheet.cell(row=current_row, column=3, value=difference)
-                logger.debug(f"Not using date range: written {time_line_date} to "
-                             f"row: {current_row} col: {column}")
         except TypeError:
             pass
         finally:
@@ -145,7 +141,6 @@ def gather_data(start_row: int,
     for i in range(block_start_row, BLOCK_END, BLOCK_SKIP):
         val = sheet.cell(row=i, column=col).value
         newsheet.cell(row=x, column=1, value=val)
-        logger.debug(f"Writing {val} to row: {x} col: 1")
         x += 1
     x = start_row
     for i in range(block_start_row + FORECAST_ACTUAL_SKIP, BLOCK_END + 1, BLOCK_SKIP):
@@ -153,7 +148,6 @@ def gather_data(start_row: int,
         if isinstance(val, datetime.datetime):
             val = val.date()
         newsheet.cell(row=x, column=2, value=val)
-        logger.debug(f"Writing {val} to row: {x} col: 2")
         x += 1
 
     # process the sheet to populate Column B
@@ -168,7 +162,6 @@ def gather_data(start_row: int,
 
     for i in range(start_row, start_row + MILESTONES_TO_COLLECT):
         newsheet.cell(row=i, column=4, value=project_number)
-        logger.debug(f"Writing {project_number} to row: {i} col: 4")
 
     return newwb, start_row
 

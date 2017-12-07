@@ -25,6 +25,7 @@ ptpython = "*"
 mypy = "*"
 pytest-profiling = "*"
 cprofilev = "*"
+pytest-cov = "*"
 
 
 [requires]

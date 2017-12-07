@@ -1,6 +1,14 @@
 Changes
 ~~~~~~~
 
+v1.3.10
+######
+
+* fixed bug where rcf analyser wouldn't run with no arguments
+* removed necessity to have to stipulate different keys for Q3 and Q4 in financial
+  analysis
+
+
 v1.3.9
 ######
 

@@ -26,3 +26,8 @@ def test_bcompiler_count_rows_csv(populated_template):
     with open(os.path.join(OUTPUT_DIR, 'row_count.csv'), 'r') as f:
         reader = csv.reader(f)
         assert next(reader)[0] == 'bicc_template.xlsm'
+
+
+def test_bcompiler_count_rows_quiet(populated_template):
+    output = subprocess.run(['bcompiler', '-r', '--quiet'], stdout=subprocess.PIPE, encoding='utf-8')
+    assert output.stdout.startswith('#')

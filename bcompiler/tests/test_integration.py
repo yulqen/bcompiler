@@ -1,6 +1,9 @@
+import csv
+import os
 import subprocess
 
 from bcompiler import __version__
+from ..utils import OUTPUT_DIR
 
 
 def test_bcompiler_help():
@@ -16,3 +19,10 @@ def test_bcompiler_version():
 def test_bcompiler_count_rows(populated_template):
     output = subprocess.run(['bcompiler', '-r'], stdout=subprocess.PIPE, encoding='utf-8')
     assert output.stdout.startswith('Workbook')
+
+
+def test_bcompiler_count_rows_csv(populated_template):
+    subprocess.run(['bcompiler', '-r', '--csv'])
+    with open(os.path.join(OUTPUT_DIR, 'row_count.csv'), 'r') as f:
+        reader = csv.reader(f)
+        assert next(reader)[0] == 'bicc_template.xlsm'

@@ -603,10 +603,9 @@ def main():
         parse_csv_to_file(args['transpose'][0])
         return
     if args['populate']:
-        master = '{}master.csv'.format(working_directory('source'))
+        master = config['Master']['name']
         clean_datamap(DATAMAP_MASTER_TO_RETURN)
-        parse_csv_to_file(master)
-        populate_blank_bicc_form(master, args['populate'])
+        populate_blank_bicc_form(os.path.join(ROOT_PATH, master), args['populate'])
         return
     if args['all']:
         master = os.path.join(working_directory('source'), 'master.csv')

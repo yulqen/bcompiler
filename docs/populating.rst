@@ -1,7 +1,7 @@
 Populating templates based on a master spreadsheet
 --------------------------------------------------
 
-- Ensure the master spreadsheet is in the ``Documents/bcompiler/source`` directory.
+- Ensure the master spreadsheet is in the ``Documents/bcompiler`` directory.
 - Ensure the filename of the master spreadsheet is included in the ``[Master]`` section in ``config.ini``.
 - In a command window, run ``bcompiler -a``.
 - The resulting files will be created in ``Documents/bcompiler/output``.

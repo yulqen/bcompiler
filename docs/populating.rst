@@ -5,9 +5,19 @@ Populating templates based on a master spreadsheet
 - Ensure the filename of the master spreadsheet is included in the ``[Master]`` section in ``config.ini``.
 - In a command window, run ``bcompiler -a``.
 - The resulting files will be created in ``Documents/bcompiler/output``.
+- Carry out RAG-colour and Data Validation handling as :ref:`described <macro-handling>`.
+- Ensure each sheet and each workbook is protected using a password (*View*, *Protect Sheet* and
+  *View*, *Protect Workbook*).
+  
+.. warning::
+    Make sure the password is retained by all admin users. You will not be able
+    to amend the worksheet or workbook if the password is forgotten.
 
-Handling RAG-color and Data Validation macros
-+++++++++++++++++++++++++++++++++++++++++++++
+
+.. _macro-handling:
+
+Handling RAG-colour and Data Validation macros
+++++++++++++++++++++++++++++++++++++++++++++++
 
 The BICC data collection process requires that 'blank' templates are sent to
 project teams using a number of data validation rules. For example, certain

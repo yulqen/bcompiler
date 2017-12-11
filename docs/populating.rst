@@ -8,6 +8,7 @@ Populating templates based on a master spreadsheet
 - Carry out RAG-colour and Data Validation handling as :ref:`described <macro-handling>`.
 - Ensure each sheet and each workbook is protected using a password (*View*, *Protect Sheet* and
   *View*, *Protect Workbook*).
+- Save the workbook
   
 .. warning::
     Make sure the password is retained by all admin users. You will not be able

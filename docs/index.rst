@@ -15,7 +15,9 @@ A tool for managing DfT BICC data.
    introduction
    installation
    Initialisation and settings <initialisation>
-   Typical use <use>
+   Populating templates from a master <populating>
+   Compiling from templates to a master <compiling>
+   Usage tips <use>
    analysers
    roadmap
    changes

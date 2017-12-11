@@ -1,28 +1,5 @@
 .. _use:
 
-Using bcompiler
-===============
-
-Creating a master spreadsheet from populated templates
--------------------------------------------------------
-
-- Ensure all populated returns are copied to the ``Documents/bcompiler/source/returns`` directory. Ensure no other files are present in this directory.
-- In a command window, run ``bcompiler`` (no arguments are required).
-- The resulting master file will be created in ``Documents/bcompiler/output`` directory.
-- To compare values from a previous master, run ``bcompiler --compare <PATH-TO-MASTER-TO-COMPARE>``
-
-
-
-Populating templates based on a master spreadsheet
---------------------------------------------------
-
-- Ensure the master spreadsheet is in the ``Documents/bcompiler/source`` directory.
-- Ensure the filename of the master spreadsheet is included in the ``[Master]`` section in ``config.ini``.
-- In a command window, run ``bcompiler -a``.
-- The resulting files will be created in ``Documents/bcompiler/output``.
-
-
-
 Check integrity of populated template files
 -------------------------------------------
 

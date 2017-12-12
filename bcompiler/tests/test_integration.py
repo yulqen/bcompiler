@@ -31,3 +31,8 @@ def test_bcompiler_count_rows_csv(populated_template):
 def test_bcompiler_count_rows_quiet(populated_template):
     output = subprocess.run(['bcompiler', '-r', '--quiet'], stdout=subprocess.PIPE, encoding='utf-8')
     assert output.stdout.startswith('#')
+
+
+#def test_bcompiler_populate_all_templates(master):
+#    output = subprocess.run(['bcompiler', '-a'], stdout=subprocess.PIPE, encoding='utf-8')
+#    assert output.stdout

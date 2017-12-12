@@ -6,8 +6,8 @@ Populating templates based on a master spreadsheet
 - In a command window, run ``bcompiler -a``.
 - The resulting files will be created in ``Documents/bcompiler/output``.
 - Carry out RAG-colour and Data Validation handling as :ref:`described <macro-handling>`.
-- Ensure each sheet and each workbook is protected using a password (*View*, *Protect Sheet* and
-  *View*, *Protect Workbook*).
+- Ensure each sheet and each workbook is protected using a password (either *View*, *Protect Sheet* and
+  *View*, *Protect Workbook*, or by running the macro *Protect_All_Sheets*).
 - Save the workbook
   
 .. warning::
@@ -46,7 +46,8 @@ Unfortunately, the macros have to be run on each individual file.
 Ensure no other Excel files are open on your machine to prevent additional
 macros being listed. Then, open each exported populated template in turn, and:
 
-2. Unprotect each sheet (*Review*, *Unprotect Sheet*)
+2. Unprotect each sheet (either *Review*, *Unprotect Sheet*, or run the
+   *Unprotect_All_Sheets* macro)
 3. Run the *DataVerification* macro (*View*, *Macros*, highlight
    *DataVerification*, click *Run*)
 4. Run the *RAG_Conditional* macro (*View*, *Macros*, highlight

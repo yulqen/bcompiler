@@ -1,6 +1,13 @@
 Populating templates based on a master spreadsheet
 --------------------------------------------------
 
+.. attention::
+    The macros explained in the :ref:`macro-handling` section below have been
+    replaced with a single macro calledd *UniversalMacro* which will unlock all
+    worksheets in the template, run both formatting macros and re-lock sheets
+    Use this unless you need to debug a particular step, or you're
+    a maschocist...
+
 - Ensure the master spreadsheet is in the ``Documents/bcompiler`` directory.
 - Ensure the filename of the master spreadsheet is included in the ``[Master]`` section in ``config.ini``.
 - In a command window, run ``bcompiler -a``.

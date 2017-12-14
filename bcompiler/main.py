@@ -370,11 +370,11 @@ def _initial_clean(key: str) -> str:
     return key
 
 
-def populate_blank_bicc_form(source_master_file, proj_num):
+def populate_blank_bicc_form(master_obj: Master, proj_num):
     datamap = Datamap()
     datamap.cell_map_from_csv(os.path.join(SOURCE_DIR, config['Datamap']['name']))
-    proj_data = project_data_from_master(source_master_file)
-    ls = get_list_projects(source_master_file)
+    proj_data = master_obj.data
+    ls = master_obj.projects
     test_proj = ls[int(proj_num)]
     logger.info("Processing project {}.".format(test_proj))
     test_proj_data = proj_data[test_proj]
@@ -513,16 +513,18 @@ def pop_all():
     Populates the blank bicc_template file with data from the master, one
     form for each project dataset.
     """
-    import pdb; pdb.set_trace()  # XXX BREAKPOINT
     m_path = os.path.join(ROOT_PATH, config['Master']['name'])
     q_str = config['QuarterData']['CurrentQuarter']
     q = Quarter(int(q_str[1]), int(q_str[-4:]))
     m = Master(q, m_path)
+    if m.duplicate_keys(True):
+        logger.critical("Duplicate keys will not migrate to templates - you must "
+                        "remove duplicates to migrate all data from the master!")
     number_of_projects = len(m.projects)
     # we need to iterate through the master based on indexes so we use a range
     # based on the number of projects
     for p in range(number_of_projects):
-        populate_blank_bicc_form(os.path.join(ROOT_PATH, config['Master']['name']), p)
+        populate_blank_bicc_form(m, p)
 
 
 def get_dropdown_data(header=None):

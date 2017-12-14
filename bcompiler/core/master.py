@@ -123,9 +123,11 @@ class Master:
         if to_log and len(dups) > 0:
             for x in dups:
                 logger.warning(f"{self.path} contains duplicate key: \"{x}\". Masters cannot contain duplicate keys. Rename them.")
+            return True
         elif to_log and len(dups) == 0:
             logger.info(f"No duplicate keys in {self.path}")
+            return False
         elif len(dups) > 0:
             return dups
         else:
-            return
+            return False

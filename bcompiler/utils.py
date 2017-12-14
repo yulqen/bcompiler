@@ -7,6 +7,7 @@ import os
 from collections import OrderedDict
 from datetime import date, datetime
 from math import isclose
+from typing import Dict, Any
 
 import configparser
 
@@ -205,7 +206,7 @@ def get_relevant_names(project_name, project_data):
     return (sro_d, pd_d)
 
 
-def project_data_from_master(master_file: str, opened_wb=False):
+def project_data_from_master(master_file: str, opened_wb=False) -> Dict[str, Any]:
     if opened_wb is False:
         wb = load_workbook(master_file)
         ws = wb.active
@@ -226,6 +227,8 @@ def project_data_from_master(master_file: str, opened_wb=False):
                     d_value = date(cell.value.year, cell.value.month, cell.value.day)
                     p_dict[project_name][val] = d_value
                 else:
+                    if val in p_dict[project_name].keys():
+                        logger.critical(f"\"{val}\" is a duplicate. Duplicate keys in master not allowed! Please rename the key.")
                     p_dict[project_name][val] = cell.value
     # remove any "None" projects that were pulled from the master
     try:

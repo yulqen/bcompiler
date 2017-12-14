@@ -1,6 +1,13 @@
 Changes
 ~~~~~~~
 
+v1.3.11
+#######
+
+* significant speed optimisation when using ``bcompiler -a`` option
+* when doing ``bcompiler -a`` will warn if master contains duplicate keys,
+  which aren't allowed
+
 v1.3.10
 #######
 

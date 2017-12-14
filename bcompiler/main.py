@@ -34,6 +34,7 @@ from openpyxl.worksheet.datavalidation import DataValidation
 
 import bcompiler.compile as compile_returns
 from bcompiler import __version__
+from bcompiler.core import Master, Quarter
 from bcompiler.analysers import annex_run
 from bcompiler.analysers import financial_analyser_run
 from bcompiler.analysers import keyword_run
@@ -512,7 +513,12 @@ def pop_all():
     Populates the blank bicc_template file with data from the master, one
     form for each project dataset.
     """
-    number_of_projects = len(get_list_projects(os.path.join(ROOT_PATH, config['Master']['name'])))
+    import pdb; pdb.set_trace()  # XXX BREAKPOINT
+    m_path = os.path.join(ROOT_PATH, config['Master']['name'])
+    q_str = config['QuarterData']['CurrentQuarter']
+    q = Quarter(int(q_str[1]), int(q_str[-4:]))
+    m = Master(q, m_path)
+    number_of_projects = len(m.projects)
     # we need to iterate through the master based on indexes so we use a range
     # based on the number of projects
     for p in range(number_of_projects):

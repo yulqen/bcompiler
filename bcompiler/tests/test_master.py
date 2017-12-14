@@ -1,4 +1,5 @@
 import pytest
+import logging
 
 from ..core import Master, Quarter, ProjectData
 
@@ -93,9 +94,7 @@ def test_pull_iterable_from_master_based_on_key_flat(master):
     ]
 
 
-#def test_multiple_masters(master, previous_quarter_master):
-#    q2_2017 = Quarter(2, 2017)
-#    q1_2017 = Quarter(1, 2017)
-#    m2 = Master(q1_2017, master)
-#    m1 = Master(q1_2017, previous_quarter_master)
-
+def test_duplicate_keys_in_master(master, caplog):
+    m = Master(Quarter(1, 2017), master)
+    m.duplicate_keys(True)
+    assert "WARNING" in caplog.text

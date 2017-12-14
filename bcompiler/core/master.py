@@ -1,11 +1,16 @@
 import re
 import datetime
+import logging
 import unicodedata
 from pathlib import Path
 from typing import List, Tuple, Iterable, Optional, Any
 
 from ..utils import project_data_from_master
 from ..process.cleansers import DATE_REGEX_4
+
+from openpyxl import load_workbook
+
+logger = logging.getLogger('bcompiler.utils')
 
 
 class ProjectData:
@@ -100,3 +105,29 @@ class Master:
     @property
     def projects(self):
         return self._project_titles
+
+    def duplicate_keys(self, to_log=None):
+        wb = load_workbook(self.path)
+        ws = wb.active
+        col_a = next(ws.iter_cols())
+        col_a = [item.value for item in col_a]
+        seen: set = set()
+        uniq = []
+        dups: set = set()
+        for x in col_a:
+            if x not in seen:
+                uniq.append(x)
+                seen.add(x)
+            else:
+                dups.add(x)
+        if to_log and len(dups) > 0:
+            for x in dups:
+                logger.warning(f"{self.path} contains duplicate key: \"{x}\". Masters cannot contain duplicate keys. Rename them.")
+            return True
+        elif to_log and len(dups) == 0:
+            logger.info(f"No duplicate keys in {self.path}")
+            return False
+        elif len(dups) > 0:
+            return dups
+        else:
+            return False

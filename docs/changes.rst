@@ -1,6 +1,12 @@
 Changes
 ~~~~~~~
 
+v1.3.13
+#######
+
+* small change to financial analyser to allow additional keys to be collected
+  in certain circumstances
+
 v1.3.12
 #######
 

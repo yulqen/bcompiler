@@ -1,6 +1,11 @@
 Changes
 ~~~~~~~
 
+v1.3.12
+#######
+
+* improvements to ``bcompiler-init`` bootstrapping functionality
+
 v1.3.11
 #######
 

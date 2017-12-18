@@ -8,6 +8,10 @@ import shutil
 import re
 import subprocess
 
+from colorama import init, deinit, Fore, Back, Style
+
+init()
+
 DOCS = os.path.join(os.path.expanduser('~'), 'Documents')
 BCOMPILER_WORKING_D = 'bcompiler'
 ROOT_PATH = os.path.join(DOCS, BCOMPILER_WORKING_D)
@@ -21,7 +25,11 @@ CONFIG_FILE = os.path.join(SOURCE_DIR, 'config.ini')
 GIT_COMMANDS = {
     'untracked': 'git ls-files --others --exclude-standard',
     'modified': 'git ls-files -m',
-    'log': 'git log'
+    'log': 'git log',
+    'add': 'git add',
+    'commit': 'git commit -m',
+    'checkout': 'git checkout -- ',
+    'push': 'git push origin master',
 }
 
 logger = logging.getLogger('bcompiler.compiler')
@@ -101,14 +109,19 @@ for comp in AuxReport._check_components:
     setattr(AuxReport, "_".join([comp, 'files']), [])
 
 
-def _git_command(opts: str) -> str:
+def _git_command(opts: str, *args):
     """
     Wraps a string git command with a subprocess.run() call, encoding
     stdout.
     :param opts: git command as a str
     :return: str of stdout of command
     """
-    return subprocess.run(opts.split(), encoding='utf-8',
+    if args:
+        args = list(args)
+        command = opts.split() + args
+    else:
+        command = opts.split()
+    return subprocess.run(command, encoding='utf-8',
                           stdout=subprocess.PIPE).stdout
 
 
@@ -121,11 +134,23 @@ def _git_check_untracked(dir: str) -> None:
     print("Checking for untracked files...\n")
     os.chdir(dir)
     g_output = _git_command(GIT_COMMANDS['untracked']).split('\n')
-    if g_output:
+    if len(g_output) > 1:
         print("You have files in your auxiliary folder that have not been added to the repository.\n")
         for f in g_output:
-            print("\t{}".format(f))
-    _discover_master_file(g_output)
+            print(Fore.YELLOW + Style.BRIGHT + "\t{}".format(f))
+            print(Style.RESET_ALL)
+        _discover_master_file(g_output)
+        for f in g_output[:-1]:
+            add = input(f"Do you wish to add {f} to the repository? (y/n/q) ")
+            if add in ['y', 'Yes', 'Y']:
+                mes = input("Please type a short commit message to explain the change:")
+                _git_command(GIT_COMMANDS['add'], f).split('\n')
+                _git_command(GIT_COMMANDS['commit'], mes).split('\n')
+                push_output = _git_command(GIT_COMMANDS['push'])
+                print(push_output)
+            else:
+                deinit()
+                sys.exit(0)
 
 
 def _discover_master_file(g_output: List[str]) -> None:
@@ -136,14 +161,15 @@ def _discover_master_file(g_output: List[str]) -> None:
     :return:
     """
     for f in g_output:
-        master_f = re.match(r'^.+(?P<master_file>(master|MASTER|Master).+xlsx)', f)
+        master_f = re.match(r'^(master|MASTER|Master).+xlsx', f)
         if master_f:
             print(
                 "It looks as though you have a master document in the directory: \n\n\t{}.\n\nPlease remove the master file.\n\n"
                 "Master files should not be committed to the auxiliary files repository and "
                 "if you we are going to wipe out the repository and start again, you will lose "
                 "the master.\n\nPlease copy to a safe directory somewhere, such as your Desktop before "
-                "proceeding.".format(master_f.group('master_file')))
+                "proceeding.".format(master_f.group(0)))
+            sys.exit(0)
 
 
 def _git_check_modified_files(dir: str) -> None:
@@ -156,11 +182,36 @@ def _git_check_modified_files(dir: str) -> None:
     os.chdir(dir)
     g_output = _git_command(GIT_COMMANDS['modified']).split('\n')
     if len(g_output) > 1:
+        print("You have modified files and your repository is not clean.\n")
         for i in g_output:
             mod = re.match(r'(?P<file>.+)$', i)
             if mod:
-                print("You have modified files and your repository is not clean.\n")
-                print("File: {}".format(mod.group('file')))
+                print("File: " + Fore.GREEN + Style.BRIGHT + "{}\n".format(mod.group('file')))
+                print(Style.RESET_ALL)
+                commit = input("Do you want to commit these changes to the repository? (y/n/q) ")
+                if commit in ['n', 'No', 'NO', 'N']:
+                    revert = input(f"In which case, do you wish to revert this file to its "
+                                   f"original state? (RECOMMENDED) (y/n/q) ")
+                    if revert in ['y', 'Yes', 'YES', 'Y']:
+                        _git_command(GIT_COMMANDS['checkout'], mod.group(0))
+                        print(f"Reverted changes to {mod.group(0)}\n")
+                    elif revert in ['n', 'No', 'N', 'NO']:
+                        print(f"Leaving your local repository in a dirty state - you have been warned!\n")
+                    else:
+                        deinit()
+                        sys.exit(0)
+                elif commit in ['y', 'Y', 'Yes']:
+                    mes = input("Please type a short commit message to explain the change: ")
+                    _git_command(GIT_COMMANDS['add'], mod.group('file')).split('\n')
+                    print(f"Staged changes to {mod.group('file')}\n")
+                    _git_command(GIT_COMMANDS['commit'], mes).split('\n')
+                    print(f"Committed changes to {mod.group('file')}\n")
+                    push_output = _git_command(GIT_COMMANDS['push'])
+                    print(push_output)
+                else:
+                    deinit()
+                    sys.exit(0)
+    else:
         print("You do not have modified files in the auxiliary directory.\n\n")
 
 
@@ -169,19 +220,16 @@ def main():
     Purpose of this is to bootstrap the system.
     """
     if os.path.exists(ROOT_PATH):
-        response = input(
-            "This will REMOVE any existing directories containing bcompiler " "auxiliary files (e.g. MyDocuments/bcompiler/source or ~/Documents/"
-            "bcompiler/source, depending on your operating system.\n Do you "
-            "wish to continue? (y/n) ")
-        if response in ['N', 'No', 'NO', 'n']:
-            sys.exit()
-        else:
-            # print(f"Deleting {SOURCE_DIR} and all files within")
-            # shutil.rmtree(ROOT_PATH)
-            # print("Old auxiliary directory removed")
-            _git_check_modified_files(SOURCE_DIR)
-            _git_check_untracked(SOURCE_DIR)
-            sys.exit()
+        print(
+            f"There is currently a directory set up at {ROOT_PATH}.\n"
+            f"Checking for any changes you have made to auxiliary/config files..."
+        )
+        # print(f"Deleting {SOURCE_DIR} and all files within")
+        # shutil.rmtree(ROOT_PATH)
+        # print("Old auxiliary directory removed")
+        _git_check_modified_files(SOURCE_DIR)
+        _git_check_untracked(SOURCE_DIR)
+        sys.exit()
     else:
         print("There is no directory structure set up.")
         print("Creating it.")

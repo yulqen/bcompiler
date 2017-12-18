@@ -136,14 +136,15 @@ def _discover_master_file(g_output: List[str]) -> None:
     :return:
     """
     for f in g_output:
-        master_f = re.match(r'^.+(?P<master_file>(master|MASTER|Master).+xlsx)', f)
+        master_f = re.match(r'^(master|MASTER|Master).+xlsx', f)
         if master_f:
             print(
                 "It looks as though you have a master document in the directory: \n\n\t{}.\n\nPlease remove the master file.\n\n"
                 "Master files should not be committed to the auxiliary files repository and "
                 "if you we are going to wipe out the repository and start again, you will lose "
                 "the master.\n\nPlease copy to a safe directory somewhere, such as your Desktop before "
-                "proceeding.".format(master_f.group('master_file')))
+                "proceeding.".format(master_f.group(0)))
+            sys.exit(0)
 
 
 def _git_check_modified_files(dir: str) -> None:

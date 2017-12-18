@@ -1,18 +1,18 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d43aa8756405e137133aa5a424a762986804a925d4ab9630c539b722aeb46d12"
+            "sha256": "e30bf6246cd6f9608253bf9ea05acab7e793661a03cd8aed23bdd12150393c1c"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
-            "implementation_version": "3.6.3",
+            "implementation_version": "3.6.2",
             "os_name": "posix",
             "platform_machine": "x86_64",
             "platform_python_implementation": "CPython",
-            "platform_release": "4.13.0-1-amd64",
+            "platform_release": "4.9.0-4-amd64",
             "platform_system": "Linux",
-            "platform_version": "#1 SMP Debian 4.13.13-1 (2017-11-16)",
-            "python_full_version": "3.6.3",
+            "platform_version": "#1 SMP Debian 4.9.51-1 (2017-09-28)",
+            "python_full_version": "3.6.2",
             "python_version": "3.6",
             "sys_platform": "linux"
         },
@@ -29,6 +29,13 @@
         ]
     },
     "default": {
+        "colorama": {
+            "hashes": [
+                "sha256:463f8483208e921368c9f306094eb6f725c6ca42b0f97e313cb5d5512459feda",
+                "sha256:48eb22f4f8461b1df5734a074b57042430fb06e1d61bd1e11b078c0fe6d7a1f1"
+            ],
+            "version": "==0.3.9"
+        },
         "colorlog": {
             "hashes": [
                 "sha256:d1b20ea87caab804803db445bcdc2084668005eab5353cb551e3913a19ad7523",
@@ -237,10 +244,10 @@
         },
         "jedi": {
             "hashes": [
-                "sha256:3af518490ffcd00a3074c135b42511e081575e9abd115c216a34491411ceebb0",
-                "sha256:f6d5973573e76b1fd2ea75f6dcd6445d02d41ff3af5fc61b275b4e323d1dd396"
+                "sha256:d795f2c2e659f5ea39a839e5230d70a0b045d0daee7ca2403568d8f348d0ad89",
+                "sha256:d6e799d04d1ade9459ed0f20de47c32f2285438956a677d083d3c98def59fa97"
             ],
-            "version": "==0.11.0"
+            "version": "==0.11.1"
         },
         "jinja2": {
             "hashes": [
@@ -280,10 +287,10 @@
         },
         "mypy": {
             "hashes": [
-                "sha256:0d66ca31ec6a51e465f68634e9daf363b877f0caa19a7f1d6319a743fb709d25",
-                "sha256:58302374890b9803b19a5547e2229f8bab46900624a2f31f398b231e5f461929"
+                "sha256:aa668809ae0dbec5e9feb8929f4b5e1f9318a0a397447fa2f38c382a2ed6a036",
+                "sha256:bd0c9a2fcf0c4f7a54a2b625f466fcc000d415f371298d96fa5d2acc69074aca"
             ],
-            "version": "==0.550"
+            "version": "==0.560"
         },
         "neovim": {
             "hashes": [
@@ -293,10 +300,10 @@
         },
         "parso": {
             "hashes": [
-                "sha256:b573acb69f66a970197b5fdbbdfad3b8a417a520e383133b2b4e708f104bfc9a",
-                "sha256:c5279916bb417aa2bf634648ff895cf35dce371d7319744884827bfad06f8d7b"
+                "sha256:a7bb86fe0844304869d1c08e8bd0e52be931228483025c422917411ab82d628a",
+                "sha256:5815f3fe254e5665f3c5d6f54f086c2502035cb631a91341591b5a564203cffb"
             ],
-            "version": "==0.1.0"
+            "version": "==0.1.1"
         },
         "pdbpp": {
             "hashes": [
@@ -374,12 +381,6 @@
                 "sha256:dbae1046def0efb574852fab9e90209b23f556367b5a320c0bcb871c77c3e8cc"
             ],
             "version": "==2.2.0"
-        },
-        "pyrepl": {
-            "hashes": [
-                "sha256:3bcbbf1e47d2b80819b805aceea16dc90832ba4800035d595fa3c4bf48fcd4d7"
-            ],
-            "version": "==0.8.4"
         },
         "pytest": {
             "hashes": [

@@ -8,6 +8,10 @@ import shutil
 import re
 import subprocess
 
+from colorama import init, deinit, Fore, Back, Style
+
+init()
+
 DOCS = os.path.join(os.path.expanduser('~'), 'Documents')
 BCOMPILER_WORKING_D = 'bcompiler'
 ROOT_PATH = os.path.join(DOCS, BCOMPILER_WORKING_D)
@@ -133,7 +137,8 @@ def _git_check_untracked(dir: str) -> None:
     if len(g_output) > 1:
         print("You have files in your auxiliary folder that have not been added to the repository.\n")
         for f in g_output:
-            print("\t{}".format(f))
+            print(Fore.YELLOW + Style.BRIGHT + "\t{}".format(f))
+            print(Style.RESET_ALL)
         _discover_master_file(g_output)
         for f in g_output[:-1]:
             add = input(f"Do you wish to add {f} to the repository? (y/n/q) ")
@@ -144,6 +149,7 @@ def _git_check_untracked(dir: str) -> None:
                 push_output = _git_command(GIT_COMMANDS['push'])
                 print(push_output)
             else:
+                deinit()
                 sys.exit(0)
 
 
@@ -180,7 +186,8 @@ def _git_check_modified_files(dir: str) -> None:
         for i in g_output:
             mod = re.match(r'(?P<file>.+)$', i)
             if mod:
-                print("File: {}\n".format(mod.group('file')))
+                print("File: " + Fore.GREEN + Style.BRIGHT + "{}\n".format(mod.group('file')))
+                print(Style.RESET_ALL)
                 commit = input("Do you want to commit these changes to the repository? (y/n/q) ")
                 if commit in ['n', 'No', 'NO', 'N']:
                     revert = input(f"In which case, do you wish to revert this file to its "
@@ -191,6 +198,7 @@ def _git_check_modified_files(dir: str) -> None:
                     elif revert in ['n', 'No', 'N', 'NO']:
                         print(f"Leaving your local repository in a dirty state - you have been warned!\n")
                     else:
+                        deinit()
                         sys.exit(0)
                 elif commit in ['y', 'Y', 'Yes']:
                     mes = input("Please type a short commit message to explain the change: ")
@@ -201,6 +209,7 @@ def _git_check_modified_files(dir: str) -> None:
                     push_output = _git_command(GIT_COMMANDS['push'])
                     print(push_output)
                 else:
+                    deinit()
                     sys.exit(0)
     else:
         print("You do not have modified files in the auxiliary directory.\n\n")
@@ -212,7 +221,7 @@ def main():
     """
     if os.path.exists(ROOT_PATH):
         print(
-            f"This is currently a directory set up at {ROOT_PATH}."
+            f"There is currently a directory set up at {ROOT_PATH}.\n"
             f"Checking for any changes you have made to auxiliary/config files..."
         )
         # print(f"Deleting {SOURCE_DIR} and all files within")

@@ -10,6 +10,7 @@ name = "pypi"
 colorlog = "*"
 openpyxl = "==2.4.9"
 python-dateutil = "*"
+colorama = "*"
 
 
 [dev-packages]
@@ -18,13 +19,13 @@ pytest = "*"
 neovim = "*"
 pdbpp = "*"
 "flake8" = "*"
-Sphinx = "*"
-sphinx_rtd_theme = "*"
+sphinx = "*"
+sphinx-rtd-theme = "*"
 twine = "*"
 ptpython = "*"
 mypy = "*"
 pytest-profiling = "*"
-CProfileV = "*"
+cprofilev = "*"
 pytest-cov = "*"
 
 

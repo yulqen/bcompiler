@@ -23,7 +23,9 @@ GIT_COMMANDS = {
     'modified': 'git ls-files -m',
     'log': 'git log',
     'add': 'git add',
-    'commit': 'git commit -m'
+    'commit': 'git commit -m',
+    'checkout': 'git checkout -- ',
+    'push': 'git push origin master',
 }
 
 logger = logging.getLogger('bcompiler.compiler')
@@ -134,17 +136,15 @@ def _git_check_untracked(dir: str) -> None:
             print("\t{}".format(f))
         _discover_master_file(g_output)
         for f in g_output[:-1]:
-            add = input(f"Do you wish to add {f} to the repository? (y/n)")
+            add = input(f"Do you wish to add {f} to the repository? (y/n/q) ")
             if add in ['y', 'Yes', 'Y']:
                 mes = input("Please type a short commit message to explain the change:")
-                a_output = _git_command(GIT_COMMANDS['add'], f).split('\n')
-                print(a_output)
-                c_output = _git_command(GIT_COMMANDS['commit'], mes).split('\n')
-                print(c_output)
-
-
-
-
+                _git_command(GIT_COMMANDS['add'], f).split('\n')
+                _git_command(GIT_COMMANDS['commit'], mes).split('\n')
+                push_output = _git_command(GIT_COMMANDS['push'])
+                print(push_output)
+            else:
+                sys.exit(0)
 
 
 def _discover_master_file(g_output: List[str]) -> None:
@@ -180,26 +180,36 @@ def _git_check_modified_files(dir: str) -> None:
         for i in g_output:
             mod = re.match(r'(?P<file>.+)$', i)
             if mod:
-                print("File: {}".format(mod.group('file')))
-                commit = input("Do you want to commit these changes to the repository? (y/n)")
+                print("File: {}\n".format(mod.group('file')))
+                commit = input("Do you want to commit these changes to the repository? (y/n/q) ")
                 if commit in ['n', 'No', 'NO', 'N']:
-                    revert = input(f"In which case, do you wish to revert these files to their "
-                                   f"original state? (RECOMMENDED) (y/n)")
+                    revert = input(f"In which case, do you wish to revert this file to its "
+                                   f"original state? (RECOMMENDED) (y/n/q) ")
                     if revert in ['y', 'Yes', 'YES', 'Y']:
-                        _revert_files(g_output)
+                        _git_command(GIT_COMMANDS['checkout'], mod.group(0))
+                        print(f"Reverted changes to {mod.group(0)}\n")
+                    elif revert in ['n', 'No', 'N', 'NO']:
+                        print(f"Leaving your local repository in a dirty state - you have been warned!\n")
+                    else:
+                        sys.exit(0)
+                elif commit in ['y', 'Y', 'Yes']:
+                    mes = input("Please type a short commit message to explain the change: ")
+                    _git_command(GIT_COMMANDS['add'], mod.group('file')).split('\n')
+                    print(f"Staged changes to {mod.group('file')}\n")
+                    _git_command(GIT_COMMANDS['commit'], mes).split('\n')
+                    print(f"Committed changes to {mod.group('file')}\n")
+                    push_output = _git_command(GIT_COMMANDS['push'])
+                    print(push_output)
+                else:
+                    sys.exit(0)
     else:
         print("You do not have modified files in the auxiliary directory.\n\n")
-
-
-def _revert_files(f_list: List[str]):
-    pass
 
 
 def main():
     """
     Purpose of this is to bootstrap the system.
     """
-    import pdb; pdb.set_trace()  # XXX BREAKPOINT
     if os.path.exists(ROOT_PATH):
         print(
             f"This is currently a directory set up at {ROOT_PATH}."

@@ -137,6 +137,13 @@ def parse_comparison_master(compare_master: str) -> FileComparitor:
     return FileComparitor([compare_master])
 
 
+def _remove_datetimes(out_map):
+    for x in out_map:
+        if type(x['gmpp_key_value']) is datetime:
+            x['gmpp_key_value'] = x['gmpp_key_value'].date()
+    return out_map
+
+
 def write_excel(source_file, count, workbook, compare_master=None, comparitor=None) -> None:
     """
     Writes all return data to a single master Excel sheet.
@@ -149,6 +156,7 @@ def write_excel(source_file, count, workbook, compare_master=None, comparitor=No
 
     # this is the data from the source spreadsheet
     out_map = parse_source_cells(source_file, DATAMAP_RETURN_TO_MASTER)
+    out_map = _remove_datetimes(out_map)
 
     # we need to the project name to work out index order for comparing
     # master file

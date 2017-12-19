@@ -190,6 +190,8 @@ def write_excel(source_file, count, workbook, compare_master=None, comparitor=No
             c_format = CellFormatState()
 
             try:
+                cs = Cleanser(d['gmpp_key'])
+                d['gmpp_key'] = cs.clean()
                 compare_val = comparitor.compare(this_index, d['gmpp_key'].rstrip())
                 if isinstance(compare_val, str) and compare_val is not None and re.match(DATE_REGEX_TIME, compare_val):
                     ds = compare_val.split(' ')
@@ -228,6 +230,8 @@ def write_excel(source_file, count, workbook, compare_master=None, comparitor=No
             c_format = CellFormatState()
 
             try:
+                cs = Cleanser(d['gmpp_key'])
+                d['gmpp_key'] = cs.clean()
                 compare_val = comparitor.compare(this_index, d['gmpp_key'])
                 if isinstance(compare_val, str) and compare_val is not None and re.match(DATE_REGEX_TIME, compare_val):
                     ds = compare_val.split(' ')

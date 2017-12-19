@@ -273,6 +273,9 @@ class DateCellFormat(CellFormatState):
     def export_rule(self):
         if isinstance(self.compare_val, datetime):
             self.compare_val = self.compare_val.date()
+        if isinstance(self.this_val, datetime):
+            self.this_val = self.this_val.date()
+
         if self.compare_val > self.this_val:
             return self.set_style(DateCellFormat.rgb_this_lower)
         elif self.compare_val < self.this_val:

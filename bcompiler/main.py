@@ -23,6 +23,7 @@ import datetime
 import logging
 import sys
 import textwrap
+import unicodedata
 from typing import Dict, List
 
 import colorlog
@@ -367,6 +368,8 @@ def _initial_clean(key: str) -> str:
     key = key.replace('  ', ' ')
     # trailing whitespace = killed!
     key = key.rstrip()
+    if unicodedata.lookup('EN DASH') in key:
+        key = key.replace(unicodedata.lookup('EN DASH'), unicodedata.lookup('HYPHEN-MINUS'))
     return key
 
 

@@ -1,18 +1,18 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e30bf6246cd6f9608253bf9ea05acab7e793661a03cd8aed23bdd12150393c1c"
+            "sha256": "13d9cf31c813cc1455f1e98ec2b3f3fc3c1669845aa80dca1a1673e2e049cae6"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
-            "implementation_version": "3.6.2",
+            "implementation_version": "3.6.3",
             "os_name": "posix",
             "platform_machine": "x86_64",
             "platform_python_implementation": "CPython",
-            "platform_release": "4.9.0-4-amd64",
+            "platform_release": "4.13.0-1-amd64",
             "platform_system": "Linux",
-            "platform_version": "#1 SMP Debian 4.9.51-1 (2017-09-28)",
-            "python_full_version": "3.6.2",
+            "platform_version": "#1 SMP Debian 4.13.13-1 (2017-11-16)",
+            "python_full_version": "3.6.3",
             "python_version": "3.6",
             "sys_platform": "linux"
         },
@@ -382,6 +382,12 @@
             ],
             "version": "==2.2.0"
         },
+        "pyrepl": {
+            "hashes": [
+                "sha256:3bcbbf1e47d2b80819b805aceea16dc90832ba4800035d595fa3c4bf48fcd4d7"
+            ],
+            "version": "==0.8.4"
+        },
         "pytest": {
             "hashes": [
                 "sha256:ae4a2d0bae1098bbe938ecd6c20a526d5d47a94dc42ad7331c9ad06d0efe4962",
@@ -523,6 +529,13 @@
                 "sha256:d806f65ac1554366b6e31d29d7be2e8893996c0acbb2824bbf2b1f49cf628a13"
             ],
             "version": "==0.3"
+        },
+        "yapf": {
+            "hashes": [
+                "sha256:545028348c0d09ce408a4a8cd6e3d9de495f8c370ec9ba8a00aab179c16e8142",
+                "sha256:ff28f8839a9a105854a099026a33f4cbec8bd933554bfed658aec359bfc88ae8"
+            ],
+            "version": "==0.20.0"
         }
     }
 }

@@ -46,9 +46,9 @@ class ProjectData:
         if flat is True:
             # search and replace troublesome EN DASH character
             xs = [item for item in self._data.items()
-                  for i in input_iter if item[0].replace(unicodedata.lookup('EN DASH'), unicodedata.lookup('HYPHEN-MINUS')) == i]
+                  for i in input_iter if item[0].strip().replace(unicodedata.lookup('EN DASH'), unicodedata.lookup('HYPHEN-MINUS')) == i]
             xs = [_convert_str_date_to_object(x) for x in xs]
-            ts = sorted(xs, key=lambda x: input_iter.index(x[0].replace(unicodedata.lookup('EN DASH'), unicodedata.lookup('HYPHEN-MINUS'))))
+            ts = sorted(xs, key=lambda x: input_iter.index(x[0].strip().replace(unicodedata.lookup('EN DASH'), unicodedata.lookup('HYPHEN-MINUS'))))
             ts = [item[1] for item in ts]
             return ts
         else:

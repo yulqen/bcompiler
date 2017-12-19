@@ -96,7 +96,8 @@ class BlankCellFormat(CellFormatState):
             self.compare_val = compare_val
             self.this_val = this_val
             self.key = key
-        elif isinstance(this_val, decimal.Decimal) and isinstance(compare_val, float):
+        elif isinstance(this_val, decimal.Decimal) and isinstance(
+                compare_val, float):
             self.__class__ = FloatCellFormat
             self.compare_val = compare_val
             self.this_val = this_val
@@ -119,14 +120,16 @@ class BlankCellFormat(CellFormatState):
                 self.compare_val = compare_val
                 self.this_val = this_val
                 self.key = key
-                logger.warning(f"Values {self.this_val} in processed file and {self.compare_val} in comparing master do not compare. Skipping.")
+                logger.warning(
+                    f"Values {self.this_val} in processed file and {self.compare_val} in comparing master do not compare. Skipping."
+                )
             else:
                 self.__class__ = DateCellFormat
                 self.compare_val = compare_val
                 self.this_val = this_val
                 self.key = key
-        elif isinstance(this_val, datetime) and isinstance(compare_val,
-                                                           datetime):
+        elif isinstance(this_val, datetime) and isinstance(
+                compare_val, datetime):
             self.__class__ = DateCellFormat
             self.compare_val = compare_val
             self.this_val = this_val
@@ -211,6 +214,7 @@ class IntegerCellFormat(CellFormatState):
         return (PatternFill(
             patternType='solid', fgColor=c_value, bgColor=c_value),
                 IntegerCellFormat.number_format)
+
     # comparison code is at cellformat.py:241
     def export_rule(self):
         if self.compare_val > self.this_val:
@@ -267,6 +271,11 @@ class DateCellFormat(CellFormatState):
                 DateCellFormat.number_format)
 
     def export_rule(self):
+        if isinstance(self.compare_val, datetime):
+            self.compare_val = self.compare_val.date()
+        if isinstance(self.this_val, datetime):
+            self.this_val = self.this_val.date()
+
         if self.compare_val > self.this_val:
             return self.set_style(DateCellFormat.rgb_this_lower)
         elif self.compare_val < self.this_val:

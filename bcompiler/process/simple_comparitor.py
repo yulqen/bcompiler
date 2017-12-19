@@ -3,6 +3,7 @@ import logging
 from openpyxl import load_workbook
 
 from bcompiler.utils import index_returns_directory
+from bcompiler.process import Cleanser
 
 logger = logging.getLogger('bcompiler.process.simple_comparitor')
 
@@ -28,6 +29,10 @@ class ParsedMaster:
         self._project_header_index = {}
         self._parse()
 
+    def _cleanse_key(self, key):
+        c = Cleanser(key)
+        return c.clean()
+
     def _parse(self):
         """
         Private method to set up the class.
@@ -36,7 +41,7 @@ class ParsedMaster:
         self._projects = [cell.value for cell in self._ws[1][1:]]
 #       self._projects.sort()
         self._project_count = len(self.projects)
-        self._key_col = [cell.value.rstrip() for cell in self._ws['A']]
+        self._key_col = [self._cleanse_key(cell.value) for cell in self._ws['A']]
         self._index_projects()
 
     @property

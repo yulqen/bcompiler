@@ -1,6 +1,15 @@
 Changes
 ~~~~~~~
 
+v1.3.13
+#######
+
+* small change to financial analyser to allow additional keys to be collected
+  in certain circumstances
+* improved date handling
+* improved string cleaning of master keys
+* various bug fixes
+
 v1.3.12
 #######
 

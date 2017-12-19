@@ -13,6 +13,7 @@ COMMA_REGEX = r",\s?"
 COMMA_FIX = r" "
 APOS_REGEX = r"^'"
 APOS_FIX = r""
+TRAILING_SPACE_REGEX = r"(.+)( |  )$"
 DATE_REGEX = r"^(\d{2,4})(\/|-|\.)(\d{1,2})(\/|-|\.)(\d{2,4})"
 DATE_REGEX_4 = r"^(\d{2,4})(/|-|\.)(\d{1,2})(/|-|\.)(\d{1,2})"
 DATE_REGEX_TIME = r"^(\d{2,4})(/|-)(\d{1,2})(/|-)(\d{1,2})\s(0:00:00)"
@@ -78,6 +79,12 @@ class Cleanser:
                 rule="  ",
                 fix=" ",
                 func=self._doublespace,
+                count=0),
+            dict(
+                c_type='trailing_space',
+                rule=TRAILING_SPACE_REGEX,
+                fix=None,
+                func=self._trailingspace,
                 count=0),
             dict(
                 c_type='pipe_char',
@@ -224,6 +231,10 @@ class Cleanser:
     def _doublespace(self, regex, fix):
         """Handles double-spaces anywhere in string."""
         return re.sub(regex, fix, self.string)
+
+    def _trailingspace(self, regex, fix):
+        """Handles trailing space in the string."""
+        return self.string.strip()
 
     def _space_pipe_char(self, regex, fix):
         """Handles space pipe char anywhere in string."""

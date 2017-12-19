@@ -4,6 +4,8 @@ import logging
 import sys
 import os
 
+from .process.cleansers import Cleanser
+
 from collections import OrderedDict
 from datetime import date, datetime
 from math import isclose
@@ -212,6 +214,10 @@ def project_data_from_master(master_file: str, opened_wb=False):
     else:
         wb = master_file
         ws = wb.active
+    # cleanse the keys
+    for cell in ws['A']:
+        c = Cleanser(cell.value)
+        cell.value = c.clean()
     p_dict = {}
     for col in ws.iter_cols(min_col=2):
         project_name = ""

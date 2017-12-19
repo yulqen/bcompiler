@@ -41,7 +41,7 @@ class TestAuxReportBase(object):
 
     def test_add_AuxReport_instance(self):
         r = AuxReport()
-        assert str(r) == "Report(['untracked', 'modified', 'log'])"
+        assert str(r) == "Report(['untracked', 'modified', 'log', 'add', 'commit', 'checkout', 'push'])"
 
 
     def test_change_instance_expect_attribute_change(self):

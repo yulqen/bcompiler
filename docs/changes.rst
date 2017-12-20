@@ -1,6 +1,12 @@
 Changes
 ~~~~~~~
 
+v1.3.14
+#######
+
+* provisional fix Windows character encoding bug
+* provisional fix Excel file corruption
+
 v1.3.13
 #######
 

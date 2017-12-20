@@ -365,6 +365,8 @@ def imprint_current_quarter(sheet) -> None:
 
 def _initial_clean(key: str) -> str:
     # double spaces - killed!
+    c = Cleanser(key)
+    key = c.clean()
     key = key.replace('  ', ' ')
     # trailing whitespace = killed!
     key = key.rstrip()

@@ -40,7 +40,7 @@ class Datamap:
 
     def _import_source_data(self, source_file: str) -> None:
         """Internal implementation of csv importer."""
-        with open(source_file, 'r') as csv_file:
+        with open(source_file, 'r', encoding='utf-8') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 self.cell_map.append(

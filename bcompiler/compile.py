@@ -68,8 +68,8 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
     datamap_obj.cell_map_from_csv(datamap_source_file)
     for item in datamap_obj.cell_map:
         if item.template_sheet is not None and item.cell_reference is not None:
-            if os.name == 'nt':
-                item.cell_key = encode_win(item.cell_key)
+#           if os.name == 'nt':
+#               item.cell_key = encode_win(item.cell_key)
             try:
                 ws = wb[item.template_sheet]
             except KeyError as e:

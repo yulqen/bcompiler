@@ -1,6 +1,11 @@
 Changes
 ~~~~~~~
 
+v1.3.15
+#######
+
+* fixed encoding bug that was preventing running of --compare function
+
 v1.3.14
 #######
 

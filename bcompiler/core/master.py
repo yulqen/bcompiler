@@ -13,9 +13,9 @@ from openpyxl import load_workbook
 logger = logging.getLogger('bcompiler.utils')
 
 
-class MasterProjectData:
+class ProjectData:
     """
-    Light wrapper around Master.data object.
+    ProjectData class
     """
     def __init__(self, d: dict) -> None:
         """
@@ -40,7 +40,7 @@ class MasterProjectData:
 
     def pull_keys(self, input_iter: Iterable, flat=False) -> List[Tuple[Any, ...]]:
         """
-        Returns a list of (key, value) tuples from MasterProjectData if key matches a
+        Returns a list of (key, value) tuples from ProjectData if key matches a
         key. The order of tuples is based on the order of keys passed in the iterable.
         """
         if flat is True:
@@ -61,7 +61,7 @@ class MasterProjectData:
             return ts
 
     def __repr__(self):
-        return f"MasterProjectData() - with data: {id(self._data)}"
+        return f"ProjectData() - with data: {id(self._data)}"
 
 
 def _convert_str_date_to_object(d_str: tuple) -> Tuple[str, Optional[datetime.date]]:
@@ -90,7 +90,7 @@ class Master:
         self.year = self._quarter.year
 
     def __getitem__(self, project_name):
-        return MasterProjectData(self._data[project_name])
+        return ProjectData(self._data[project_name])
 
     @property
     def data(self):

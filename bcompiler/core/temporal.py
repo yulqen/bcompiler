@@ -39,6 +39,9 @@ class FinancialYear:
         self.quarters = [Quarter(x, self.year) for x in range(1, 5)]
 
 
+    def __repr__(self):
+        return f"FinancialYear({self.year})"
+
 
 class Quarter:
 

@@ -134,3 +134,6 @@ class Master:
             return dups
         else:
             return False
+
+    def __repr__(self):
+        return f"Master({self.path}, {self.quarter.quarter}, {self.quarter.year})"

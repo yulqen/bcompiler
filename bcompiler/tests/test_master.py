@@ -1,7 +1,7 @@
 import pytest
 import logging
 
-from ..core import Master, Quarter, ProjectData
+from ..core import Master, Quarter, MasterProjectData
 
 
 def test_master(master):
@@ -32,7 +32,7 @@ def test_project_data_object(master):
     assert str(m.quarter) == 'Q2 18/19'
     assert m.year == 2018
     assert len(m.projects) == 3
-    assert isinstance(m['PROJECT/PROGRAMME NAME 1'], ProjectData)
+    assert isinstance(m['PROJECT/PROGRAMME NAME 1'], MasterProjectData)
 
 
 def test_master_key_filter(master):

@@ -7,6 +7,7 @@ from typing import List, Tuple, Iterable, Optional, Any
 
 from ..utils import project_data_from_master
 from ..process.cleansers import DATE_REGEX_4
+from .temporal import Quarter
 
 from openpyxl import load_workbook
 
@@ -79,10 +80,36 @@ def _convert_str_date_to_object(d_str: tuple) -> Tuple[str, Optional[datetime.da
 
 
 class Master:
+    """A Master object, representing the main central data item in ``bcompiler``.
+
+    A master object is a composition between a :py:class:`core.temporal.Quarter` object and an
+    actual master xlsx file on disk.
+
+    You create one, either by creating the Quarter object first, and using that as the first
+    parameter of the ``Master`` constructor, e.g.::
+
+        from bcompiler.core.temporal import Quarter
+        from bcompiler.core.master import Master
+
+        q1 = Quarter(1, 2016)
+        m1 = Master(q1, '/tmp/master_1_2016.xlsx')
+
+    or by doing both in one::
+
+        m1 = Master(Quarter(1, 2016), '/tmp/master_1_2016.xlsx')
+
+    Args:
+        quarter (:py:class:`core.temporal.Quarter`): creating using ``Quarter(1, 2017)`` for example.
+        path (str): path to the master xlsx file
+
+    The following *attributes* are available on `m1` once created as such, e.g.::
+
+        data = m1.data
+        quarter = m1.quarter
+        filename = m1.filename
+        ..etc
     """
-    Master class.
-    """
-    def __init__(self, quarter, path: str) -> None:
+    def __init__(self, quarter: Quarter, path: str) -> None:
         self._quarter = quarter
         self.path = path
         self._data = project_data_from_master(self.path)
@@ -94,6 +121,21 @@ class Master:
 
     @property
     def data(self):
+        """Return all the data contained in the master in a large, nested dictionary.
+
+        The resulting data structure contains a dictionary of OrderedDict items whose
+        key is the name of a project::
+
+            "Project Name": OrderedDict("key": "value"
+                                        ...)
+
+        This object can then be further interrogated, for example to obtain all key/values
+        from a partictular project, by doing::
+
+            d = Master.data
+            project_data = d['PROJECT_NAME']
+
+        """
         return self._data
 
     @property

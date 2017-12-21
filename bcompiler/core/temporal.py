@@ -44,7 +44,12 @@ class FinancialYear:
 
 
 class Quarter:
+    """An object representing a financial quarter.
 
+    Args:
+        quarter (int): e.g.1, 2, 3 or 4
+        year (int): e.g. 2013
+    """
     start_months = {
         1: (4, 'April'),
         2: (7, 'July'),
@@ -59,8 +64,8 @@ class Quarter:
         4: (3, 'March', 31),
     }
 
-    def __init__(self, quarter: int, year: int):
 
+    def __init__(self, quarter: int, year: int):
 
         if isinstance(quarter, int) and (quarter >= 1 and quarter <= 4):
             self.quarter = quarter

@@ -60,6 +60,9 @@ class ProjectData:
             ts = sorted(xs, key=lambda x: input_iter.index(x[0].replace(unicodedata.lookup('EN DASH'), unicodedata.lookup('HYPHEN-MINUS'))))
             return ts
 
+    def __repr__(self):
+        return f"ProjectData() - with data: {id(self._data)}"
+
 
 def _convert_str_date_to_object(d_str: tuple) -> Tuple[str, Optional[datetime.date]]:
     try:

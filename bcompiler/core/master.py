@@ -20,7 +20,7 @@ class ProjectData:
     """
     def __init__(self, d: dict) -> None:
         """
-        ordered_dict is easiest to get from project_data_from_master[x]
+        :py:func:`OrderedDict` is easiest to get from project_data_from_master[x]
         """
         self._data = d
 
@@ -82,7 +82,7 @@ def _convert_str_date_to_object(d_str: tuple) -> Tuple[str, Optional[datetime.da
 class Master:
     """A Master object, representing the main central data item in ``bcompiler``.
 
-    A master object is a composition between a :py:class:`core.temporal.Quarter` object and an
+    A master object is a composition between a :py:class:`api.Quarter` object and an
     actual master xlsx file on disk.
 
     You create one, either by creating the Quarter object first, and using that as the first
@@ -99,7 +99,7 @@ class Master:
         m1 = Master(Quarter(1, 2016), '/tmp/master_1_2016.xlsx')
 
     Args:
-        quarter (:py:class:`core.temporal.Quarter`): creating using ``Quarter(1, 2017)`` for example.
+        quarter (:py:class:`api.Quarter`): creating using ``Quarter(1, 2017)`` for example.
         path (str): path to the master xlsx file
 
     The following *attributes* are available on `m1` once created as such, e.g.::
@@ -123,7 +123,7 @@ class Master:
     def data(self):
         """Return all the data contained in the master in a large, nested dictionary.
 
-        The resulting data structure contains a dictionary of OrderedDict items whose
+        The resulting data structure contains a dictionary of :py:class:`colletions.OrderedDict` items whose
         key is the name of a project::
 
             "Project Name": OrderedDict("key": "value"
@@ -140,18 +140,40 @@ class Master:
 
     @property
     def quarter(self):
+        """Returns the ``Quarter`` object associated with the ``Master``.
+
+        Example::
+
+            q1 = m.quarter
+
+        ``q1`` can then be further interrogated as documented in :py:class:`core.temporal.Quarter`.
+
+        """
+
         return self._quarter
 
     @property
     def filename(self):
+        """The filename of the master xlsx file, e.g. ``master_1_2017.xlsx``.
+        """
         p = Path(self.path)
         return p.name
 
     @property
     def projects(self):
+        """A list of project titles derived from the master xlsx.
+        """
         return self._project_titles
 
     def duplicate_keys(self, to_log=None):
+        """Checks for duplicate keys in a master xlsx file.
+
+        Args:
+            to_log (bool): Optional True or False, depending on whether you want to see duplicates reported in a ``WARNING`` log message. This is used mainly for internal purposes within ``bcompiler``.
+
+        Returns:
+            duplicates (set): a set of duplicated keys
+        """
         wb = load_workbook(self.path)
         ws = wb.active
         col_a = next(ws.iter_cols())

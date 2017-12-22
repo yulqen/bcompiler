@@ -44,20 +44,21 @@ class FinancialYear:
 
 
 class Quarter:
-    """An object representing a financial quarter.
+    """An object representing a financial quarter. This is mainly required for building
+    a :py:class:`core.master.Master` object.
 
     Args:
         quarter (int): e.g.1, 2, 3 or 4
         year (int): e.g. 2013
     """
-    start_months = {
+    _start_months = {
         1: (4, 'April'),
         2: (7, 'July'),
         3: (10, 'October'),
         4: (1, 'January')
     }
 
-    end_months = {
+    _end_months = {
         1: (6, 'June', 30),
         2: (9, 'September', 30),
         3: (12, 'December', 31),
@@ -65,7 +66,7 @@ class Quarter:
     }
 
 
-    def __init__(self, quarter: int, year: int):
+    def __init__(self, quarter: int, year: int) -> None:
 
         if isinstance(quarter, int) and (quarter >= 1 and quarter <= 4):
             self.quarter = quarter
@@ -86,16 +87,18 @@ class Quarter:
     def _start_date(self, q, y):
         if q == 4:
             y = y + 1
-        return datetime.date(y, Quarter.start_months[q][0], 1)
+        return datetime.date(y, Quarter._start_months[q][0], 1)
 
     def _end_date(self, q, y):
         if q == 4:
             y = y + 1
-        return datetime.date(y, Quarter.end_months[q][0], Quarter.end_months[q][2])
+        return datetime.date(y, Quarter._end_months[q][0], Quarter._end_months[q][2])
 
     def __repr__(self):
         return f"Quarter({self.quarter}, {self.year})"
 
     @property
     def fy(self):
+        """Return a :py:class:`core.temporal.FinancialYear` object.
+        """
         return FinancialYear(self.year)

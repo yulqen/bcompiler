@@ -6,3 +6,4 @@ dist/*
 .pdb-pyhist
 bcompiler/prof/*
 bcompiler/htmlcov/
+tags

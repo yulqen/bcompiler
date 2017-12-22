@@ -83,7 +83,7 @@ class Master:
     """A Master object, representing the main central data item in ``bcompiler``.
 
     Args:
-        quarter (:py:class:`api.Quarter`): creating using ``Quarter(1, 2017)`` for example.
+        quarter (:py:class:`bcompiler.api.Quarter`): creating using ``Quarter(1, 2017)`` for example.
         path (str): path to the master xlsx file
 
     A master object is a composition between a :py:class:`bcompiler.api.Quarter` object and an
@@ -92,8 +92,8 @@ class Master:
     You create one, either by creating the Quarter object first, and using that as the first
     parameter of the ``Master`` constructor, e.g.::
 
-        from bcompiler.core.temporal import Quarter
-        from bcompiler.core.master import Master
+        from bcompiler.api import Quarter
+        from bcompiler.api import Master
 
         q1 = Quarter(1, 2016)
         m1 = Master(q1, '/tmp/master_1_2016.xlsx')

@@ -163,7 +163,6 @@ and the effect will be the same.
 API Reference
 +++++++++++++
 
-
 .. _master:
 
 Master

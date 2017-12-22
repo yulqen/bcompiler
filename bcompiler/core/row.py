@@ -2,17 +2,26 @@ import string
 import datetime
 
 from ..process.cell import Cell
+from typing import Iterable
 
 from itertools import chain
 
 
 class Row:
     """
-    A Row object is populated with an iterable, bound to an openpyxl
-    worksheet. It is used to populate a row of cells in an output
+    A Row object is populated with an iterable (list or other sequence), bound
+    to an openpyxl worksheet. It is used to populate a row of cells in an output
     Excel file with the values from the iterable.
+
+    The ``anchor_column`` and ``anchor_row`` parameters represent the coordinates of
+    a cell which form the *leftmost* cell of the row, i.e. to set the row of data
+    to start at the very top left of a sheet, you'd create the ``Row()`` object this::
+
+        r = Row(1, 1, interable)
+        r.bind(ws)
     """
-    def __init__(self, anchor_column, anchor_row, seq):
+
+    def __init__(self, anchor_column: int, anchor_row: int, seq: Iterable):
         if isinstance(anchor_column, str):
             if len(anchor_column) == 1:
                 enumerated_alphabet = list(enumerate(string.ascii_uppercase, start=1))
@@ -67,6 +76,9 @@ class Row:
 
 
     def bind(self, worksheet):
+        """Bind the Row to a particular worksheetl, which effectively does the
+        printing of data into cells. Must be done prior to saving the workbook.
+        """
         self._ws = worksheet
 #       self._basic_bind(self._ws)
         self._cell_bind(self._ws)

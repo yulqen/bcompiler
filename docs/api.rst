@@ -183,13 +183,19 @@ same job.
 
 .. autofunction:: bcompiler.api.project_data_from_master
 
+.. note::
+    This function is not the same as :py:func:`bcompiler.utils.project_data_from_master`.
+    That function produces a complex data structure containing a dictionary of
+    :py:class:`collections.OrderedDict` objects, whilst this one returns
+    a :py:class:`bcompiler.api.Master` object, which is more user-friendly to work with.
+
 
 .. _quarter:
 
 Quarter
 ~~~~~~~
 
-.. py:class:: bcompiler.api.Quarter(quarter, year)
+.. py:class:: bcompiler.api.Quarter(quarter: int, year: int)
 
 A Quarter object enapsulates data about a financial quarter in ``bcompiler``.
 Because it contains data about dates (start dates and end dates for

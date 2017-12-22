@@ -2,6 +2,15 @@ import datetime
 
 
 class FinancialYear:
+    """An object representing a financial year.
+
+    Used by ``bcompiler`` internally when creating :py:class:`bcompiler.api.Master` objects.
+    Can be used to calculate start and ends dates and :py:class:`bcompiler.api.Quarter` objects.
+
+    If parameter ``year`` must be in the range 150 - 2100.
+
+    """
+
     def __init__(self, year):
         if isinstance(year, int) and (year in range(150, 2100)):
             self.year = year
@@ -17,19 +26,27 @@ class FinancialYear:
         self.end_date = self.q4.end_date
 
     @property
-    def q1(self):
+    def q1(self) -> datetime.date:
+        """Quarter 1 as a :py:class:`datetime.date` object
+        """
         return self._q1
 
     @property
     def q2(self):
+        """Quarter 2 as a :py:class:`datetime.date` object
+        """
         return self._q2
 
     @property
     def q3(self):
+        """Quarter 3 as a :py:class:`datetime.date` object
+        """
         return self._q3
 
     @property
     def q4(self):
+        """Quarter 4 as a :py:class:`datetime.date` object
+        """
         return self._q4
 
     def __str__(self):

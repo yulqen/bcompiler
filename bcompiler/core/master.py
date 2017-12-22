@@ -82,7 +82,11 @@ def _convert_str_date_to_object(d_str: tuple) -> Tuple[str, Optional[datetime.da
 class Master:
     """A Master object, representing the main central data item in ``bcompiler``.
 
-    A master object is a composition between a :py:class:`api.Quarter` object and an
+    Args:
+        quarter (:py:class:`api.Quarter`): creating using ``Quarter(1, 2017)`` for example.
+        path (str): path to the master xlsx file
+
+    A master object is a composition between a :py:class:`bcompiler.api.Quarter` object and an
     actual master xlsx file on disk.
 
     You create one, either by creating the Quarter object first, and using that as the first
@@ -98,9 +102,10 @@ class Master:
 
         m1 = Master(Quarter(1, 2016), '/tmp/master_1_2016.xlsx')
 
-    Args:
-        quarter (:py:class:`api.Quarter`): creating using ``Quarter(1, 2017)`` for example.
-        path (str): path to the master xlsx file
+    Once you have a ``Master`` object, you can access project data from it, like this::
+
+        project_data = m1['Project Title']
+
 
     The following *attributes* are available on `m1` once created as such, e.g.::
 

@@ -18,6 +18,7 @@ A tool for managing DfT BICC data.
    Populating templates from a master <populating>
    Compiling from templates to a master <compiling>
    Usage tips <use>
+   api
    analysers
    roadmap
    changes

@@ -1,6 +1,12 @@
 Changes
 ~~~~~~~
 
+v1.3.16
+#######
+
+* introduced the bcompiler.api module
+* updated docs to cover basic API and give examples of use
+
 v1.3.15
 #######
 

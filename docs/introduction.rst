@@ -12,7 +12,7 @@ It is developed and maintained by `Matthew Lemon
 from many Excel files into a single master spreadsheet, or populating many
 Excel files using the data from a master spreadsheet.
 
-"Auxiliary" files are required to map data in each direction, and to templates.
+"Auxiliary" files (see :ref:`aux_files`) are required to map data in each direction, and to templates.
 These files are contained in a DfT reporitory on GitHub. ``bcompiler`` can be
 used to obtain/update these files.
 
@@ -46,6 +46,8 @@ itself, as we shall see.
 
 This process can also be operated in reverse, i.e. data can be transferred from
 a master to a set of templates.
+
+.. image:: concept_map.png
 
 Datamap
 ~~~~~~~
@@ -86,16 +88,17 @@ Birth", etc.
 
 .. note::
 
-    The datamap (called ``datamap.csv``) is an *auxiliary file*, created by
-    ``bcompiler`` in a special location inside the the ``Documents`` folder of your
-    computer. An auxiliary file is simply a file whose contents help ``bcompiler``
-    do its job and can be amended by any user of the program.
+    The datamap (called ``datamap.csv``) is an *auxiliary file* (see
+    :ref:`aux_files`), created by ``bcompiler`` in a special location inside
+    the the ``Documents`` folder of your computer. An auxiliary file is simply
+    a file whose contents help ``bcompiler`` do its job and can be amended by
+    any user of the program.
 
 .. warning::
 
     Without a correctly populated datamap, ``bcompiler`` has no way of finding
-    data, so it is an essential component of the process and can be the source
-    errors and unexpected values.
+    or placing data, so it is an essential component of the process and can be
+    the source errors and unexpected values.
 
 Designing or amending a template
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -124,3 +127,4 @@ by ``bcompiler`` is listed on a single line, in CSV (comma-seperated) format::
 The ``datamap.csv`` file is saved and placed in the ``bcompiler/source/``
 directory in the computer's ``Documents`` directory (the name of which differs
 depending on whether using Windows, Mac OS X or Linux).
+

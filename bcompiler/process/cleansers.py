@@ -1,4 +1,5 @@
 import colorlog
+import datetime
 from datetime import date
 from operator import itemgetter
 import re
@@ -189,7 +190,14 @@ class Cleanser:
                 ("Dates inputted as dd/mm/65 will migrate as dd/mm/2065. "
                     "Dates inputted as dd/mm/66 will migrate as dd/mm/1966."))
         try:
-            return parse(m.string, dayfirst=True).date()
+            if len(m.string.split('-')[0]) == 4: #  year is first
+                return datetime.date(int(m.string.split('-')[0]),
+                                     int(m.string.split('-')[1]),
+                                     int(m.string.split('-')[2]))
+            else:
+                return parse(m.string, dayfirst=True).date()
+        except IndexError:
+            pass
         except ValueError:
             logger.warning(
                 "Potential date issue (perhaps a date mixed with free text?): \"{}\"".format(self.string))

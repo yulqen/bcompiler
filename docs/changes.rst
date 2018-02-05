@@ -1,10 +1,14 @@
 Changes
 ~~~~~~~
 
-v1.3.17
+v1.3.18
 #######
 
 * change to require openpyxl 2.4.9
+
+v1.3.17
+#######
+
 * date fix
 
 v1.3.16

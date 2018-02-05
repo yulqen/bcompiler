@@ -102,6 +102,8 @@ output: ``2016``::
 output: ``datetime.date(2016, 6, 30)``
 
 
+.. _row_example:
+
 Writing data to a new Excel file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -249,3 +251,5 @@ Row
 
 .. autoclass:: bcompiler.api.Row
     :members:
+
+See an example of ``Row`` in use: :ref:`row_example`

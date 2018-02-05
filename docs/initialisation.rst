@@ -8,6 +8,8 @@ Initialise bcompiler
 Changing settings for various things in ``bcompiler`` is done using
 a :ref:`config` file.
 
+.. _aux_files:
+
 Auxiliary files
 ~~~~~~~~~~~~~~~
 ``bcompiler`` requires three files to be present in the auxiliary directory,

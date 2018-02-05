@@ -5,6 +5,7 @@ v1.3.17
 #######
 
 * change to require openpyxl 2.4.9
+* date fix
 
 v1.3.16
 #######

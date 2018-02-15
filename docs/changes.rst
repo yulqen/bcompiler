@@ -1,6 +1,11 @@
 Changes
 ~~~~~~~
 
+v1.3.19
+#######
+
+* annex analyser fixes
+
 v1.3.18
 #######
 

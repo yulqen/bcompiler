@@ -14,7 +14,7 @@ runtime_config.read(CONFIG_FILE)
 
 # Fill colours
 red_colour = Color(rgb='00fc2525')
-red_amber_colour = Color(rgb='00f9cb31')
+red_amber_colour = Color(rgb='00f97b31')
 amber_colour = Color(rgb='00fce553')
 amber_green_colour = Color(rgb='00a5b700')
 green_colour = Color(rgb='0017960c')
@@ -67,12 +67,12 @@ def process_master(source_wb, project_number, dca_map, diff: list):
     al_right = Alignment(horizontal="right", vertical="bottom", wrap_text=True,
                          shrink_to_fit=True)
 
-    double_bottom_border = Border(left=Side(style='thin'),
+    double_bottom_border = Border(left=Side(style='none'),
                                   right=Side(style='none'),
                                   top=Side(style='none'),
                                   bottom=Side(style='double'))
 
-    single_bottom_border = Border(left=Side(style='thin'),
+    single_bottom_border = Border(left=Side(style='none'),
                                   right=Side(style='none'),
                                   top=Side(style='none'),
                                   bottom=Side(style='thick'))
@@ -89,7 +89,7 @@ def process_master(source_wb, project_number, dca_map, diff: list):
     SRO_conf = ws2.cell(row=57, column=project_number).value
     # SRO_conf_last_qtr =
     SoP = ws2.cell(row=201, column=project_number).value
-    ipa_rag = ws2.cell(row=1275, column=project_number).value
+    ipa_rag = ws2.cell(row=1274, column=project_number).value
     if isinstance(SoP, datetime.datetime):
         SoP = SoP.date()
     finance_DCA = ws2.cell(row=280, column=project_number).value
@@ -165,6 +165,9 @@ def process_master(source_wb, project_number, dca_map, diff: list):
     sheet['F40'].border = double_bottom_border
     sheet.merge_cells('A11:F45')
     sheet['A45'].border = single_bottom_border
+
+    # set print area
+    sheet.print_area = "A1:F45"
 
 
     def _pattern(str_colour: str):

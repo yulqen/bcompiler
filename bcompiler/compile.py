@@ -60,12 +60,15 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
     datamap_obj = Datamap()
     datamap_obj.cell_map_from_csv(datamap_source_file)
     for item in datamap_obj.cell_map:
+        if item.template_sheet == "":
+            continue
         if item.template_sheet is not None and item.cell_reference is not None:
             try:
                 ws = wb[item.template_sheet]
             except KeyError as e:
                 logger.critical(f"{e}.{source_file} is not a BICC template. Not processing. Remove it!")
                 sys.exit()
+                pass
             try:
                 v = ws[item.cell_reference].value
             except IndexError:

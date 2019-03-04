@@ -57,6 +57,7 @@ def parse_source_cells(source_file: str, datamap_source_file: str) -> \
     """
     ls_of_dataline_dicts = []
     wb = load_workbook(source_file, read_only=True, data_only=True)
+    dm = load_workbook(datamap_source_file)
     datamap_obj = Datamap()
     datamap_obj.cell_map_from_csv(datamap_source_file)
     for item in datamap_obj.cell_map:

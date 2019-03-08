@@ -384,9 +384,9 @@ def dm_tabs_list():
     '''
 
     # Matt - I've done the bit below knowing how to get it to work as I don't understand the function methods that
-    # are using for access DM. so this is a bit of cheat.
+    # are using for access DM. so this is a bit basic.
 
-    dm = open('C:\\Users\\Standalone\\Will\\masters folder\\dms\\datamap_gmpp.csv')
+    dm = open('C:\\Users\\Standalone\\Documents\\bcompiler\\source\\datamap.csv')  # hard coded
     reader = csv.reader(dm)
     data = list(reader)
 
@@ -423,21 +423,20 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
     test_proj_data = proj_data[test_proj]
     blank = load_workbook(SOURCE_DIR + BLANK_TEMPLATE_FN, keep_vba=True)
     ws_list = dm_tabs_list()
-
     ws_summary = blank[config['TemplateSheets']['summary_sheet']]
-    ws_fb = blank[config['TemplateSheets']['fb_sheet']]
-    ws_res = blank[config['TemplateSheets']['resource_sheet']]
-    ws_apm = blank[config['TemplateSheets']['apm']]
-    ws_ap = blank[config['TemplateSheets']['ap']]
-    ws_gmpp = blank[config['TemplateSheets']['gmpp']]
-    ws_x1 = blank[config['TemplateSheets']['extra_1']]
-    ws_x2 = blank[config['TemplateSheets']['extra_2']]
-    ws_x3 = blank[config['TemplateSheets']['extra_3']]
-    ws_x4 = blank[config['TemplateSheets']['extra_4']]
-    ws_x5 = blank[config['TemplateSheets']['extra_5']]
-    ws_x6 = blank[config['TemplateSheets']['extra_6']]
-    ws_x7 = blank[config['TemplateSheets']['extra_7']]
-    ws_x8 = blank[config['TemplateSheets']['extra_8']]
+    #ws_fb = blank[config['TemplateSheets']['fb_sheet']]
+    #ws_res = blank[config['TemplateSheets']['resource_sheet']]
+    #ws_apm = blank[config['TemplateSheets']['apm']]
+    #ws_ap = blank[config['TemplateSheets']['ap']]
+    #ws_gmpp = blank[config['TemplateSheets']['gmpp']]
+    #ws_x1 = blank[config['TemplateSheets']['extra_1']]
+    #ws_x2 = blank[config['TemplateSheets']['extra_2']]
+    #ws_x3 = blank[config['TemplateSheets']['extra_3']]
+    #ws_x4 = blank[config['TemplateSheets']['extra_4']]
+    #ws_x5 = blank[config['TemplateSheets']['extra_5']]
+    #ws_x6 = blank[config['TemplateSheets']['extra_6']]
+    #ws_x7 = blank[config['TemplateSheets']['extra_7']]
+    #ws_x8 = blank[config['TemplateSheets']['extra_8']]
 
     for item in datamap.cell_map:
         item.cell_key = _initial_clean(item.cell_key)
@@ -451,8 +450,7 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
                 logger.warning(f"Cannot find {item.cell_key} in {test_proj} - check for double spaces in cell in master. Skipping.")
                 continue
         for tab in ws_list:
-            if tab == 'Introduction': # hack because this is hard coded and just what to check it works
-                ws_summary = tab
+            if tab == 'Summary': # hack because this is hard coded and just what to check it works
                 if item.template_sheet == tab:
                     if 'Project/Programme Name' in item.cell_key:
                         ws_summary[item.cell_reference].value = test_proj
@@ -472,219 +470,27 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
                     c = Cleanser(str(test_proj_data[item.cell_key]))
                     cleaned = c.clean()
                     ws_summary[item.cell_reference].value = cleaned
-            elif item.template_sheet == config['TemplateSheets']['fb_sheet']:
+            elif item.template_sheet == tab:
+                ws = blank[tab]
                 if has_whiff_of_total(item.cell_key):
                     continue
                 if isinstance(test_proj_data[item.cell_key], datetime.date):
                     c = Cleanser(str(test_proj_data[item.cell_key]))
                     cleaned = c.clean()
-                    ws_fb[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
+                    ws[item.cell_reference].value = test_proj_data[item.cell_key]
+                    ws[item.cell_reference].number_format = 'dd/mm/yyyy'
                     continue
                 try:
                     if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                        ws_fb[item.cell_reference].value = test_proj_data[item.cell_key]
-                        ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
+                        ws[item.cell_reference].value = test_proj_data[item.cell_key]
+                        ws[item.cell_reference].number_format = 'dd/mm/yyyy'
                 except TypeError:
                     pass
                 if test_proj_data[item.cell_key] is None:
                     continue
                 c = Cleanser(str(test_proj_data[item.cell_key]))
                 cleaned = c.clean()
-                ws_fb[item.cell_reference].value = cleaned
-        elif item.template_sheet == config['TemplateSheets']['resource_sheet']:
-            if has_whiff_of_total(item.cell_key):
-                continue
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_res[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_res[item.cell_reference].number_format = 'dd/mm/yyyy'
-            if test_proj_data[item.cell_key] is None:
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                    ws_res[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_res[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_res[item.cell_reference].value = cleaned
-        elif item.template_sheet == config['TemplateSheets']['apm']:
-            if has_whiff_of_total(item.cell_key):
-                continue
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_apm[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_apm[item.cell_reference].number_format = 'dd/mm/yyyy'
-            if test_proj_data[item.cell_key] is None:
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                    ws_apm[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_apm[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_apm[item.cell_reference].value = cleaned
-        elif item.template_sheet == config['TemplateSheets']['ap']:
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_ap[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_ap[item.cell_reference].number_format = 'dd/mm/yyyy'
-            if test_proj_data[item.cell_key] is None:
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                    ws_ap[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_ap[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_ap[item.cell_reference].value = cleaned
-        elif item.template_sheet == config['TemplateSheets']['gmpp']:
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_gmpp[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_gmpp[item.cell_reference].number_format = 'dd/mm/yyyy'
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                    ws_gmpp[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_gmpp[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            if test_proj_data[item.cell_key] is None:
-                continue
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_gmpp[item.cell_reference].value = cleaned
-        elif item.template_sheet == config['TemplateSheets']['extra_1']:
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_x1[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_x1[item.cell_reference].number_format = 'dd/mm/yyyy'
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                    ws_x1[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_x1[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            if test_proj_data[item.cell_key] is None:
-                continue
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_x1[item.cell_reference].value = cleaned
-        elif item.template_sheet == config['TemplateSheets']['extra_2']:
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_x2[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_x2[item.cell_reference].number_format = 'dd/mm/yyyy'
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                    ws_x2[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_x2[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            if test_proj_data[item.cell_key] is None:
-                continue
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_x2[item.cell_reference].value = cleaned
-        elif item.template_sheet == config['TemplateSheets']['extra_3']:
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_x3[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_x3[item.cell_reference].number_format = 'dd/mm/yyyy'
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                    ws_x3[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_x3[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            if test_proj_data[item.cell_key] is None:
-                continue
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_x3[item.cell_reference].value = cleaned
-        elif item.template_sheet == config['TemplateSheets']['extra_4']:
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_x4[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_x4[item.cell_reference].number_format = 'dd/mm/yyyy'
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                    ws_x4[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_x4[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            if test_proj_data[item.cell_key] is None:
-                continue
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_x4[item.cell_reference].value = cleaned
-        elif item.template_sheet == config['TemplateSheets']['extra_5']:
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_x5[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_x5[item.cell_reference].number_format = 'dd/mm/yyyy'
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                    ws_x5[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_x5[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            if test_proj_data[item.cell_key] is None:
-                continue
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_x5[item.cell_reference].value = cleaned
-        elif item.template_sheet == config['TemplateSheets']['extra_6']:
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_x6[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_x6[item.cell_reference].number_format = 'dd/mm/yyyy'
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                    ws_x6[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_x6[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            if test_proj_data[item.cell_key] is None:
-                continue
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_x6[item.cell_reference].value = cleaned
-        elif item.template_sheet == config['TemplateSheets']['extra_7']:
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_x7[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_x7[item.cell_reference].number_format = 'dd/mm/yyyy'
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                    ws_x7[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_x7[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            if test_proj_data[item.cell_key] is None:
-                continue
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_x7[item.cell_reference].value = cleaned
-        elif item.template_sheet == config['TemplateSheets']['extra_8']:
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_x8[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_x8[item.cell_reference].number_format = 'dd/mm/yyyy'
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                    ws_x8[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_x8[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            if test_proj_data[item.cell_key] is None:
-                continue
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_x8[item.cell_reference].value = cleaned
+                ws[item.cell_reference].value = cleaned
 
     imprint_current_quarter(ws_summary)
 

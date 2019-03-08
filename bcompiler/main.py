@@ -386,7 +386,8 @@ def dm_tabs_list():
     # Matt - I've done the bit below knowing how to get it to work as I don't understand the function methods that
     # are using for access DM. so this is a bit basic.
 
-    dm = open('C:\\Users\\Standalone\\Documents\\bcompiler\\source\\datamap.csv')  # hard coded
+    '''this is hard coded although I have used the file path to where the datamap should be'''
+    dm = open('C:\\Users\\Standalone\\Documents\\bcompiler\\source\\datamap.csv')
     reader = csv.reader(dm)
     data = list(reader)
 
@@ -423,7 +424,7 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
     test_proj_data = proj_data[test_proj]
     blank = load_workbook(SOURCE_DIR + BLANK_TEMPLATE_FN, keep_vba=True)
     ws_list = dm_tabs_list()
-    ws_summary = blank[config['TemplateSheets']['summary_sheet']]
+    ws_summary = blank[ws_list[0]]
     #ws_fb = blank[config['TemplateSheets']['fb_sheet']]
     #ws_res = blank[config['TemplateSheets']['resource_sheet']]
     #ws_apm = blank[config['TemplateSheets']['apm']]
@@ -449,28 +450,30 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
             else:
                 logger.warning(f"Cannot find {item.cell_key} in {test_proj} - check for double spaces in cell in master. Skipping.")
                 continue
-        for tab in ws_list:
-            if tab == 'Summary': # hack because this is hard coded and just what to check it works
-                if item.template_sheet == tab:
-                    if 'Project/Programme Name' in item.cell_key:
-                        ws_summary[item.cell_reference].value = test_proj
-                        continue
-                    if isinstance(test_proj_data[item.cell_key], datetime.date):
-                        ws_summary[item.cell_reference].value = test_proj_data[item.cell_key]
-                        ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
-                        continue
-                    try:
-                        if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                            ws_summary[item.cell_reference].value = test_proj_data[item.cell_key]
-                            ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
-                    except TypeError:
-                        pass
-                    if test_proj_data[item.cell_key] is None:
-                        continue
-                    c = Cleanser(str(test_proj_data[item.cell_key]))
-                    cleaned = c.clean()
-                    ws_summary[item.cell_reference].value = cleaned
-            elif item.template_sheet == tab:
+
+
+        if item.template_sheet == ws_list[0]:
+            if 'Project/Programme Name' in item.cell_key:
+                ws_summary[item.cell_reference].value = test_proj
+                continue
+            if isinstance(test_proj_data[item.cell_key], datetime.date):
+                ws_summary[item.cell_reference].value = test_proj_data[item.cell_key]
+                ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
+                continue
+            try:
+                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
+                    ws_summary[item.cell_reference].value = test_proj_data[item.cell_key]
+                    ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
+            except TypeError:
+                pass
+            if test_proj_data[item.cell_key] is None:
+                continue
+            c = Cleanser(str(test_proj_data[item.cell_key]))
+            cleaned = c.clean()
+            ws_summary[item.cell_reference].value = cleaned
+
+        for tab in ws_list[1:]:
+            if item.template_sheet == tab:
                 ws = blank[tab]
                 if has_whiff_of_total(item.cell_key):
                     continue
@@ -491,6 +494,8 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
                 c = Cleanser(str(test_proj_data[item.cell_key]))
                 cleaned = c.clean()
                 ws[item.cell_reference].value = cleaned
+            else:
+                pass
 
     imprint_current_quarter(ws_summary)
 

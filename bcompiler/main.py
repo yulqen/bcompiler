@@ -55,6 +55,8 @@ from bcompiler.utils import directory_has_returns_check
 from bcompiler.utils import runtime_config as config
 from bcompiler.compile import parse_comparison_master
 
+import csv
+
 logger = colorlog.getLogger('bcompiler')
 logger.setLevel(logging.DEBUG)
 
@@ -374,6 +376,42 @@ def _initial_clean(key: str) -> str:
         key = key.replace(unicodedata.lookup('EN DASH'), unicodedata.lookup('HYPHEN-MINUS'))
     return key
 
+def dm_tabs_list():
+    '''
+    :var datamap
+    :returns list of names of tabs in dm:
+    takes the datamap and returns a list of all the different tab names with the dm
+    '''
+
+    # Matt - I've done the bit below knowing how to get it to work as I don't understand the function methods that
+    # are using for access DM. so this is a bit of cheat.
+
+    dm = open('C:\\Users\\Standalone\\Will\\masters folder\\dms\\datamap_gmpp.csv')
+    reader = csv.reader(dm)
+    data = list(reader)
+
+    # got this from stack overflow. it removed duplicates from list while maintaining order place into the list.
+    def f7(seq):
+        seen = set()
+        seen_add = seen.add
+        return [x for x in seq if not (x in seen or seen_add(x))]
+
+    tab_list = []
+    for x in data:
+        tab_list.append(x[1])
+
+    tab_list_2 = f7(tab_list)
+
+    # remove the first entry in the list as this is the 'template_sheet' column title
+    tab_list_2.remove(tab_list_2[0])
+
+    # remove any blank cells
+    for x in tab_list_2:
+        if x == '':
+            tab_list_2.remove(x)
+
+    return tab_list_2
+
 
 def populate_blank_bicc_form(master_obj: Master, proj_num):
     datamap = Datamap()
@@ -384,6 +422,8 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
     logger.info("Processing project {}.".format(test_proj))
     test_proj_data = proj_data[test_proj]
     blank = load_workbook(SOURCE_DIR + BLANK_TEMPLATE_FN, keep_vba=True)
+    ws_list = dm_tabs_list()
+
     ws_summary = blank[config['TemplateSheets']['summary_sheet']]
     ws_fb = blank[config['TemplateSheets']['fb_sheet']]
     ws_res = blank[config['TemplateSheets']['resource_sheet']]
@@ -410,45 +450,48 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
             else:
                 logger.warning(f"Cannot find {item.cell_key} in {test_proj} - check for double spaces in cell in master. Skipping.")
                 continue
-        if item.template_sheet == config['TemplateSheets']['summary_sheet']:
-            if 'Project/Programme Name' in item.cell_key:
-                ws_summary[item.cell_reference].value = test_proj
-                continue
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_summary[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
-                    ws_summary[item.cell_reference].value = test_proj_data[item.cell_key]
-                    ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            if test_proj_data[item.cell_key] is None:
-                continue
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_summary[item.cell_reference].value = cleaned
-        elif item.template_sheet == config['TemplateSheets']['fb_sheet']:
-            if has_whiff_of_total(item.cell_key):
-                continue
-            if isinstance(test_proj_data[item.cell_key], datetime.date):
-                c = Cleanser(str(test_proj_data[item.cell_key]))
-                cleaned = c.clean()
-                ws_fb[item.cell_reference].value = test_proj_data[item.cell_key]
-                ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
-                continue
-            try:
-                if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
+        for tab in ws_list:
+            if tab == 'Introduction': # hack because this is hard coded and just what to check it works
+                ws_summary = tab
+                if item.template_sheet == tab:
+                    if 'Project/Programme Name' in item.cell_key:
+                        ws_summary[item.cell_reference].value = test_proj
+                        continue
+                    if isinstance(test_proj_data[item.cell_key], datetime.date):
+                        ws_summary[item.cell_reference].value = test_proj_data[item.cell_key]
+                        ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
+                        continue
+                    try:
+                        if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
+                            ws_summary[item.cell_reference].value = test_proj_data[item.cell_key]
+                            ws_summary[item.cell_reference].number_format = 'dd/mm/yyyy'
+                    except TypeError:
+                        pass
+                    if test_proj_data[item.cell_key] is None:
+                        continue
+                    c = Cleanser(str(test_proj_data[item.cell_key]))
+                    cleaned = c.clean()
+                    ws_summary[item.cell_reference].value = cleaned
+            elif item.template_sheet == config['TemplateSheets']['fb_sheet']:
+                if has_whiff_of_total(item.cell_key):
+                    continue
+                if isinstance(test_proj_data[item.cell_key], datetime.date):
+                    c = Cleanser(str(test_proj_data[item.cell_key]))
+                    cleaned = c.clean()
                     ws_fb[item.cell_reference].value = test_proj_data[item.cell_key]
                     ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
-            except TypeError:
-                pass
-            if test_proj_data[item.cell_key] is None:
-                continue
-            c = Cleanser(str(test_proj_data[item.cell_key]))
-            cleaned = c.clean()
-            ws_fb[item.cell_reference].value = cleaned
+                    continue
+                try:
+                    if re.match(r'(\d+/\d+/\d+)', test_proj_data[item.cell_key]):
+                        ws_fb[item.cell_reference].value = test_proj_data[item.cell_key]
+                        ws_fb[item.cell_reference].number_format = 'dd/mm/yyyy'
+                except TypeError:
+                    pass
+                if test_proj_data[item.cell_key] is None:
+                    continue
+                c = Cleanser(str(test_proj_data[item.cell_key]))
+                cleaned = c.clean()
+                ws_fb[item.cell_reference].value = cleaned
         elif item.template_sheet == config['TemplateSheets']['resource_sheet']:
             if has_whiff_of_total(item.cell_key):
                 continue

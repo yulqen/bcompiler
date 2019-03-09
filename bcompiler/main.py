@@ -378,15 +378,15 @@ def _initial_clean(key: str) -> str:
 
 def dm_tabs_list():
     '''
-    :var datamap
-    :returns list of names of tabs in dm:
-    takes the datamap and returns a list of all the different tab names with the dm
+    Takes the datamap and returns a list of all the different work sheet names in the dm.
+    haven't put any parentheses/arguments for the function yet. the only one required is the file path for dm
+    stated below.
+
+    Matt - I've constructed this using code  I'm more familiar with. You probably know a better way of obtaining
+    a list from the datamap? I've used a basic way to specific file path to dm. This should no doubt be changed to
+    the os.path.join method you use in the rest of the programme
     '''
 
-    # Matt - I've done the bit below knowing how to get it to work as I don't understand the function methods that
-    # are using for access DM. so this is a bit basic.
-
-    '''this is hard coded although I have used the file path to where the datamap should be'''
     dm = open('C:\\Users\\Standalone\\Documents\\bcompiler\\source\\datamap.csv')
     reader = csv.reader(dm)
     data = list(reader)
@@ -417,6 +417,7 @@ def dm_tabs_list():
 def populate_blank_bicc_form(master_obj: Master, proj_num):
     datamap = Datamap()
     datamap.cell_map_from_csv(os.path.join(SOURCE_DIR, config['Datamap']['name']))
+    #TODO further testing on namingly for datamap in config file. might be connected to clean datamap function?
     proj_data = master_obj.data
     ls = master_obj.projects
     test_proj = ls[int(proj_num)]
@@ -424,20 +425,7 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
     test_proj_data = proj_data[test_proj]
     blank = load_workbook(SOURCE_DIR + BLANK_TEMPLATE_FN, keep_vba=True)
     ws_list = dm_tabs_list()
-    ws_summary = blank[ws_list[0]]
-    #ws_fb = blank[config['TemplateSheets']['fb_sheet']]
-    #ws_res = blank[config['TemplateSheets']['resource_sheet']]
-    #ws_apm = blank[config['TemplateSheets']['apm']]
-    #ws_ap = blank[config['TemplateSheets']['ap']]
-    #ws_gmpp = blank[config['TemplateSheets']['gmpp']]
-    #ws_x1 = blank[config['TemplateSheets']['extra_1']]
-    #ws_x2 = blank[config['TemplateSheets']['extra_2']]
-    #ws_x3 = blank[config['TemplateSheets']['extra_3']]
-    #ws_x4 = blank[config['TemplateSheets']['extra_4']]
-    #ws_x5 = blank[config['TemplateSheets']['extra_5']]
-    #ws_x6 = blank[config['TemplateSheets']['extra_6']]
-    #ws_x7 = blank[config['TemplateSheets']['extra_7']]
-    #ws_x8 = blank[config['TemplateSheets']['extra_8']]
+    ws_summary = blank[ws_list[0]] # this sheet is treated differently as its connect to need for 'proj/prog name
 
     for item in datamap.cell_map:
         item.cell_key = _initial_clean(item.cell_key)
@@ -452,6 +440,8 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
                 continue
 
 
+        '''The first work sheet name in list is treated differently to the for loop below. This is because 
+        as I understand it code is structured so that the first worksheet specifies the project/programme name'''
         if item.template_sheet == ws_list[0]:
             if 'Project/Programme Name' in item.cell_key:
                 ws_summary[item.cell_reference].value = test_proj
@@ -472,6 +462,7 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
             cleaned = c.clean()
             ws_summary[item.cell_reference].value = cleaned
 
+        '''for loop go through rest of worksheets in list'''
         for tab in ws_list[1:]:
             if item.template_sheet == tab:
                 ws = blank[tab]

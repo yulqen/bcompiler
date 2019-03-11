@@ -314,7 +314,7 @@ def run(compare_master=None, comparitor=None):
             elif fnmatch.fnmatch(file, '*.xlsm#' or fnmatch.fnmatch(file, '*.xlsx#')):
                 logger.warning("You have a file open in your spreadsheet program. Ignoring the lock file.")
             else:
-                logger.critical("There are no Excel files in {}. Copy some in there!".format(RETURNS_DIR))
+                logger.warning("Non-spreadsheet file detected: {}.", format(file))
         q_string = config['QuarterData']['CurrentQuarter'].split()[0]
         OUTPUT_FILE = '/'.join([OUTPUT_DIR, 'compiled_master_{}_{}.xlsx'.format(TODAY, q_string)])
         workbook.save(OUTPUT_FILE)

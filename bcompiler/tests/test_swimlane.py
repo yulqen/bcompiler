@@ -115,7 +115,6 @@ def test_swimlane_assurance_data(tmpdir, master):
     assert ws['B10'].value == datetime.datetime(2020, 1, 1)
 
     assert ws['C2'].value is None
-    import pdb; pdb.set_trace()  # XXX BREAKPOINT
     assert ws['C3'].value is None
     assert ws['C4'].value is None
     assert ws['C5'].value is None

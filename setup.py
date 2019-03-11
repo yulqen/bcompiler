@@ -55,5 +55,5 @@ setup(
         'bcompiler = bcompiler.main:main',
         'bcompiler-init = bcompiler.process.bootstrap:main',
     ]},
-    install_requires=['openpyxl == 2.4.9', 'python-dateutil', 'colorlog'],
+    install_requires=['openpyxl == 2.6.1', 'python-dateutil', 'colorlog'],
     test_suite='bcompiler.tests')

@@ -35,8 +35,12 @@ class Datamap:
         if source_file[-4:] == '.csv':
             try:
                 self._import_source_data(source_file)
-            except Exception:
-                print("Problem with that CSV file. File extension?")
+            except UnicodeDecodeError:
+                print("There is a problem with the CSV file. Please ensure "
+                      "it is saved as UTF-8 encoding after you create or edit it"
+                      " (i.e. in Notepad, Excel, LibreOffice, etc.\nCannot continue."
+                      "Exiting.")
+                system.exit(1)
 
     def _import_source_data(self, source_file: str) -> None:
         """Internal implementation of csv importer."""

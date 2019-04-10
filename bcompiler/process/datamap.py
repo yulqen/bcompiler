@@ -43,18 +43,21 @@ class Datamap:
                       "Exiting.")
                 sys.exit(1)
 
-    def _import_source_data(self, source_file: str) -> None:
-        """Internal implementation of csv importer."""
-        with open(source_file, 'r', encoding='utf-8') as csv_file:
+
+    def _open_with_encoding_and_extract_data(self, source_file, encoding):
+        with open(source_file, 'r', encoding=encoding) as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
-                self.cell_map.append(
-                    Cell(
-                        cell_key=row['cell_key'],
-                        cell_value=None,  # have no need of a value in dm
-                        cell_reference=row['cell_reference'],
-                        template_sheet=row['template_sheet'],
-                        bg_colour=None,
-                        fg_colour=None,
-                        number_format=None,
-                        verification_list=None))
+                self.cell_map.append(Cell(cell_key=row['cell_key'], cell_value=None, # have no need of a value in dm
+                        cell_reference=row['cell_reference'], template_sheet=row['template_sheet'], bg_colour=None, fg_colour=None, number_format=None, verification_list=None))
+
+    def _import_source_data(self, source_file: str) -> None:
+        """Internal implementation of csv importer."""
+        try:
+            self._open_with_encoding_and_extract_data(source_file, "ISO-8859-1")
+        except UnicodeDecodeError:
+            self._open_with_encoding_and_extract_data(source_file, "utf-8")
+        except Exception:
+            print(f"Cannot decode file {source_file}")
+            sys.exit(1)
+            

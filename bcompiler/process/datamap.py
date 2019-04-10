@@ -1,4 +1,5 @@
 import csv
+import sys
 
 from .cell import Cell
 
@@ -40,7 +41,7 @@ class Datamap:
                       "it is saved as UTF-8 encoding after you create or edit it"
                       " (i.e. in Notepad, Excel, LibreOffice, etc.\nCannot continue."
                       "Exiting.")
-                system.exit(1)
+                sys.exit(1)
 
     def _import_source_data(self, source_file: str) -> None:
         """Internal implementation of csv importer."""

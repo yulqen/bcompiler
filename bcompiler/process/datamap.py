@@ -1,9 +1,8 @@
 import csv
 import sys
+from typing import List
 
 from .cell import Cell
-
-from typing import List
 
 
 class Datamap:
@@ -17,6 +16,7 @@ class Datamap:
     Datamap.cell_map_from_database(). To create a base cell map from the
     template, call Datamap.cell_map_from_csv().
     """
+
     def __init__(self) -> None:
         self.cell_map: List[Cell] = []
 
@@ -43,13 +43,13 @@ class Datamap:
                       "Exiting.")
                 sys.exit(1)
 
-
     def _open_with_encoding_and_extract_data(self, source_file, encoding):
         with open(source_file, 'r', encoding=encoding) as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
-                self.cell_map.append(Cell(cell_key=row['cell_key'], cell_value=None, # have no need of a value in dm
-                        cell_reference=row['cell_reference'], template_sheet=row['template_sheet'], bg_colour=None, fg_colour=None, number_format=None, verification_list=None))
+                self.cell_map.append(Cell(cell_key=row['cell_key'], cell_value=None,  # have no need of a value in dm
+                                          cell_reference=row['cell_reference'], template_sheet=row['template_sheet'],
+                                          bg_colour=None, fg_colour=None, number_format=None, verification_list=None))
 
     def _import_source_data(self, source_file: str) -> None:
         """Internal implementation of csv importer."""
@@ -60,4 +60,3 @@ class Datamap:
         except Exception:
             print(f"Cannot decode file {source_file}")
             sys.exit(1)
-            

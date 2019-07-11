@@ -1,49 +1,51 @@
+import configparser
 import csv
 import fnmatch
 import logging
-import sys
 import os
-
-from .process.cleansers import Cleanser
-
+import sys
 from collections import OrderedDict
 from datetime import date, datetime
 from math import isclose
 
-import configparser
-
-from openpyxl import load_workbook, Workbook
+from openpyxl import Workbook, load_workbook
 from openpyxl.styles import PatternFill
 from openpyxl.utils import quote_sheetname
 
-logger = logging.getLogger('bcompiler.utils')
+from .process.cleansers import Cleanser
 
-rdel_cdel_merge = ''
+logger = logging.getLogger("bcompiler.utils")
 
-DOCS = os.path.join(os.path.expanduser('~'), 'Documents')
-BCOMPILER_WORKING_D = 'bcompiler'
+rdel_cdel_merge = ""
+
+DOCS = os.path.join(os.path.expanduser("~"), "Documents")
+BCOMPILER_WORKING_D = "bcompiler"
 ROOT_PATH = os.path.join(DOCS, BCOMPILER_WORKING_D)
-SOURCE_DIR = os.path.join(ROOT_PATH, 'source')
+SOURCE_DIR = os.path.join(ROOT_PATH, "source")
 
-CONFIG_FILE = os.path.join(SOURCE_DIR, 'config.ini')
-
+CONFIG_FILE = os.path.join(SOURCE_DIR, "config.ini")
 
 runtime_config = configparser.ConfigParser()
 runtime_config.read(CONFIG_FILE)
 
-CURRENT_QUARTER = runtime_config['QuarterData']['CurrentQuarter']
+CURRENT_QUARTER = runtime_config["QuarterData"]["CurrentQuarter"]
 
 try:
-    SHEETS = [i for i in dict((runtime_config.items('TemplateSheets'))).values()]
-    BLANK_TEMPLATE_FN = runtime_config['BlankTemplate']['name']
+    SHEETS = [
+        i for i in dict((runtime_config.items("TemplateSheets"))).values()
+    ]
+    BLANK_TEMPLATE_FN = runtime_config["BlankTemplate"]["name"]
 except configparser.NoSectionError:
-    print("There is no config file present. Please run bcompiler-init to initialise bcompiler")
+    print(
+        "There is no config file present. Please run bcompiler-init to initialise bcompiler"
+    )
     sys.exit()
 
 
 def directory_has_returns_check(dir: str):
     if os.listdir(dir) == []:
-        logger.critical("Please copy populated return files to returns directory.")
+        logger.critical(
+            "Please copy populated return files to returns directory.")
         return False
     else:
         return True
@@ -55,8 +57,12 @@ def row_check(excel_file: str):
     for sheet in wb.sheetnames:
         ws = wb[sheet]
         rows = ws.rows
-        data.append(dict(workbook=excel_file.split('/')[-1], sheet=sheet,
-                    row_count=len(list(rows))))
+        data.append(
+            dict(
+                workbook=excel_file.split("/")[-1],
+                sheet=sheet,
+                row_count=len(list(rows)),
+            ))
     return data
 
 
@@ -73,18 +79,18 @@ def row_data_formatter(csv_output=False, quiet=False) -> None:
                         " or the other.")
         return
     try:
-        returns_dir = os.path.join(ROOT_PATH, 'source', 'returns')
+        returns_dir = os.path.join(ROOT_PATH, "source", "returns")
     except FileNotFoundError:
         logger.warning("There is no output directory. Run bcompiler -d to "
                        "set up working directories")
     try:
-        tmpl_data = row_check(os.path.join(ROOT_PATH, 'source',
-                                           BLANK_TEMPLATE_FN))
+        tmpl_data = row_check(
+            os.path.join(ROOT_PATH, "source", BLANK_TEMPLATE_FN))
     except FileNotFoundError:
         logger.warning("bicc_template.xlsm not found")
     if csv_output:
-        csv_output_path = os.path.join(OUTPUT_DIR, 'row_count.csv')
-        csv_output_file = open(csv_output_path, 'w', newline='')
+        csv_output_path = os.path.join(OUTPUT_DIR, "row_count.csv")
+        csv_output_file = open(csv_output_path, "w", newline="")
         csv_writer = csv.writer(csv_output_file)
         logger.info("Writing output to csv file...")
     elif quiet:
@@ -96,31 +102,47 @@ def row_data_formatter(csv_output=False, quiet=False) -> None:
     # Start with the bicc_template.xlsm BASE data
     for line in tmpl_data:
         if csv_output:
-            csv_writer.writerow([line['workbook'], line['sheet'], line['row_count']])
+            csv_writer.writerow(
+                [line["workbook"], line["sheet"], line["row_count"]])
         elif quiet:
             pass
         else:
-            print(f"{line['workbook']:<90}{line['sheet']:<40}{line['row_count']:<10}")
+            print(
+                f"{line['workbook']:<90}{line['sheet']:<40}{line['row_count']:<10}"
+            )
     print("{:#<150}".format(""))
     for f in os.listdir(returns_dir):
         if fnmatch.fnmatch(f, "*.xlsm"):
             d = row_check(os.path.join(returns_dir, f))
             zipped_data = zip(tmpl_data, d)
             for line in zipped_data:
-                counts = [i['row_count'] for i in line]
+                counts = [i["row_count"] for i in line]
                 flag = counts[0] != counts[-1]
                 if not flag:
                     if csv_output:
-                        csv_writer.writerow([line[1]['workbook'], line[1]['sheet'], line[1]['row_count']])
+                        csv_writer.writerow([
+                            line[1]["workbook"],
+                            line[1]["sheet"],
+                            line[1]["row_count"],
+                        ])
                     elif quiet:
                         pass
                     else:
-                        print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10}")
+                        print(
+                            f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10}"
+                        )
                 else:
                     if csv_output:
-                        csv_writer.writerow([line[1]['workbook'], line[1]['sheet'], line[1]['row_count'], "INCONSISTENT WITH bicc_template.xlsm"])
+                        csv_writer.writerow([
+                            line[1]["workbook"],
+                            line[1]["sheet"],
+                            line[1]["row_count"],
+                            "INCONSISTENT WITH bicc_template.xlsm",
+                        ])
                     else:
-                        print(f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10} *")
+                        print(
+                            f"{line[1]['workbook']:<90}{line[1]['sheet']:<40}{line[1]['row_count']:<10} *"
+                        )
             if not quiet:
                 print("{:#<150}".format(""))
             else:
@@ -163,37 +185,41 @@ def cell_bg_colour(rgb=[]):
     Give it a list of integers between 0 and 255 - three of them.
     """
     c_value = "{0:02X}{1:02X}{2:02X}".format(*rgb)
-    return PatternFill(patternType='solid', fgColor=c_value, bgColor=c_value)
+    return PatternFill(patternType="solid", fgColor=c_value, bgColor=c_value)
 
 
 def get_relevant_names(project_name, project_data):
 
     try:
-        sro_first_name = project_data[project_name]['SRO Full Name'].split(
+        sro_first_name = project_data[project_name]["SRO Full Name"].split(
             " ")[0]
     except IndexError:
-        logger.warning("SRO Full Name ({0}) is not suitable for splitting".
-                       format(project_data[project_name]['SRO Full Name']))
+        logger.warning(
+            "SRO Full Name ({0}) is not suitable for splitting".format(
+                project_data[project_name]["SRO Full Name"]))
 
     try:
-        sro_last_name = project_data[project_name]['SRO Full Name'].split(" ")[
-            1]
+        sro_last_name = project_data[project_name]["SRO Full Name"].split(
+            " ")[1]
     except IndexError:
-        logger.warning("SRO Full Name ({0}) is not suitable for splitting".
-                       format(project_data[project_name]['SRO Full Name']))
+        logger.warning(
+            "SRO Full Name ({0}) is not suitable for splitting".format(
+                project_data[project_name]["SRO Full Name"]))
 
     try:
-        pd_first_name = project_data[project_name]['PD Full Name'].split(" ")[
-            0]
+        pd_first_name = project_data[project_name]["PD Full Name"].split(
+            " ")[0]
     except IndexError:
-        logger.warning("PD Full Name ({0}) is not suitable for splitting".
-                       format(project_data[project_name]['PD Full Name']))
+        logger.warning(
+            "PD Full Name ({0}) is not suitable for splitting".format(
+                project_data[project_name]["PD Full Name"]))
 
     try:
-        pd_last_name = project_data[project_name]['PD Full Name'].split(" ")[1]
+        pd_last_name = project_data[project_name]["PD Full Name"].split(" ")[1]
     except IndexError:
-        logger.warning("PD Full Name ({0}) is not suitable for splitting".
-                       format(project_data[project_name]['PD Full Name']))
+        logger.warning(
+            "PD Full Name ({0}) is not suitable for splitting".format(
+                project_data[project_name]["PD Full Name"]))
 
     try:
         sro_d = dict(first_name=sro_first_name, last_name=sro_last_name)
@@ -215,7 +241,10 @@ def project_data_from_master(master_file: str, opened_wb=False):
         wb = master_file
         ws = wb.active
     # cleanse the keys
-    for cell in ws['A']:
+    for cell in ws["A"]:
+        # we don't want to clean None...
+        if cell.value is None:
+            continue
         c = Cleanser(cell.value)
         cell.value = c.clean()
     p_dict = {}
@@ -229,7 +258,8 @@ def project_data_from_master(master_file: str, opened_wb=False):
             else:
                 val = ws.cell(row=cell.row, column=1).value
                 if type(cell.value) == datetime:
-                    d_value = date(cell.value.year, cell.value.month, cell.value.day)
+                    d_value = date(cell.value.year, cell.value.month,
+                                   cell.value.day)
                     p_dict[project_name][val] = d_value
                 else:
                     p_dict[project_name][val] = cell.value
@@ -243,10 +273,10 @@ def project_data_from_master(master_file: str, opened_wb=False):
 
 def project_data_line():
     p_dict = {}
-    with open(SOURCE_DIR + 'master_transposed.csv', 'r') as f:
+    with open(SOURCE_DIR + "master_transposed.csv", "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            key = row.pop('Project/Programme Name')
+            key = row.pop("Project/Programme Name")
             if key in p_dict:
                 pass
             p_dict[key] = row
@@ -269,34 +299,35 @@ def working_directory(dir_type=None):
     Returns the working directory for source files
     :return: path to the working directory intended for the source files
     """
-    docs = os.path.join(os.path.expanduser('~'), 'Documents')
-    bcomp_working_d = 'bcompiler'
+    docs = os.path.join(os.path.expanduser("~"), "Documents")
+    bcomp_working_d = "bcompiler"
     try:
         root_path = os.path.join(docs, bcomp_working_d)
     except FileNotFoundError:
         print("You need to run with --create-wd to",
               "create the working directory")
-    if dir_type == 'source':
+    if dir_type == "source":
         return root_path + "/source/"
-    elif dir_type == 'output':
+    elif dir_type == "output":
         return root_path + "/output/"
-    elif dir_type == 'returns':
+    elif dir_type == "returns":
         return root_path + "/source/returns/"
     else:
         return
 
+
 # TODO this lot needs cleaning up - no more use of working_directory()
 
-SOURCE_DIR = working_directory('source')
-OUTPUT_DIR = working_directory('output')
-RETURNS_DIR = working_directory('returns')
-DATAMAP_RETURN_TO_MASTER = SOURCE_DIR + 'datamap.csv'
-DATAMAP_MASTER_TO_RETURN = SOURCE_DIR + 'datamap.csv'
-DATAMAP_MASTER_TO_GMPP = SOURCE_DIR + 'archive/datamap-master-to-gmpp'
-CLEANED_DATAMAP = SOURCE_DIR + 'cleaned_datamap.csv'
-MASTER = SOURCE_DIR + 'master.csv'
+SOURCE_DIR = working_directory("source")
+OUTPUT_DIR = working_directory("output")
+RETURNS_DIR = working_directory("returns")
+DATAMAP_RETURN_TO_MASTER = SOURCE_DIR + "datamap.csv"
+DATAMAP_MASTER_TO_RETURN = SOURCE_DIR + "datamap.csv"
+DATAMAP_MASTER_TO_GMPP = SOURCE_DIR + "archive/datamap-master-to-gmpp"
+CLEANED_DATAMAP = SOURCE_DIR + "cleaned_datamap.csv"
+MASTER = SOURCE_DIR + "master.csv"
 TEMPLATE = SOURCE_DIR + BLANK_TEMPLATE_FN
-GMPP_TEMPLATE = SOURCE_DIR + 'archive/gmpp_template.xlsx'
+GMPP_TEMPLATE = SOURCE_DIR + "archive/gmpp_template.xlsx"
 
 
 def index_returns_directory():
@@ -313,10 +344,10 @@ def index_returns_directory():
 
     pnames_in_returns_dir = []
     for f in target_files:
-        if fnmatch.fnmatch(f, '*.xlsm'):
+        if fnmatch.fnmatch(f, "*.xlsm"):
             wb = load_workbook(os.path.join(RETURNS_DIR, f))
-            ws = wb[runtime_config['TemplateSheets']['summary_sheet']]
-            pnames_in_returns_dir.append(ws['B5'].value)
+            ws = wb[runtime_config["TemplateSheets"]["summary_sheet"]]
+            pnames_in_returns_dir.append(ws["B5"].value)
     return pnames_in_returns_dir
 
 
@@ -330,15 +361,15 @@ def parse_csv_to_file(source_file):
     :param source_file:
     :return:
     """
-    output = open(SOURCE_DIR + 'master_transposed.csv', 'w+')
+    output = open(SOURCE_DIR + "master_transposed.csv", "w+")
     try:
-        source = open(source_file, 'r')
+        source = open(source_file, "r")
     except FileNotFoundError:
         logger.critical(f"There is no file {source_file} present.")
         source.close()
         return
-    with open(source_file, 'r') as source_f:
-        lis = [x.split(',') for x in source_f]
+    with open(source_file, "r") as source_f:
+        lis = [x.split(",") for x in source_f]
         for i in lis:
             # we need to do this to remove trailing "\n" from the end of
             # each original master.csv line
@@ -346,8 +377,8 @@ def parse_csv_to_file(source_file):
 
     for x in zip(*lis):
         for y in x:
-            output.write(y + ',')
-        output.write('\n')
+            output.write(y + ",")
+        output.write("\n")
     output.close()
 
 
@@ -358,7 +389,7 @@ def create_master_dict_transposed(source_master_csv):
     returns a list of dicts, which makes up all the data from the master
     """
     parse_csv_to_file(source_master_csv)
-    with open(SOURCE_DIR + 'master_transposed.csv', 'r') as f:
+    with open(SOURCE_DIR + "master_transposed.csv", "r") as f:
         r = csv.DictReader(f)
         ls = [row for row in r]
     return ls
@@ -367,96 +398,95 @@ def create_master_dict_transposed(source_master_csv):
 sheet_name = "Dropdown"
 
 VALIDATION_REFERENCES = {
-    'Quarter':
+    "Quarter":
     "{0}!$A$2:$A$9".format(quote_sheetname(sheet_name)),
-    'Joining Qtr':
+    "Joining Qtr":
     "{0}!$B$2:$B$25".format(quote_sheetname(sheet_name)),
-    'Classification':
+    "Classification":
     "{0}!$C$2:$C$4".format(quote_sheetname(sheet_name)),
-    'Entity format':
+    "Entity format":
     "{0}!$D$2:$D$4".format(quote_sheetname(sheet_name)),
-    'Methodology':
+    "Methodology":
     "{0}!$E$2:$E$10".format(quote_sheetname(sheet_name)),
-    'Category':
+    "Category":
     "{0}!$F$2:$H$11".format(quote_sheetname(sheet_name)),
-    'Scope Changed':
+    "Scope Changed":
     "{0}!$G$2:$I$4".format(quote_sheetname(sheet_name)),
-    'Monetised / Non Monetised Benefits':
+    "Monetised / Non Monetised Benefits":
     "{0}!$H$2:$H$4".format(quote_sheetname(sheet_name)),
-    'RAG':
+    "RAG":
     "{0}!$I$2:$I$6".format(quote_sheetname(sheet_name)),
-    'RAG 2':
+    "RAG 2":
     "{0}!$J$2:$J$4".format(quote_sheetname(sheet_name)),
-    'RPA level':
+    "RPA level":
     "{0}!$K$2:$K$4".format(quote_sheetname(sheet_name)),
-    'Capability RAG':
+    "Capability RAG":
     "{0}!$L$2:$L$5".format(quote_sheetname(sheet_name)),
-    'MPLA / PLP':
+    "MPLA / PLP":
     "{0}!$M$2:$M$30".format(quote_sheetname(sheet_name)),
-    'PL Changes':
+    "PL Changes":
     "{0}!$N$2:$N$31".format(quote_sheetname(sheet_name)),
-    'Stage':
+    "Stage":
     "{0}!$O$2:$O$10".format(quote_sheetname(sheet_name)),
-    'Business Cases':
+    "Business Cases":
     "{0}!$P$2:$P$11".format(quote_sheetname(sheet_name)),
-    'Milestone Types':
+    "Milestone Types":
     "{0}!$Q$2:$Q$4".format(quote_sheetname(sheet_name)),
-    'Finance figures format':
+    "Finance figures format":
     "{0}!$R$2:$R$3".format(quote_sheetname(sheet_name)),
-    'Index Years':
+    "Index Years":
     "{0}!$S$2:$S$27".format(quote_sheetname(sheet_name)),
-    'Discount Rate':
+    "Discount Rate":
     "{0}!$T$2:$T$32".format(quote_sheetname(sheet_name)),
-    'Finance type':
+    "Finance type":
     "{0}!$U$2:$U$6".format(quote_sheetname(sheet_name)),
-    'Yes/No':
+    "Yes/No":
     "{0}!$V$2:$V$3".format(quote_sheetname(sheet_name)),
-    'Years (Spend)':
+    "Years (Spend)":
     "{0}!$W$2:$W$90".format(quote_sheetname(sheet_name)),
-    'Years (Benefits)':
+    "Years (Benefits)":
     "{0}!$X$2:$X$90".format(quote_sheetname(sheet_name)),
-    'Snapshot Dates':
+    "Snapshot Dates":
     "{0}!$Y$2:$Y$9".format(quote_sheetname(sheet_name)),
-    'Percentage of time spent on SRO role':
+    "Percentage of time spent on SRO role":
     "{0}!$Z$2:$Z$21".format(quote_sheetname(sheet_name)),
-    'AR Category':
+    "AR Category":
     "{0}!$AA$2:$AA$5".format(quote_sheetname(sheet_name)),
-    'Project Lifecycle':
+    "Project Lifecycle":
     "{0}!$AB$2:$AB$6".format(quote_sheetname(sheet_name)),
-    'Programme Lifecycle':
+    "Programme Lifecycle":
     "{0}!$AC$2:$AC$7".format(quote_sheetname(sheet_name)),
-    'Other':
+    "Other":
     "{0}!$AD$2:$AD$19".format(quote_sheetname(sheet_name)),
-    'Start / Year end - FY':
+    "Start / Year end - FY":
     "{0}!$AE$3:$AE$22".format(quote_sheetname(sheet_name)),
-    'Count':
+    "Count":
     "{0}!$AF$2:$AF$22".format(quote_sheetname(sheet_name)),
-    'VFM':
+    "VFM":
     "{0}!$AG$2:$AG$11".format(quote_sheetname(sheet_name)),
-    'DfT Group':
+    "DfT Group":
     "{0}!$AH$2:$AH$7".format(quote_sheetname(sheet_name)),
-    'DfT Division':
+    "DfT Division":
     "{0}!$AI$2:$AI$15".format(quote_sheetname(sheet_name)),
-    'Agency':
+    "Agency":
     "{0}!$AJ$2:$AJ$9".format(quote_sheetname(sheet_name)),
-    'High Speed Rail':
+    "High Speed Rail":
     "{0}!$AK$2:$AK$4".format(quote_sheetname(sheet_name)),
-    'Rail Group':
+    "Rail Group":
     "{0}!$AL$2:$AL$4".format(quote_sheetname(sheet_name)),
-    'Roads, Devolution & Motoring':
+    "Roads, Devolution & Motoring":
     "{0}!$AM$2:$AM$5".format(quote_sheetname(sheet_name)),
-    'International, Security and Environment':
+    "International, Security and Environment":
     "{0}!$AN$2:$AN$4".format(quote_sheetname(sheet_name)),
-    'Resource and Strategy':
+    "Resource and Strategy":
     "{0}!$AO$2:$AO$2".format(quote_sheetname(sheet_name)),
-    'Non-Group':
+    "Non-Group":
     "{0}!$AP$2:$AP$2".format(quote_sheetname(sheet_name)),
-    'GMPP Annual Report Category':
+    "GMPP Annual Report Category":
     "{0}!$AQ$2:$AQ$2".format(quote_sheetname(sheet_name)),
-    'SDP':
+    "SDP":
     "{0}!$AR2:$AR$5".format(quote_sheetname(sheet_name)),
 }
-
 
 
 def row_accessor(row: tuple):
@@ -467,7 +497,7 @@ def row_accessor(row: tuple):
     :return:
     """
     for item in row:
-        yield (''.join([item.column, str(item.row)]), item.value)
+        yield ("".join([item.column, str(item.row)]), item.value)
 
 
 def gen_sheet_data(workbook: str) -> dict:
@@ -508,7 +538,8 @@ def get_sheets_in_workbook(real_template: str) -> list:
     return sheets
 
 
-def generate_test_template_from_real(real_template: str, save_path: str) -> None:
+def generate_test_template_from_real(real_template: str,
+                                     save_path: str) -> None:
     """
     Given the bicc_template.xlsm file, this function strips it of
     everything but cell data.
@@ -528,8 +559,6 @@ def generate_test_template_from_real(real_template: str, save_path: str) -> None
             for cell in r:
                 summary_sheet[cell[0]] = cell[1]
         sheet_order += 1
-    if save_path.endswith('/'):
+    if save_path.endswith("/"):
         save_path = save_path[:-1]
-    blank.save(''.join([save_path, '/gen_bicc_template.xlsm']))
-
-
+    blank.save("".join([save_path, "/gen_bicc_template.xlsm"]))

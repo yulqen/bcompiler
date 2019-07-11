@@ -1,12 +1,12 @@
-import colorlog
 import datetime
+import re
 from datetime import date
 from operator import itemgetter
-import re
 
+import colorlog
 from dateutil.parser import parse
 
-logger = colorlog.getLogger('bcompiler.cleanser')
+logger = colorlog.getLogger("bcompiler.cleanser")
 
 ENDASH_REGEX = r"–"
 ENDASH_FIX = r"-"
@@ -56,79 +56,82 @@ class Cleanser:
                 rule=ENDASH_REGEX,
                 fix=ENDASH_FIX,
                 func=self._endash,
-                count=0),
+                count=0,
+            ),
             dict(
-                c_type='commas',
+                c_type="commas",
                 rule=COMMA_REGEX,
                 fix=COMMA_FIX,
                 func=self._commas,
-                count=0),
+                count=0,
+            ),
             dict(
-                c_type='leading_apostrophe',
+                c_type="leading_apostrophe",
                 rule=APOS_REGEX,
                 fix=APOS_FIX,
                 func=self._apostrophe,
-                count=0),
+                count=0,
+            ),
+            dict(c_type="newline",
+                 rule=NL_REGEX,
+                 fix=NL_FIX,
+                 func=self._newline,
+                 count=0),
             dict(
-                c_type='newline',
-                rule=NL_REGEX,
-                fix=NL_FIX,
-                func=self._newline,
-                count=0),
-            dict(
-                c_type='double_space',
+                c_type="double_space",
                 rule="  ",
                 fix=" ",
                 func=self._doublespace,
-                count=0),
+                count=0,
+            ),
             dict(
-                c_type='trailing_space',
+                c_type="trailing_space",
                 rule=TRAILING_SPACE_REGEX,
                 fix=None,
                 func=self._trailingspace,
-                count=0),
+                count=0,
+            ),
             dict(
-                c_type='pipe_char',
+                c_type="pipe_char",
                 rule=SPACE_PIPE_CHAR_REGEX,
                 fix=SPACE_PIPE_CHAR_FIX,
                 func=self._space_pipe_char,
-                count=0),
+                count=0,
+            ),
+            dict(c_type="date",
+                 rule=DATE_REGEX,
+                 fix=None,
+                 func=self._date,
+                 count=0),
             dict(
-                c_type='date',
-                rule=DATE_REGEX,
-                fix=None,
-                func=self._date,
-                count=0),
-            dict(
-                c_type='date_time',
+                c_type="date_time",
                 rule=DATE_REGEX_TIME,
                 fix=None,
                 func=self._date_time,
-                count=0),
+                count=0,
+            ),
+            dict(c_type="int",
+                 rule=INT_REGEX,
+                 fix=None,
+                 func=self._int,
+                 count=0),
+            dict(c_type="float",
+                 rule=FLOAT_REGEX,
+                 fix=None,
+                 func=self._float,
+                 count=0),
             dict(
-                c_type='int',
-                rule=INT_REGEX,
-                fix=None,
-                func=self._int,
-                count=0),
-            dict(
-                c_type='float',
-                rule=FLOAT_REGEX,
-                fix=None,
-                func=self._float,
-                count=0),
-            dict(
-                c_type='percent',
+                c_type="percent",
                 rule=PERCENT_REGEX,
                 fix=None,
                 func=self._percent,
-                count=0),
-            dict(
-                c_type='pound',
-                rule=POUND_REGEX,
-                fix=None,
-                func=self._pound,
-                count=0)
+                count=0,
+            ),
+            dict(c_type="pound",
+                 rule=POUND_REGEX,
+                 fix=None,
+                 func=self._pound,
+                 count=0),
         ]
         self.checks_l = len(self._checks)
         self._analyse()
@@ -140,8 +143,9 @@ class Cleanser:
         a count with a value higher than 0 to run with, otherwise later
         fixes might not get hit.
         """
-        self._checks = sorted(
-            self._checks, key=itemgetter('count'), reverse=True)
+        self._checks = sorted(self._checks,
+                              key=itemgetter("count"),
+                              reverse=True)
 
     def _endash(self, regex, fix):
         """
@@ -188,19 +192,22 @@ class Cleanser:
         if int(m.groups()[-1]) in range(1965, 1967):
             logger.warning(
                 ("Dates inputted as dd/mm/65 will migrate as dd/mm/2065. "
-                    "Dates inputted as dd/mm/66 will migrate as dd/mm/1966."))
+                 "Dates inputted as dd/mm/66 will migrate as dd/mm/1966."))
         try:
-            if len(m.string.split('-')[0]) == 4: #  year is first
-                return datetime.date(int(m.string.split('-')[0]),
-                                     int(m.string.split('-')[1]),
-                                     int(m.string.split('-')[2]))
+            if len(m.string.split("-")[0]) == 4:  #  year is first
+                return datetime.date(
+                    int(m.string.split("-")[0]),
+                    int(m.string.split("-")[1]),
+                    int(m.string.split("-")[2]),
+                )
             else:
                 return parse(m.string, dayfirst=True).date()
         except IndexError:
             pass
         except ValueError:
             logger.warning(
-                "Potential date issue (perhaps a date mixed with free text?): \"{}\"".format(self.string))
+                'Potential date issue (perhaps a date mixed with free text?): "{}"'
+                .format(self.string))
             return self.string
 
     def _date_time(self, regex, fix):
@@ -230,7 +237,7 @@ class Cleanser:
 
     def _apostrophe(self, regex, fix):
         """Handles apostrophes as first char of the string."""
-        return self.string.lstrip('\'')
+        return self.string.lstrip("'")
 
     def _newline(self, regex, fix):
         """Handles newlines anywhere in string."""
@@ -251,8 +258,8 @@ class Cleanser:
     def _access_checks(self, c_type):
         """Helper method returns the index of rule in self._checks
         when given a c_type"""
-        return self._checks.index(next(
-            item for item in self._checks if item['c_type'] == c_type))
+        return self._checks.index(
+            next(item for item in self._checks if item["c_type"] == c_type))
 
     def _analyse(self):
         """
@@ -262,9 +269,9 @@ class Cleanser:
         """
         i = 0
         while i < self.checks_l:
-            matches = re.finditer(self._checks[i]['rule'], self.string)
+            matches = re.finditer(self._checks[i]["rule"], self.string)
             if matches:
-                self._checks[i]['count'] += len(list(matches))
+                self._checks[i]["count"] += len(list(matches))
             i += 1
 
     def clean(self):
@@ -272,10 +279,9 @@ class Cleanser:
         string."""
         self._sort_checks()
         for check in self._checks:
-            if check['count'] > 0:
-                self.string = check['func'](
-                    check['rule'], check['fix'])
-                check['count'] = 0
+            if check["count"] > 0:
+                self.string = check["func"](check["rule"], check["fix"])
+                check["count"] = 0
             else:
                 return self.string
         return self.string

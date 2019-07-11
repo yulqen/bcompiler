@@ -76,23 +76,21 @@ def analyser_args(args, func):
     is a runner function defined elsewhere that does the work.
     """
     if args["start_date"] and args["end_date"]:
-        if args["output"] and not args["master"]:  # user stipulates an output directory
-            func(
-                args["output"], date_range=[args["start_date"][0], args["end_date"][0]]
-            )
+        if args["output"] and not args[
+                "master"]:  # user stipulates an output directory
+            func(args["output"],
+                 date_range=[args["start_date"][0], args["end_date"][0]])
             return
-        if (
-            args["output"] and args["master"]
-        ):  # user stipulates an output and a target master
+        if (args["output"] and args["master"]
+            ):  # user stipulates an output and a target master
             func(
                 args["output"],
                 args["master"][0],
                 date_range=[args["start_date"][0], args["end_date"][0]],
             )
             return
-        if (
-            args["master"] and not args["output"]
-        ):  # user stipulates a master but NOT an output directory
+        if (args["master"] and not args["output"]
+            ):  # user stipulates a master but NOT an output directory
             func(
                 user_provided_master_path=args["master"][0],
                 date_range=[args["start_date"][0], args["end_date"][0]],
@@ -105,17 +103,16 @@ def analyser_args(args, func):
         func(args["compare"][0])
         return
     else:
-        if args["output"] and not args["master"]:  # user stipulates an output directory
+        if args["output"] and not args[
+                "master"]:  # user stipulates an output directory
             func(output_path=args["output"])
             return
-        if (
-            args["output"] and args["master"]
-        ):  # user stipulates an output and a target master
+        if (args["output"] and args["master"]
+            ):  # user stipulates an output and a target master
             func(args["output"], args["master"][0])
             return
-        if (
-            args["master"] and not args["output"]
-        ):  # user stipulates a master but NOT an output directory
+        if (args["master"] and not args["output"]
+            ):  # user stipulates a master but NOT an output directory
             func(user_provided_master_path=args["master"][0])
             return
         else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
@@ -123,17 +120,16 @@ def analyser_args(args, func):
 
 
 def rcf_args(args, func):
-    if args["output"] and not args["master"]:  # user stipulates an output directory
+    if args["output"] and not args[
+            "master"]:  # user stipulates an output directory
         func(output_path=args["output"][0])
         return
-    if (
-        args["output"] and args["master"]
-    ):  # user stipulates an output and a target master
+    if (args["output"] and
+            args["master"]):  # user stipulates an output and a target master
         func(args["output"][0], args["master"][0])
         return
-    if (
-        args["master"] and not args["output"]
-    ):  # user stipulates a master but NOT an output directory
+    if (args["master"] and not args["output"]
+        ):  # user stipulates a master but NOT an output directory
         func(user_provided_master_path=args["master"][0])
         return
     else:  # no options supplied - default options applied (saved to bcompiler/output, master from config.ini
@@ -187,15 +183,13 @@ def keyword_args(args, func):
 def get_parser():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        description=textwrap.dedent(
-            """
+        description=textwrap.dedent("""
             | |__   ___ ___  _ __ ___  _ __ (_) | ___ _ __
             | '_ \ / __/ _ \| '_ ` _ \| '_ \| | |/ _ \ '__|
             | |_) | (_| (_) | | | | | | |_) | | |  __/ |
             |_.__/ \___\___/|_| |_| |_| .__/|_|_|\___|_|
                                     |_|
-            Compile BICC data or prepare Excel BICC return forms."""
-        ),
+            Compile BICC data or prepare Excel BICC return forms."""),
     )
 
     parser.add_argument(
@@ -205,8 +199,7 @@ def get_parser():
         dest="clean-datamap",
         help=(
             "Remove trailing spaces from datamap and ensure ready for running. "
-            "Should be no requirement to run manually."
-        ),
+            "Should be no requirement to run manually."),
     )
     parser.add_argument(
         "-v",
@@ -229,7 +222,8 @@ def get_parser():
     parser.add_argument(
         "--quiet",
         action="store_true",
-        help="If used with -r, will only report differences in row count if they occur.",
+        help=
+        "If used with -r, will only report differences in row count if they occur.",
     )
     parser.add_argument(
         "-t",
@@ -262,17 +256,16 @@ def get_parser():
         "--compare",
         nargs=1,
         metavar="PATH_TO_FILE TO COMPARE",
-        help=(
-            "To be used with compile action; file path to master file "
-            "to compare to compiled data"
-        ),
+        help=("To be used with compile action; file path to master file "
+              "to compare to compiled data"),
     )
     parser.add_argument(
         "-ll",
         "--loglevel",
         type=str,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        help=("Set the logging level for the console." "The log file is set to DEBUG."),
+        help=("Set the logging level for the console."
+              "The log file is set to DEBUG."),
     )
     parser.add_argument(
         "--analyser",
@@ -282,15 +275,17 @@ def get_parser():
     parser.add_argument(
         "--output",
         nargs=1,
-        help=("Path to save the resulting file. Ignored if used without --analyser."),
+        help=
+        ("Path to save the resulting file. Ignored if used without --analyser."
+         ),
         metavar="PATH_TO_DIRECTORY",
     )
     parser.add_argument(
         "--master",
         nargs=1,
-        help=(
-            "Path to master to be used for analysis. Ignored if used without --analyser."
-        ),
+        help=
+        ("Path to master to be used for analysis. Ignored if used without --analyser."
+         ),
         metavar="PATH_TO_DIRECTORY",
     )
     parser.add_argument(
@@ -298,12 +293,12 @@ def get_parser():
         nargs=1,
         help=("Path to xlsx file to be used as output for keyword analyser"),
     )
-    parser.add_argument(
-        "--start_date", nargs=1, help="Start date for milestone range - dd/mm/yy"
-    )
-    parser.add_argument(
-        "--end_date", nargs=1, help="End date for milestone range - dd/mm/yy"
-    )
+    parser.add_argument("--start_date",
+                        nargs=1,
+                        help="Start date for milestone range - dd/mm/yy")
+    parser.add_argument("--end_date",
+                        nargs=1,
+                        help="End date for milestone range - dd/mm/yy")
 
     return parser
 
@@ -321,9 +316,8 @@ def clean_datamap(dm_file):
         pass
     cleaned_datamap = open(cleaned_datamap_file, "a+")
     try:
-        with open(
-            dm_file, "r", encoding="UTF-8"
-        ) as f:  # make sure every line has a comma at the end
+        with open(dm_file, "r", encoding="UTF-8"
+                  ) as f:  # make sure every line has a comma at the end
             for line in f.readlines():
                 newline = line.rstrip()
                 if "," in newline[-1]:
@@ -334,9 +328,8 @@ def clean_datamap(dm_file):
                     cleaned_datamap.write(newline)
         cleaned_datamap.close()
     except UnicodeDecodeError:
-        with open(
-            dm_file, "r", encoding="latin1"
-        ) as f:  # make sure every line has a comma at the end
+        with open(dm_file, "r", encoding="latin1"
+                  ) as f:  # make sure every line has a comma at the end
             for line in f.readlines():
                 newline = line.rstrip()
                 if "," in newline[-1]:
@@ -357,8 +350,7 @@ def get_list_projects(source_master_file):
     except FileNotFoundError:
         logger.critical(
             "Have you copied the compiled master xlsx file into"
-            " the source directory and named it correctly in config.ini?"
-        )
+            " the source directory and named it correctly in config.ini?")
         sys.exit(1)
         return
     ws = wb.active
@@ -390,9 +382,8 @@ def get_datamap():
                     validation_header="",
                 )
             except IndexError:
-                m_map = dict(
-                    cell_description=data_map_line[0], sheet="CAN'T FIND SHEET"
-                )
+                m_map = dict(cell_description=data_map_line[0],
+                             sheet="CAN'T FIND SHEET")
             output_excel_map_list.append(m_map)
         elif data_map_line[-1] in dropdown_headers:
             try:
@@ -403,7 +394,8 @@ def get_datamap():
                     validation_header=data_map_line[3],
                 )
             except IndexError:
-                logger.error("Something wrong with the datamap indexing", m_map.items())
+                logger.error("Something wrong with the datamap indexing",
+                             m_map.items())
             output_excel_map_list.append(m_map)
     return output_excel_map_list
 
@@ -432,9 +424,8 @@ def _initial_clean(key: str) -> str:
     # trailing whitespace = killed!
     key = key.rstrip()
     if unicodedata.lookup("EN DASH") in key:
-        key = key.replace(
-            unicodedata.lookup("EN DASH"), unicodedata.lookup("HYPHEN-MINUS")
-        )
+        key = key.replace(unicodedata.lookup("EN DASH"),
+                          unicodedata.lookup("HYPHEN-MINUS"))
     return key
 
 
@@ -455,7 +446,8 @@ def dm_tabs_list():
 
 def populate_blank_bicc_form(master_obj: Master, proj_num):
     datamap = Datamap()
-    datamap.cell_map_from_csv(os.path.join(SOURCE_DIR, config["Datamap"]["name"]))
+    datamap.cell_map_from_csv(
+        os.path.join(SOURCE_DIR, config["Datamap"]["name"]))
     proj_data = master_obj.data
     ls = master_obj.projects
     test_proj = ls[int(proj_num)]
@@ -463,9 +455,8 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
     test_proj_data = proj_data[test_proj]
     blank = load_workbook(SOURCE_DIR + BLANK_TEMPLATE_FN, keep_vba=True)
     ws_list = dm_tabs_list()
-    ws_summary = blank[
-        ws_list[0]
-    ]  # this sheet is treated differently as its connect to need for 'proj/prog name
+    ws_summary = blank[ws_list[
+        0]]  # this sheet is treated differently as its connect to need for 'proj/prog name
 
     for item in datamap.cell_map:
         item.cell_key = _initial_clean(item.cell_key)
@@ -480,7 +471,6 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
                     f"Cannot find {item.cell_key} in {test_proj} - check for double spaces in cell in master. Skipping."
                 )
                 continue
-
         """The first work sheet name in list is treated differently to the for loop below. This is because
         as I understand it code is structured so that the first worksheet specifies the project/programme name"""
         if item.template_sheet == ws_list[0]:
@@ -488,15 +478,16 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
                 ws_summary[item.cell_reference].value = test_proj
                 continue
             if isinstance(test_proj_data[item.cell_key], datetime.date):
-                ws_summary[item.cell_reference].value = test_proj_data[item.cell_key]
+                ws_summary[item.cell_reference].value = test_proj_data[
+                    item.cell_key]
                 ws_summary[item.cell_reference].number_format = "dd/mm/yyyy"
                 continue
             try:
                 if re.match(r"(\d+/\d+/\d+)", test_proj_data[item.cell_key]):
                     ws_summary[item.cell_reference].value = test_proj_data[
-                        item.cell_key
-                    ]
-                    ws_summary[item.cell_reference].number_format = "dd/mm/yyyy"
+                        item.cell_key]
+                    ws_summary[
+                        item.cell_reference].number_format = "dd/mm/yyyy"
             except TypeError:
                 pass
             if test_proj_data[item.cell_key] is None:
@@ -504,7 +495,6 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
             c = Cleanser(str(test_proj_data[item.cell_key]))
             cleaned = c.clean()
             ws_summary[item.cell_reference].value = cleaned
-
         """for loop go through rest of worksheets in list"""
         for tab in ws_list[1:]:
             if item.template_sheet == tab:
@@ -514,12 +504,15 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
                 if isinstance(test_proj_data[item.cell_key], datetime.date):
                     c = Cleanser(str(test_proj_data[item.cell_key]))
                     cleaned = c.clean()
-                    ws[item.cell_reference].value = test_proj_data[item.cell_key]
+                    ws[item.cell_reference].value = test_proj_data[
+                        item.cell_key]
                     ws[item.cell_reference].number_format = "dd/mm/yyyy"
                     continue
                 try:
-                    if re.match(r"(\d+/\d+/\d+)", test_proj_data[item.cell_key]):
-                        ws[item.cell_reference].value = test_proj_data[item.cell_key]
+                    if re.match(r"(\d+/\d+/\d+)",
+                                test_proj_data[item.cell_key]):
+                        ws[item.cell_reference].value = test_proj_data[
+                            item.cell_key]
                         ws[item.cell_reference].number_format = "dd/mm/yyyy"
                 except TypeError:
                     pass
@@ -533,16 +526,11 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
 
     imprint_current_quarter(ws_summary)
 
-    blank.save(
-        "/".join(
-            [
-                OUTPUT_DIR,
-                "{}_{}_Return.xlsm".format(
-                    test_proj.replace("/", "_"), config["QuarterData"]["CurrentQuarter"]
-                ),
-            ]
-        )
-    )
+    blank.save("/".join([
+        OUTPUT_DIR,
+        "{}_{}_Return.xlsm".format(test_proj.replace("/", "_"),
+                                   config["QuarterData"]["CurrentQuarter"]),
+    ]))
 
 
 def pop_all():
@@ -557,8 +545,7 @@ def pop_all():
     if m.duplicate_keys(True):
         logger.critical(
             "Duplicate keys will not migrate to templates - you must "
-            "remove duplicates to migrate all data from the master!"
-        )
+            "remove duplicates to migrate all data from the master!")
     number_of_projects = len(m.projects)
     # we need to iterate through the master based on indexes so we use a range
     # based on the number of projects
@@ -652,7 +639,8 @@ def main():
     if args["populate"]:
         master = config["Master"]["name"]
         clean_datamap(DATAMAP_MASTER_TO_RETURN)
-        populate_blank_bicc_form(os.path.join(ROOT_PATH, master), args["populate"])
+        populate_blank_bicc_form(os.path.join(ROOT_PATH, master),
+                                 args["populate"])
         return
     if args["all"]:
         master = os.path.join(working_directory("source"), "master.csv")
@@ -690,7 +678,8 @@ def main():
 
     if args["count-rows"]:
         if args["csv"] and args["quiet"]:
-            logger.critical("-r option can only use --csv or --quiet, not both")
+            logger.critical(
+                "-r option can only use --csv or --quiet, not both")
             return
         if args["csv"]:
             row_data_formatter(csv_output=True)

@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
-from setuptools import setup, find_packages
-import bcompiler
 import os
+
+from setuptools import find_packages, setup
+
+import bcompiler
 
 
 def read(*names):
@@ -55,5 +57,8 @@ setup(
         'bcompiler = bcompiler.main:main',
         'bcompiler-init = bcompiler.process.bootstrap:main',
     ]},
-    install_requires=['openpyxl == 2.6.2', 'python-dateutil', 'colorlog'],
+    install_requires=[
+        'click',
+        'colorama'],
+
     test_suite='bcompiler.tests')

@@ -59,6 +59,8 @@ setup(
     ]},
     install_requires=[
         'click',
-        'colorama'],
+        'colorama',
+        'colorlog'
+    ],
 
     test_suite='bcompiler.tests')

@@ -30,7 +30,7 @@
         "bcompiler-engine": {
             "editable": true,
             "git": "https://github.com/hammerheadlemon/bcompiler-engine",
-            "ref": "9e6a4561fe35d417c569561c509e56acab7c1399"
+            "ref": "ad2f5a82baa7f162e5362df3ed1396d5e60af294"
         },
         "click": {
             "hashes": [

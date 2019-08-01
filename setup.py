@@ -64,6 +64,6 @@ setup(
         'bcompiler-engine'
     ],
     dependency_links=[
-        'git+https://github.com/hammerheadlemon/bcompiler-engine.git'
+        'git+https://github.com/hammerheadlemon/bcompiler-engine.git@master#egg=bcompiler-engine'
     ],
     test_suite='bcompiler.tests')

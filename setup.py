@@ -60,7 +60,10 @@ setup(
     install_requires=[
         'click',
         'colorama',
-        'colorlog'
+        'colorlog',
+        'bcompiler-engine'
     ],
-
+    dependency_links=[
+        'git+https://github.com/hammerheadlemon/bcompiler-engine.git'
+    ],
     test_suite='bcompiler.tests')

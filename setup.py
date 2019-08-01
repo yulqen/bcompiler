@@ -61,7 +61,7 @@ setup(
         'click',
         'colorama',
         'colorlog',
-        'bcompiler-engine'
+        'bcompiler-engine>=0.0'
     ],
     dependency_links=[
         'git+https://github.com/hammerheadlemon/bcompiler-engine.git@master#egg=bcompiler-engine'

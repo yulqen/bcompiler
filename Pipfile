@@ -5,9 +5,10 @@ name = "pypi"
 
 [packages]
 click = "==7.0"
-colorama = "==0.4.1"
+colorama = "*"
 bcompiler-engine = {editable = true,git = "https://github.com/hammerheadlemon/bcompiler-engine",ref = "master"}
 bcompiler = {editable = true,path = "."}
+halo = "*"
 
 [dev-packages]
 pytest = "*"

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2016 Matthew Lemon
+Copyright (c) 2019 Matthew Lemon
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -18,13 +18,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE. """
 import logging
+import warnings
 
 import click
-
 import colorlog
+from engine.adapters import cli
+from engine.config import Config
+from halo import Halo
+
+warnings.simplefilter("ignore")
 
 logger = colorlog.getLogger("bcompiler")
 logger.setLevel(logging.INFO)
+
 
 
 @click.command()
@@ -34,8 +40,11 @@ def less():
 
 @click.command()
 def main():
+
+    spinner = Halo("Creating your master now.")
+
+    Config.initialise()
     click.secho("Hello from bcompiler 2.0!", fg="yellow")
-
-
-if __name__ == "__main__":
-    less()
+    spinner.start()
+    cli.import_and_create_master()
+    spinner.stop()

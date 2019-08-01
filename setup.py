@@ -60,6 +60,7 @@ setup(
     setup_requires=['wheel'],
     install_requires=[
         'click',
+        'halo',
         'colorama',
         'colorlog',
         'bcompiler-engine @ https://github.com/hammerheadlemon/bcompiler-engine/archive/v0.0.3.zip#egg=bcompiler-engine-0.0.3'

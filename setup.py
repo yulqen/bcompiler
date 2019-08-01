@@ -57,13 +57,12 @@ setup(
         'bcompiler = bcompiler.main:main',
         'bcompiler-init = bcompiler.process.bootstrap:main',
     ]},
+    setup_requires=['wheel'],
     install_requires=[
         'click',
         'colorama',
         'colorlog',
-        'bcompiler-engine==0.0.2'
-    ],
-    dependency_links=[
-        'git+https://github.com/hammerheadlemon/bcompiler-engine.git@master#egg=bcompiler-engine'
+        'bcompiler-engine @ https://github.com/hammerheadlemon/bcompiler-engine/archive/v0.0.3.zip#egg=bcompiler-engine-0.0.3'
+
     ],
     test_suite='bcompiler.tests')

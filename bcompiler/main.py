@@ -18,33 +18,54 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE. """
 import logging
-import warnings
 
 import click
 import colorlog
-from engine.adapters import cli
-from engine.config import Config
+from engine.adapters import cli as engine_cli
+from engine.config import Config as engine_config
 from halo import Halo
-
-warnings.simplefilter("ignore")
 
 logger = colorlog.getLogger("bcompiler")
 logger.setLevel(logging.INFO)
 
 
+class Config:
+    def __init__(self):
+        self.verbose = False
 
-@click.command()
-def less():
-    click.echo_via_pager("\n".join("Line %d" % idx for idx in range(200)))
+
+pass_config = click.make_pass_decorator(Config, ensure=True)
 
 
-@click.command()
-def main():
+@click.group()
+@click.option("--verbose", is_flag=True)
+@pass_config
+def cli(config, verbose):
+    """
+    bcompiler is a tool for moving data to and from spreadsheets. See web site, etc.
+    """
+    config.verbose = verbose
 
-    spinner = Halo("Creating your master now.")
 
-    Config.initialise()
+@cli.group("import")
+def _import():
+    """
+    Import something (a batch of populated templates, a datamap, etc).
+    """
+
+
+@_import.command()
+@click.option(
+    "--to-master",
+    "-m",
+    is_flag=True,
+    default=False,
+    help="Create master.xlsx immediately",
+)
+def templates(to_master):
+    engine_config.initialise()
     click.secho("Hello from bcompiler 2.0!", fg="yellow")
-    spinner.start()
-    cli.import_and_create_master()
-    spinner.stop()
+    if to_master:
+        engine_cli.import_and_create_master()
+    else:
+        click.secho("Not implemented yet. Try --to-master/-m flag")

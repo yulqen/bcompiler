@@ -54,7 +54,7 @@ setup(
     packages=find_packages(),
     python_requires='>=3.6',
     entry_points={'console_scripts': [
-        'bcompiler = bcompiler.main:main',
+        'bcompiler = bcompiler.main:cli',
         'bcompiler-init = bcompiler.process.bootstrap:main',
     ]},
     setup_requires=['wheel'],

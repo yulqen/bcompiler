@@ -78,6 +78,6 @@ def templates(to_master):
         try:
             engine_cli.import_and_create_master(echo_funcs=output_funcs)
         except MalFormedCSVHeaderException as e:
-            click.echo(click.style("Incorrect headers in datamap. {}.".format(e.args[0]), bold=True, reverse=True, fg="cyan")
+            click.echo(click.style("Incorrect headers in datamap. {}.".format(e.args[0]), bold=True, reverse=True, fg="cyan"))
     else:
         click.secho("Not implemented yet. Try --to-master/-m flag")

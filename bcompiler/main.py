@@ -24,6 +24,7 @@ import click
 import colorlog
 from engine.adapters import cli as engine_cli
 from engine.config import Config as engine_config
+from engine.use_cases.parsing import MalFormedCSVHeaderException
 
 logger = colorlog.getLogger("bcompiler")
 logger.setLevel(logging.INFO)
@@ -74,6 +75,9 @@ def templates(to_master):
     engine_config.initialise()
     click.secho("Hello from bcompiler 2.0!", fg="yellow")
     if to_master:
-        engine_cli.import_and_create_master(echo_funcs=output_funcs)
+        try:
+            engine_cli.import_and_create_master(echo_funcs=output_funcs)
+        except MalFormedCSVHeaderException as e:
+            click.secho("Incorrect headers in datamap. {}.".format(e.args[0]))
     else:
         click.secho("Not implemented yet. Try --to-master/-m flag")

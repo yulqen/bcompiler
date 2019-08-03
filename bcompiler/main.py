@@ -18,15 +18,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE. """
 import logging
+from functools import partial
 
 import click
 import colorlog
 from engine.adapters import cli as engine_cli
 from engine.config import Config as engine_config
-from halo import Halo
 
 logger = colorlog.getLogger("bcompiler")
 logger.setLevel(logging.INFO)
+
+# we want to pass echo func down to bcompiler-engine
+output_funcs = dict(
+    click_echo_green=partial(click.secho, nl=False, fg="green"),
+    click_echo_yellow=partial(click.secho, nl=False, fg="yellow"),
+    click_echo_red=partial(click.secho, nl=False, fg="red"),
+    click_echo_white=partial(click.secho, nl=False, fg="white"),
+)
 
 
 class Config:
@@ -66,6 +74,6 @@ def templates(to_master):
     engine_config.initialise()
     click.secho("Hello from bcompiler 2.0!", fg="yellow")
     if to_master:
-        engine_cli.import_and_create_master()
+        engine_cli.import_and_create_master(echo_funcs=output_funcs)
     else:
         click.secho("Not implemented yet. Try --to-master/-m flag")

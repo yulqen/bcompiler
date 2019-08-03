@@ -63,7 +63,7 @@ setup(
         'halo',
         'colorama==0.3.9',
         'colorlog',
-        'bcompiler-engine @ https://github.com/hammerheadlemon/bcompiler-engine/archive/v0.0.3.zip#egg=bcompiler-engine-0.0.3'
+        'bcompiler-engine @ https://github.com/hammerheadlemon/bcompiler-engine/archive/master.zip#egg=bcompiler-engine'
 
     ],
     test_suite='bcompiler.tests')

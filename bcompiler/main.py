@@ -19,52 +19,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE. """
 
 import argparse
+import csv
 import datetime
 import logging
+import os
+import re
 import sys
 import textwrap
 import unicodedata
 from typing import Dict, List
 
 import colorlog
-import os
-import re
 from openpyxl import load_workbook
 from openpyxl.styles import Protection
 from openpyxl.worksheet.datavalidation import DataValidation
 
 import bcompiler.compile as compile_returns
 from bcompiler import __version__
+from bcompiler.analysers import (annex_run, financial_analyser_run,
+                                 keyword_run, rcf_run, swimlane_assurance_run,
+                                 swimlane_run)
+from bcompiler.compile import parse_comparison_master
 from bcompiler.core import Master, Quarter
-from bcompiler.analysers import annex_run
-from bcompiler.analysers import financial_analyser_run
-from bcompiler.analysers import keyword_run
-from bcompiler.analysers import swimlane_assurance_run
-from bcompiler.analysers import swimlane_run
-from bcompiler.analysers import rcf_run
 from bcompiler.process import Cleanser
 from bcompiler.process.datamap import Datamap
-from bcompiler.utils import (
-    CLEANED_DATAMAP,
-    DATAMAP_MASTER_TO_RETURN,
-    DATAMAP_RETURN_TO_MASTER,
-    OUTPUT_DIR,
-    SOURCE_DIR,
-    ROOT_PATH,
-    VALIDATION_REFERENCES,
-    parse_csv_to_file,
-    working_directory,
-    SHEETS,
-    CURRENT_QUARTER,
-    row_data_formatter,
-    BLANK_TEMPLATE_FN,
-    project_data_from_master,
-)
-from bcompiler.utils import directory_has_returns_check
+from bcompiler.utils import (BLANK_TEMPLATE_FN, CLEANED_DATAMAP,
+                             CURRENT_QUARTER, DATAMAP_MASTER_TO_RETURN,
+                             DATAMAP_RETURN_TO_MASTER, OUTPUT_DIR, ROOT_PATH,
+                             SHEETS, SOURCE_DIR, VALIDATION_REFERENCES,
+                             directory_has_returns_check, parse_csv_to_file,
+                             project_data_from_master, row_data_formatter)
 from bcompiler.utils import runtime_config as config
-from bcompiler.compile import parse_comparison_master
-
-import csv
+from bcompiler.utils import working_directory
 
 logger = colorlog.getLogger("bcompiler")
 logger.setLevel(logging.DEBUG)
@@ -400,15 +386,6 @@ def get_datamap():
     return output_excel_map_list
 
 
-def has_whiff_of_total(desc: str) -> bool:
-    total_conditions = ["Total", "RDEL Total", "CDEL Total"]
-    for cond in total_conditions:
-        if cond in desc:
-            return True
-        else:
-            return False
-
-
 def imprint_current_quarter(sheet) -> None:
     """
     Overwrites summary g3 cell.
@@ -499,8 +476,6 @@ def populate_blank_bicc_form(master_obj: Master, proj_num):
         for tab in ws_list[1:]:
             if item.template_sheet == tab:
                 ws = blank[tab]
-                if has_whiff_of_total(item.cell_key):
-                    continue
                 if isinstance(test_proj_data[item.cell_key], datetime.date):
                     c = Cleanser(str(test_proj_data[item.cell_key]))
                     cleaned = c.clean()

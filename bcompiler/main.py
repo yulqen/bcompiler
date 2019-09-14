@@ -18,9 +18,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE. """
 import logging
+import sys
 from functools import partial
 
 import click
+
 import colorlog
 from engine.adapters import cli as engine_cli
 from engine.config import Config as engine_config
@@ -63,6 +65,13 @@ def _import():
     """
 
 
+@cli.group("export")
+def export():
+    """
+    Export something (master data to blank templates, etc).
+    """
+
+
 @_import.command()
 @click.option(
     "--to-master",
@@ -81,3 +90,26 @@ def templates(to_master):
             click.echo(click.style("Incorrect headers in datamap. {}.".format(e.args[0]), bold=True, reverse=True, fg="cyan"))
     else:
         click.secho("Not implemented yet. Try --to-master/-m flag")
+
+
+@export.command()
+#@click.argument("datamap")
+#@click.argument("blank")
+@click.argument("master")
+def master(master):
+    engine_config.initialise()
+
+    input_dir = engine_config.PLATFORM_DOCS_DIR / "input"
+
+    blank_fn = engine_config.config_parser["DEFAULT"]["blank file name"]
+    datamap_fn = engine_config.config_parser["DEFAULT"]["datamap file name"]
+
+    blank = input_dir / blank_fn
+    datamap = input_dir / datamap_fn
+
+    click.secho(f"Exporting master {master} to templates based on {blank}...")
+
+    try:
+        engine_cli.write_master_to_templates(blank, datamap, master)
+    except FileNotFoundError as e:
+        click.secho(str(e), fg="red")

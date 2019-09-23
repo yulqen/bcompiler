@@ -61,7 +61,7 @@ setup(
     install_requires=[
         'click',
         'halo',
-        'colorama==0.3.9',
+        'colorama',
         'colorlog',
         'bcompiler-engine @ https://github.com/hammerheadlemon/bcompiler-engine/archive/master.zip#egg=bcompiler-engine'
 

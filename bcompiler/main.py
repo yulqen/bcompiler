@@ -18,7 +18,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE. """
 import logging
-import sys
 from functools import partial
 
 import click
@@ -87,14 +86,15 @@ def templates(to_master):
         try:
             engine_cli.import_and_create_master(echo_funcs=output_funcs)
         except MalFormedCSVHeaderException as e:
-            click.echo(click.style("Incorrect headers in datamap. {}.".format(e.args[0]), bold=True, reverse=True, fg="cyan"))
+            click.echo(
+                click.style("Incorrect headers in datamap. {}.".format(e.args[0]), bold=True, reverse=True, fg="cyan"))
     else:
         click.secho("Not implemented yet. Try --to-master/-m flag")
 
 
 @export.command()
-#@click.argument("datamap")
-#@click.argument("blank")
+# @click.argument("datamap")
+# @click.argument("blank")
 @click.argument("master")
 def master(master):
     engine_config.initialise()
@@ -113,3 +113,13 @@ def master(master):
         engine_cli.write_master_to_templates(blank, datamap, master)
     except FileNotFoundError as e:
         click.secho(str(e), fg="red")
+
+
+@export.command()
+@click.argument("target_file")
+def report(target_file):
+    """Requires the path to the target spreadsheet file."""
+    engine_config.initialise()
+    report = engine_cli.report_data_validations_in_file(target_file)
+    for r in report:
+        click.secho(r)

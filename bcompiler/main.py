@@ -70,6 +70,9 @@ def export():
     Export something (master data to blank templates, etc).
     """
 
+@cli.group("report")
+def report():
+    """Create a report"""
 
 @_import.command()
 @click.option(
@@ -115,10 +118,11 @@ def master(master):
         click.secho(str(e), fg="red")
 
 
-@export.command()
+@report.command()
 @click.argument("target_file")
-def report(target_file):
+def data_validations(target_file):
     """Requires the path to the target spreadsheet file."""
+    click.secho(f"Getting data validations from: {target_file}", fg="green")
     engine_config.initialise()
     report = engine_cli.report_data_validations_in_file(target_file)
     for r in report:

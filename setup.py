@@ -63,6 +63,7 @@ setup(
         'halo',
         'colorama',
         'colorlog',
+        'python-dateutil',
         'bcompiler-engine @ https://github.com/hammerheadlemon/bcompiler-engine/archive/master.zip#egg=bcompiler-engine'
 
     ],

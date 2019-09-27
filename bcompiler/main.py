@@ -70,9 +70,11 @@ def export():
     Export something (master data to blank templates, etc).
     """
 
+
 @cli.group("report")
 def report():
     """Create a report"""
+
 
 @_import.command()
 @click.option(
